@@ -7,18 +7,18 @@ export default class Login extends Component {
     return (
       <KeyboardAvoidingView behavior='padding' style={styles.container}>
 
-        <View style={styles.logoContainer}>
+        <KeyboardAvoidingView style={styles.logoContainer}>
           <Image 
             style={styles.logo} 
             source={require('../Images/placeholderLOGO.png')} />
 
           <Text style={styles.title}> Play Poker with friends! </Text>
-        </View>
+        </KeyboardAvoidingView>
 
 
-        <View style={styles.Container}>
+        <KeyboardAvoidingView style={styles.Container}>
           <LoginForm />
-        </View>
+        </KeyboardAvoidingView>
       </KeyboardAvoidingView>
     );
   }

@@ -34,7 +34,7 @@ export default class LoginForm extends Component {
         </TouchableOpacity>
 
         <TouchableOpacity>
-            <Text style={styles.registerButtonText}>Register</Text>
+            <Text style={styles.registerButtonText}>Sign Up</Text>
         </TouchableOpacity>
       </View>
     );
@@ -45,33 +45,36 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   input: {
-    height: 40,
+    height:40,
     backgroundColor: 'rgba(255, 255, 255, 0.25)',
     marginBottom: 20,
     color: '#FFF',
-    paddingHorizontal: 10,
-    borderRadius: 50
+    paddingHorizontal: 20,
+    paddingEnd: 10,
+    borderRadius: 50,
+    width:'100%'
   },
   forgotPassword:{
     color:'#FFF',
     fontSize: 11,
-    marginBottom:'20',
+    marginBottom: 20,
     opacity: 0.8
   },   
   buttonContainer:{
     backgroundColor: '#27ae60',
     paddingVertical: 20,
-    padding: '20',
+    padding: 20,
     borderRadius: 50,
-    width:"100%"
+    width:"100%",
+    marginBottom: 20
   },
   forgotPassword:{
     color:'#FFF',
-    marginBottom:'40',
-    opacity: 0.7
+    marginBottom: 10,
+    opacity: 0.7,
   },
   loginButtonText: {
     textAlign: 'center',
@@ -81,6 +84,6 @@ const styles = StyleSheet.create({
   registerButtonText:{
       textAlign: 'center',
       color: '#FFF',
-      fontWeight: '500'
+      marginBottom: 10
   }
 });
