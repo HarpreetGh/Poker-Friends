@@ -5,8 +5,8 @@ export default class LoginForm extends Component {
   render(){
     return (
       <KeyboardAvoidingView 
-      style={styles.container}
-      behavior = 'padding'
+        style={styles.container}
+        behavior = 'padding'
       >
         <TextInput
             placeholder="Email"
