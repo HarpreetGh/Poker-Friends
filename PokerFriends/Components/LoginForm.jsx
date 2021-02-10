@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Touchable } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Touchable, KeyboardAvoidingView } from 'react-native';
 
 export default class LoginForm extends Component {
   render(){
     return (
-      <View style={styles.container}>
+      <KeyboardAvoidingView 
+      style={styles.container}
+      behavior = 'padding'
+      >
         <TextInput
             placeholder="Email"
             placeholderTextColor="rgba(255, 255, 255, 0.75)"
@@ -36,7 +39,7 @@ export default class LoginForm extends Component {
         <TouchableOpacity>
             <Text style={styles.registerButtonText}>Sign Up</Text>
         </TouchableOpacity>
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 }
