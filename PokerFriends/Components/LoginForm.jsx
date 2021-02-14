@@ -1,9 +1,19 @@
 import React, { Component, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Touchable, KeyboardAvoidingView } from 'react-native';
+import firebase from 'firebase'
 
 export default function LoginForm () {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const Login = () => {
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .catch((error) => {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.log(errorCode, errorMessage)
+      });
+    }
 
   return (
     <KeyboardAvoidingView 
@@ -17,7 +27,7 @@ export default function LoginForm () {
           keyboardType="email-address"
           autoCapitalize="none"
           autoCorrect={false}
-          onSubmitEditing={() => this.passwordInput.focus()}
+          //onSubmitEditing={() => this.passwordInput.focus()}
           style={styles.input} 
 
           onChangeText={text => setEmail(text)}
@@ -30,7 +40,6 @@ export default function LoginForm () {
           returnKeyType="go"
           secureTextEntry
           style={styles.input} 
-          //ref={(input) => this.passwordInput = input}
 
           onChangeText={text => setPassword(text)}
           value={password}
@@ -40,7 +49,7 @@ export default function LoginForm () {
           <Text style={styles.forgotPassword}>Forgot Password?</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.buttonContainer}>
+      <TouchableOpacity style={styles.buttonContainer} onPress={Login}>
           <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
 

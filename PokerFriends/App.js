@@ -37,9 +37,11 @@ export default class App extends Component {
     })
   }
 
-  render(){
+  render(){ 
+    // Temporary Code (this.state.LoggedIn)? (<LandingPage data={this.state.LoggedIn} />):(<Register />) 
+    // Final code once Navigator works <LandingPage data={this.state.LoggedIn} />
     return (
-        (this.state.LoggedIn)? (<LandingPage />):(<Register />)
+      (this.state.LoggedIn)? (<LandingPage data={this.state.LoggedIn} />):(<Login />)
     );
   }
 }
