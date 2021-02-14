@@ -34,7 +34,6 @@ export default class HelpButton extends Component {
             this.setModalVisible(!modalVisible);
           }}
         >
-          
             <ScrollView >
           <View style = {styles.buttonTextView}>
             <View style={styles.modalView}>
@@ -74,7 +73,7 @@ export default class HelpButton extends Component {
               </Text>
 
               <Image
-               style = {{borderColor: 'red', borderWidth: 2, marginBottom: 5}}
+               style = {{borderColor: 'white', borderWidth: 2, marginBottom: 5}}
                 source = {require('../assets/communityCards.png')}
               />
               <Image

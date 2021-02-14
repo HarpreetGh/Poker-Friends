@@ -1,18 +1,18 @@
 import 'react-native-gesture-handler';
 import React, { Component, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import{NavigationContainer} from '@react-navigation/native';
+
 import LandingPage from './Components/LandingPage'
 import Register from '../PokerFriends/Components/Register';
-import{NavigationContainer} from '@react-navigation/native';
 import Login from './Components/Login'
 
+const App = () => {
+  return(
+    <Login>
 
-export default class App extends Component {
-  render(){
-    return (
-      <LandingPage />
-    );
-  }
+    </Login>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -23,3 +23,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+export default App
