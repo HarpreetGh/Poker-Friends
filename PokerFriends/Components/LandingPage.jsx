@@ -5,6 +5,7 @@ import Logo from './Logo'
 import Login from './Login'
 import Register from './Register'
 import firebase from 'firebase'
+import ForgotPassword from './ForgotPassword'
 
 const LogOut = () => {
   firebase.auth().signOut()
