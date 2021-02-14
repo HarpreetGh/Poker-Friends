@@ -73,13 +73,13 @@ const styles = StyleSheet.create({
       paddingVertical: 20,
       padding: 20,
       borderRadius: 50,
-      width:"50%",
+      width:"100%",
       marginBottom: 20
     },
     registerButtonText: {
       textAlign: 'center',
       color: '#FFF',
-      fontWeight: '900',
+      fontWeight: '900'
     },
     input: {
       height: 40,
@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
       color: '#FFF',
       paddingHorizontal: 20,
       paddingEnd: 10,
-      borderRadius: 50,
-      width:'50%'
+      borderRadius: 50
     },
 })
