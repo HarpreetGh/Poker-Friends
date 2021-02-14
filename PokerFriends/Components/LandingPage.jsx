@@ -13,7 +13,7 @@ const LogOut = () => {
     console.log('worked?')
   // Sign-out successful.
   }).catch((error) => {
-    consol.log(error)
+    console.log(error)
     // An error happened.
   });
 }
