@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, Image, KeyboardAvoidingView, Pressable } from 'react-native';
 import HelpButton from './HelpButton'
 
 
 export default class LandingPage extends Component {
     render(){    
         return (
-        <View style={styles.container}>
-            <HelpButton/>
-        </View>
+          <View style={styles.container}>
+          <Pressable>
+                <Text>Sign Out</Text>
+          </Pressable>
+          <HelpButton/>
+          </View>
         );
     }
 }

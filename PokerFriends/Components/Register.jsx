@@ -1,54 +1,63 @@
-import React, { Component } from 'react'
+import React, { Component, useState } from 'react'
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, Touchable } from 'react-native';
 import Logo from '../Components/Logo';
+import firebase from 'firebase'
+//import 'firebase/auth'
 
-export default class Register extends Component {
-    render(){
-        return (
-            <KeyboardAvoidingView 
-              style={styles.container} 
-              behavior = 'padding'>
+export default function Register() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-                <Logo />
-
-                <TextInput
-                    placeholder="Username"
-                    placeholderTextColor="rgba(255, 255, 255, 0.75)"
-                    returnKeyType="next"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    onSubmitEditing={() => this.emailInput.focus()}
-                    style={styles.input} 
-                />
-
-                <TextInput
-                    placeholder="Email"
-                    placeholderTextColor="rgba(255, 255, 255, 0.75)"
-                    returnKeyType="next"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    onSubmitEditing={() => this.passwordInput.focus()}
-                    style={styles.input}
-                    ref={(input) => this.emailInput = input}
-                />
-
-                <TextInput
-                    placeholder="Password"
-                    placeholderTextColor="rgba(255, 255, 255, 0.75)"
-                    returnKeyType="go"
-                    secureTextEntry
-                    style={styles.input} 
-                    ref={(input) => this.passwordInput = input}
-                />
-
-                <TouchableOpacity style={styles.buttonContainer}>
-                    <Text style={styles.registerButtonText}>Register</Text>
-                </TouchableOpacity>
-
-            </KeyboardAvoidingView>
-        );
+    const SignUp = () => {
+      firebase.auth().createUserWithEmailAndPassword(email, password)
+      .catch((error) => {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+        // ..
+      });
     }
+
+    return (
+        <KeyboardAvoidingView 
+          style={styles.container} 
+          behavior = 'padding'>
+
+            <Logo />
+
+            <TextInput
+                placeholder="Email"
+                placeholderTextColor="rgba(255, 255, 255, 0.75)"
+                returnKeyType="next"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                onSubmitEditing={() => this.passwordInput.focus()}
+                style={styles.input}
+                //ref={(input) => this.emailInput = input}
+
+                onChangeText={text => setEmail(text)}
+                value={email}
+            />
+
+            <TextInput
+                placeholder="Password"
+                placeholderTextColor="rgba(255, 255, 255, 0.75)"
+                returnKeyType="go"
+                secureTextEntry
+                style={styles.input} 
+                //ref={(input) => this.passwordInput = input}
+                
+                onChangeText={text => setPassword(text)}
+                value={password}
+            />
+
+            <TouchableOpacity style={styles.buttonContainer} onPress={SignUp}>
+                <Text style={styles.registerButtonText}>Register</Text>
+            </TouchableOpacity>
+
+        </KeyboardAvoidingView>
+    );
 }
 
 const styles = StyleSheet.create({
