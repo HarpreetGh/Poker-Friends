@@ -3,13 +3,15 @@ import { StyleSheet, Text, View, Image, KeyboardAvoidingView } from 'react-nativ
 import HelpButton from './HelpButton'
 import Login from './Login'
 import Register from './Register'
+import ForgotPassword from './ForgotPassword'
+import Logo from './Logo';
 
 
 export default class LandingPage extends Component {
    render(){    
       return (
       <View style={styles.container}>
-          <Register/>
+          <LandingPage />
       </View>
       );
   }
