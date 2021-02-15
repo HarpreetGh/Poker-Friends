@@ -1,9 +1,10 @@
 import 'react-native-gesture-handler';
 import React, { Component, useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import{NavigationContainer} from '@react-navigation/native';
+
 import LandingPage from './Components/LandingPage'
 import Register from '../PokerFriends/Components/Register';
-import{NavigationContainer} from '@react-navigation/native';
 import Login from './Components/Login'
 //import AsyncStorage from 'react-native-community/async-storage'
 import * as firebase from 'firebase';
@@ -17,9 +18,6 @@ const firebaseConfig = {
     messagingSenderId: "1077794174230",
     appId: "1:1077794174230:web:f05b745f8fba6d8f798c37"
   };
-
-
-
 
 export default class App extends Component {
   constructor(props){
@@ -54,3 +52,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+export default App
