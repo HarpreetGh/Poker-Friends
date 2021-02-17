@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Touchable, KeyboardAvoidingView } from 'react-native';
 
 export default class LoginForm extends Component {
+ 
+
   render(){
     return (
       <KeyboardAvoidingView 
@@ -28,15 +30,16 @@ export default class LoginForm extends Component {
             ref={(input) => this.passwordInput = input}
         />
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress = {() => this.props.navigation.navigate('ForgotPassword')} >
             <Text style={styles.forgotPassword}>Forgot Password?</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.buttonContainer}>
+        <TouchableOpacity  style={styles.buttonContainer} onPress = {() => this.props.navigation.navigate('LandingPage')}>
+          
             <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity   onPress = {() => this.props.navigation.navigate('Register')}>
             <Text style={styles.registerButtonText}>Sign Up</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>

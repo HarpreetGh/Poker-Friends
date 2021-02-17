@@ -4,6 +4,10 @@ import LoginForm from '../Components/LoginForm';
 import Logo from '../Components/Logo';
 
 export default class Login extends Component {
+  constructor(props) {
+    super(props);
+  }
+
   render(){
     return (
       <KeyboardAvoidingView style={styles.container}>
@@ -11,7 +15,7 @@ export default class Login extends Component {
         <Logo />
 
         <KeyboardAvoidingView style={styles.Container}>
-          <LoginForm />
+          <LoginForm navigation = {this.props.navigation} />
         </KeyboardAvoidingView>
       </KeyboardAvoidingView>
     );
