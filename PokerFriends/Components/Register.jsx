@@ -21,7 +21,7 @@ export default function Register() {
     return (
         <KeyboardAvoidingView 
           style={styles.container} 
-          behavior = 'padding'>
+          >
 
             <Logo />
 
