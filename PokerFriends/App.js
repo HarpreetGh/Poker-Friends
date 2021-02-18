@@ -3,7 +3,6 @@ import React, { Component, useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import{NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack'
-
 import LandingPage from './Components/LandingPage'
 import Register from '../PokerFriends/Components/Register';
 import Login from './Components/Login'
@@ -29,21 +28,18 @@ export default class App extends Component {
       this.state = {
         LoggedIn: true,
       }
+
     if(firebase.apps.length === 0){
       console.log('triggered')
       firebase.initializeApp(firebaseConfig);
     }
     firebase.auth().onAuthStateChanged((user) => {
       this.setState({LoggedIn: !!user})
-      console.log(this.state.LoggedIn)
     })
   }
 
   render(){ 
-    // Temporary Code (this.state.LoggedIn)? (<LandingPage data={this.state.LoggedIn} />):(<Register />) 
-    // Final code once Navigator works <LandingPage data={this.state.LoggedIn} />
     return (
-
       <NavigationContainer>
         <Stack.Navigator  screenOptions={{headerShown: false}}>
           <Stack.Screen name = "LandingPage">

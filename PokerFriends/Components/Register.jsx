@@ -2,7 +2,6 @@ import React, { Component, useState } from 'react'
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, Touchable } from 'react-native';
 import Logo from '../Components/Logo';
 import firebase from 'firebase'
-//import 'firebase/auth'
 
 export default class Register extends Component {
   constructor(props){
@@ -31,7 +30,6 @@ export default class Register extends Component {
         <KeyboardAvoidingView 
           style={styles.container}
           >
-
             <Logo />
 
             <TextInput

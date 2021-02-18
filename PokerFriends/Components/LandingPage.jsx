@@ -4,10 +4,21 @@ import HelpButton from './HelpButton'
 import Logo from './Logo'
 import Login from './Login'
 import Register from './Register'
+import firebase from 'firebase'
 import ForgotPassword from './ForgotPassword'
 import * as ScreenOrientation from 'expo-screen-orientation';
 import firebase from 'firebase'
 
+const LogOut = () => {
+  firebase.auth().signOut()
+  .then(() => {
+    console.log('worked?')
+  // Sign-out successful.
+  }).catch((error) => {
+    console.log(error)
+    // An error happened.
+  });
+}
 
 const LogOut = () => {
   firebase.auth().signOut()
@@ -21,17 +32,6 @@ const LogOut = () => {
 }
 
 export default class LandingPage extends Component {
-  /*constructor(props){
-    super(props)
-      this.state = {
-        LoggedIn: true,
-      }    
-    firebase.auth().onAuthStateChanged((user) => {
-      console.log(!!user)
-      this.setState({LoggedIn: !!user})
-    })
-  }*/
-
   SignedIn = () =>{
     return(
       <View>
@@ -76,7 +76,6 @@ export default class LandingPage extends Component {
           <View style={styles.container}>
             <Logo/>
             {this.props.LoggedIn? (this.SignedIn()):(this.SignedOut())}
-            
             <HelpButton/>
           </View>
         );
