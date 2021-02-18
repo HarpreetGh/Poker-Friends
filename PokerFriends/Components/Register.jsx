@@ -2,27 +2,34 @@ import React, { Component, useState } from 'react'
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, Touchable } from 'react-native';
 import Logo from '../Components/Logo';
 import firebase from 'firebase'
-//import 'firebase/auth'
 
-export default function Register() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
-    const SignUp = () => {
-      firebase.auth().createUserWithEmailAndPassword(email, password)
-      .catch((error) => {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        console.log(errorCode, errorMessage);
-        // ..
-      });
+export default class Register extends Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      email: '',
+      password: ''
     }
+  }
 
+  SignUp(){
+    firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
+      .then(() =>{
+      this.props.navigation.navigate('LandingPage')
+    })
+    .catch((error) => {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.log(errorCode, errorMessage);
+      // ..
+    });
+  }
+
+  render(){
     return (
         <KeyboardAvoidingView 
-          style={styles.container} 
-          behavior = 'padding'>
-
+          style={styles.container}
+          >
             <Logo />
 
             <TextInput
@@ -34,10 +41,8 @@ export default function Register() {
                 autoCorrect={false}
                 onSubmitEditing={() => this.passwordInput.focus()}
                 style={styles.input}
-                //ref={(input) => this.emailInput = input}
-
-                onChangeText={text => setEmail(text)}
-                value={email}
+                onChangeText={text => this.setState({email: text})}
+                value={this.state.email}
             />
 
             <TextInput
@@ -46,18 +51,17 @@ export default function Register() {
                 returnKeyType="go"
                 secureTextEntry
                 style={styles.input} 
-                //ref={(input) => this.passwordInput = input}
-                
-                onChangeText={text => setPassword(text)}
-                value={password}
+                onChangeText={text => this.setState({password: text})}
+                value={this.state.password}
             />
 
-            <TouchableOpacity style={styles.buttonContainer} onPress={SignUp}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={() => this.SignUp()}>
                 <Text style={styles.registerButtonText}>Register</Text>
             </TouchableOpacity>
 
         </KeyboardAvoidingView>
     );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -82,12 +86,13 @@ const styles = StyleSheet.create({
       fontWeight: '900'
     },
     input: {
-      height: 40,
-      backgroundColor: 'rgba(255, 255, 255, 0.25)',
-      marginBottom: 20,
-      color: '#FFF',
-      paddingHorizontal: 20,
-      paddingEnd: 10,
-      borderRadius: 50
-    },
+    height:40,
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    marginBottom: 20,
+    color: '#FFF',
+    paddingHorizontal: 20,
+    paddingEnd: 10,
+    borderRadius: 50,
+    width:'100%'
+  },
 })

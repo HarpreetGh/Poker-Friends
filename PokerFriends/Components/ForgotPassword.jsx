@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, Touchable } from 'react-native';
 import Logo from '../Components/Logo';
 
-export default class Register extends Component {
+export default class ForgotPassword extends Component {
     render(){
         return (
             <KeyboardAvoidingView 
               style={styles.container} 
-              behavior = 'padding'>
+              >
 
                 <Logo />
 

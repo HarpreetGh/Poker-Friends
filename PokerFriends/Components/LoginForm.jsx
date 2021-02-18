@@ -2,12 +2,19 @@ import React, { Component, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Touchable, KeyboardAvoidingView } from 'react-native';
 import firebase from 'firebase'
 
-export default function LoginForm () {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const Login = () => {
-    firebase.auth().signInWithEmailAndPassword(email, password)
+export default class LoginForm extends Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      email: '',
+      password: ''
+    }
+  }
+  Login() {
+    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+    .then(() =>{
+      this.props.navigation.navigate('LandingPage')
+    })
       .catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
@@ -15,7 +22,8 @@ export default function LoginForm () {
       });
     }
 
-  return (
+  render(){
+    return(
     <KeyboardAvoidingView 
       style={styles.container}
       behavior = 'padding'
@@ -29,9 +37,8 @@ export default function LoginForm () {
           autoCorrect={false}
           //onSubmitEditing={() => this.passwordInput.focus()}
           style={styles.input} 
-
-          onChangeText={text => setEmail(text)}
-          value={email}
+          onChangeText={text => this.setState({email: text})}
+          value={this.state.email}
       />
 
       <TextInput
@@ -40,24 +47,25 @@ export default function LoginForm () {
           returnKeyType="go"
           secureTextEntry
           style={styles.input} 
-
-          onChangeText={text => setPassword(text)}
-          value={password}
+          onChangeText={text => this.setState({password: text})}
+          value={this.state.password}
       />
 
-      <TouchableOpacity>
+      <TouchableOpacity onPress = {() => this.props.navigation.navigate('ForgotPassword')} >
           <Text style={styles.forgotPassword}>Forgot Password?</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.buttonContainer} onPress={Login}>
+      <TouchableOpacity style={styles.buttonContainer} onPress = {() => this.Login()}>
           <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity>
+      <TouchableOpacity onPress = {() => this.props.navigation.navigate('Register')}>
           <Text style={styles.registerButtonText}>Sign Up</Text>
       </TouchableOpacity>
+
     </KeyboardAvoidingView>
-  );
+    )
+    }
 }
 
 const styles = StyleSheet.create({
