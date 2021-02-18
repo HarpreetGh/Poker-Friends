@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, View, TouchableOpacity, StatusBar, Image } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 export default class GameSetting extends Component {
     render() { 
         return ( 
-            <View style = {styles.container} OrientationLock = {this.state}  >
+            <View style = {styles.container}  >
+                <StatusBar hidden/>
 
                 <TouchableOpacity 
                     style={styles.exitButton}
@@ -21,14 +22,22 @@ export default class GameSetting extends Component {
                 </View>
                 <View style={styles.webcam2}>
                     <Text>Webcam 2</Text> 
+                </View> 
+                <View style={styles.webcam3}>
+                    <Text>Webcam 3</Text> 
                 </View>
+                <View style={styles.webcam3}>
+                    <Text>Webcam 4</Text> 
+                </View>
+                <Image style = {styles.dealer}
+                
+                source = {require('../assets/cards.png')}
+                />
                 <View style={styles.pot}>
                     <Text>Pot:</Text>
                     <Text>$420</Text> 
                 </View>
-                <View style={styles.webcam3}>
-                    <Text>Webcam 3</Text> 
-                </View>
+               
             </View>
 
          );
@@ -43,6 +52,14 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       flexWrap: 'wrap',
       justifyContent: 'flex-start',
+    },
+      dealer: {
+      width: 125, 
+      height:125,
+      resizeMode: 'contain', 
+      justifyContent: "flex-end",
+      alignSelf: 'flex-end',
+
     },
     textStyle:{
         color: '#FFFFFF',
