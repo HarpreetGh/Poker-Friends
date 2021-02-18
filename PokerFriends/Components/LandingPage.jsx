@@ -7,18 +7,6 @@ import Register from './Register'
 import firebase from 'firebase'
 import ForgotPassword from './ForgotPassword'
 import * as ScreenOrientation from 'expo-screen-orientation';
-import firebase from 'firebase'
-
-const LogOut = () => {
-  firebase.auth().signOut()
-  .then(() => {
-    console.log('worked?')
-  // Sign-out successful.
-  }).catch((error) => {
-    console.log(error)
-    // An error happened.
-  });
-}
 
 const LogOut = () => {
   firebase.auth().signOut()
@@ -37,7 +25,7 @@ export default class LandingPage extends Component {
       <View>
         <TouchableOpacity style={styles.button} 
           onPress = {() => LogOut()}>
-              <Text style={styles.registerButtonText}>Log Out</Text>
+              <Text style={styles.textStyle}>Log Out</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
@@ -59,12 +47,12 @@ export default class LandingPage extends Component {
       <View>
         <TouchableOpacity style={styles.button} 
           onPress = {() => this.props.navigation.navigate('Register')}>
-              <Text style={styles.registerButtonText}>Sign Up</Text>
+              <Text style={styles.textStyle}>Sign Up</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.button} 
           onPress = {() => this.props.navigation.navigate('Login')}>
-              <Text style={styles.registerButtonText}>Login</Text>
+              <Text style={styles.textStyle}>Login</Text>
         </TouchableOpacity>
         
         
