@@ -1,36 +1,86 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, Image, KeyboardAvoidingView, Pressable, TouchableOpacity } from 'react-native';
 import HelpButton from './HelpButton'
+import Logo from './Logo'
 import Login from './Login'
 import Register from './Register'
 import ForgotPassword from './ForgotPassword'
-import Logo from './Logo';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import firebase from 'firebase'
 
+
+const LogOut = () => {
+  firebase.auth().signOut()
+  .then(() => {
+    console.log('worked?')
+  // Sign-out successful.
+  }).catch((error) => {
+    console.log(error)
+    // An error happened.
+  });
+}
 
 export default class LandingPage extends Component {
-   render(){    
-      return (
-      <View 
-        style={styles.container}
-        behavior = 'padding'
-      >
-          <TouchableOpacity 
+  /*constructor(props){
+    super(props)
+      this.state = {
+        LoggedIn: true,
+      }    
+    firebase.auth().onAuthStateChanged((user) => {
+      console.log(!!user)
+      this.setState({LoggedIn: !!user})
+    })
+  }*/
+
+  SignedIn = () =>{
+    return(
+      <View>
+        <TouchableOpacity style={styles.button} 
+          onPress = {() => LogOut()}>
+              <Text style={styles.registerButtonText}>Log Out</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
           style={styles.button}
           onPress = {() => {
             this.props.navigation.navigate('GameSetting'); 
-            ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
-          }} 
-
-          
-          >
-            <Text style={styles.textStyle}>Play Game</Text>
-          </TouchableOpacity>
-
-          <HelpButton></HelpButton>
+            ScreenOrientation.lockAsync
+            (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+          }}
+        >
+          <Text style={styles.textStyle}>Play Game</Text>
+        </TouchableOpacity>
       </View>
-      );
+    )
   }
+
+  SignedOut = () => {
+    return(
+      <View>
+        <TouchableOpacity style={styles.button} 
+          onPress = {() => this.props.navigation.navigate('Register')}>
+              <Text style={styles.registerButtonText}>Sign Up</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} 
+          onPress = {() => this.props.navigation.navigate('Login')}>
+              <Text style={styles.registerButtonText}>Login</Text>
+        </TouchableOpacity>
+        
+        
+      </View>
+    )
+  }
+    render(){    
+        return (
+          <View style={styles.container}>
+            <Logo/>
+            {this.props.LoggedIn? (this.SignedIn()):(this.SignedOut())}
+            
+            <HelpButton/>
+          </View>
+        );
+    }
 }
 const styles = StyleSheet.create({
   container: {
@@ -46,7 +96,7 @@ const styles = StyleSheet.create({
   },
   button:{
     borderRadius: 2,
-    marginVertical: 100,
+    marginVertical: 25,
     padding: 15,
     backgroundColor: "#778899",
   }
