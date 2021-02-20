@@ -1,28 +1,53 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet, View, TouchableOpacity, StatusBar, Image, Dimensions } from 'react-native';
+import { Text, StyleSheet, View, TouchableOpacity, StatusBar, Image,  Modal } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 
 export default class GameSetting extends Component {
+    state = {
+        modalVisible: false
+      };
+    
+      setModalVisible = (visible) => {
+        this.setState({ modalVisible: visible });
+      }
     
     render() { 
+        const { modalVisible } = this.state;
         return (  
-           
-
             <View style = {styles.container}>
                 <StatusBar hidden/>
-                <View>
-                <TouchableOpacity 
-                    style={styles.exitButton}
-                    onPress = {() => {
-                        this.props.navigation.navigate('LandingPage'); 
-                        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-                    }} 
-                >
-                <Text style={styles.textStyle}>Exit</Text>
-                </TouchableOpacity>
-                </View>
 
+                    <Modal
+                      animationType="slide"
+                      transparent={true}
+                      visible={modalVisible}
+                      
+                    >
+                        <View style = {styles.centeredView}>
+                            <View style = {styles.modalView}>
+                                <TouchableOpacity
+                                  style={styles.buttonInExit}
+                                  onPress={() => {
+                                  this.props.navigation.navigate('LandingPage')
+                                  ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+                                  this.setModalVisible(!modalVisible);
+                                  }}
+                                >
+                                    <Text style={ styles.exitStyle }>ARE YOU SURE YOU WANT TO EXIT?</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Modal>
+                    <View>
+                    <TouchableOpacity
+                      style={[styles.button, styles.buttonOpen]}
+                      onPress={() => this.setModalVisible(true)}
+                    >
+                      <Text style ={styles.textStyle} >EXIT</Text>
+                    </TouchableOpacity>
+                    </View>
+               
                 <View>
                 <View style={styles.webcam2}>
                     <Text>Webcam 2</Text> 
@@ -37,37 +62,34 @@ export default class GameSetting extends Component {
                 </View>
                 
                 <View>
-                <Image style = {styles.playtable}
-                
+                <Image  style = {styles.tableView}
                 source = {require('../assets/pokertable.png')}
                 />
-                </View>
+               </View>
 
-               
-                
                 <View>
                 <View style={styles.webcam3}>
                     <Text>Webcam 3</Text> 
                 </View>
                 </View>
                 
-                <View>
-                <View style={styles.pot}>
+              
+                <View >
                 <Image style = {{   
                     width: 50, 
                     height:50,
                     resizeMode: 'contain',
-                    marginTop: -10,
-                    marginLeft: -50,
+                    bottom: '325%',
+                    left:'735%'
                     }}
                     source={require('../assets/table.png')}
                 />
                    
-                    <Text style = {{ fontSize: 20 ,fontWeight: 'bold',color: 'white'}}>
+                    <Text style = {{bottom: '355%', left: '800%',  fontSize: 20 ,fontWeight: 'bold',color: 'white'}}>
                         Pot: $420
                     </Text>
                 </View>
-                </View>
+                
                 
                 <View>
                 <View style={styles.webcam4}>
@@ -75,30 +97,30 @@ export default class GameSetting extends Component {
                 </View>
                 </View>
                 
-                
-                <Image style = {styles.dealer}
-                
-                source = {require('../assets/cards.png')}
-                />
                 <View>
-                <View style = {styles.chipAmount}>
-                    <Text style = {{ right: 15, fontSize: 20, fontWeight: 'bold' }}>
-                        100
-                    </Text>
+                    <Image style = {styles.dealer}
+                    
+                    source = {require('../assets/cards.png')}
+                    />
+                </View>
+                
+               
+               
+                    <View>
                     <Image
                     style = {{
                     width: 40, 
                     height:40,
                     resizeMode: 'contain',
-                    marginLeft: 25,
-                    marginTop: -32,
-                    marginRight: -10
+                    bottom: '70%',
+                    left: '960%'
                     }}
                      source={require('../assets/chipAmount.png')}
-                    />
-                   
-                </View>
-                </View>
+                    /> 
+                    <Text style = {{  left: '880%', bottom: '97%', fontSize: 20, fontWeight: 'bold' }}>
+                    100
+                    </Text> 
+                    </View>
                
             </View>
 
@@ -115,68 +137,104 @@ const styles = StyleSheet.create({
       flexWrap: 'wrap',
       justifyContent: 'flex-start',
     },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+      },
+    exitStyle: {
+        fontWeight: 'bold',
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    buttonInExit: {
+        borderRadius: 2,
+        padding: 10,
+        elevation: 2,
+        backgroundColor: "#b2bec3",
+      },
+      button: {
+        borderRadius: 2,
+        padding: 10,
+        elevation: 2,
+        backgroundColor: "#b2bec3",
+        top: "3%",
+        left: "20%"
+      },
+    buttonOpen: {
+        backgroundColor: "#778899",
+      },
+    exitButton:{
+        color: '#FFFFFF',
+        fontWeight: 'bold',
+      },
     dealer: {
-      width: 100, 
-      height:100,
-      resizeMode: 'contain',
-      marginLeft: 320,
-      marginTop: -125,
+        width: 125, 
+        height:125,
+        resizeMode: 'contain',
+        bottom: '110%',
+        left: '120%'
     },
     textStyle:{
         color: '#FFFFFF',
         fontWeight: 'bold',
+        justifyContent: "center",
+        alignItems: "center",
     },
-    exitButton:{
-        borderRadius: 2,
-        alignItems: 'center',
-        paddingTop: 10,
-        marginTop: 10,
-        marginLeft: 10,
-        backgroundColor: "#778899",
-        width: 40,
-        height: 40,
+    modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
       },
+    
       webcam1:{
-        marginTop: 160,
-        marginLeft: -285,
-        marginRight: 200,
         borderRadius: 2,
         borderColor: 'black',
         paddingVertical: 30,
         paddingHorizontal: 10,
-        backgroundColor:"#778899"
-    
-        
+        backgroundColor:"#778899",
+        top: "35%",
+        right: "155%"
     },
       webcam2:{
         borderRadius: 2,
         borderColor: "black",
-        marginTop: 2,
-        marginLeft: 150,
         paddingVertical: 30,
         paddingHorizontal: 10,
         backgroundColor: "#778899",
+        left:"175%"
+       
        
     },
     webcam3:{
         borderRadius: 2,
         borderColor: "black",
-        marginTop: 2,
-        marginLeft: -175,
-        marginRight: 100,
         paddingVertical: 30,
         paddingHorizontal: 10,
         backgroundColor: "#778899",
-        marginHorizontal: 10,
+        right: '200%',
+        bottom: '0%'
+      
     },
     webcam4:{
-        marginTop: 160,
-        marginRight: -25,
         borderRadius: 2,
         borderColor: 'black',
         paddingVertical: 30,
         paddingHorizontal: 10,
-        backgroundColor:"#778899"
+        backgroundColor:"#778899",
+        bottom: "208%",
+        left: '702%'
     },
     pot:{
         borderRadius: 2,
@@ -184,28 +242,21 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         paddingVertical: 10,
         paddingHorizontal: 0,
-        marginLeft: 0,
-        marginRight: -60,
-        marginTop: 0    
-        
+        right: '300%'
+
+
     },
      chipAmount: {
-        borderRadius: 2,
-        borderColor: 'black',
-        paddingVertical: 0,
-        paddingHorizontal: 14,
-        backgroundColor:"white",
-        marginTop: -55,
-        marginLeft: 240
+       top: '500%',
+       left: '50%'
      },
-     playtable: {
-        width: 500, 
-        height:500,
-        resizeMode: 'contain',
-        marginLeft: -165,
-        marginTop: -70,
-       
-
+    
+     tableView: {
+         width: 400,
+         height: 400,
+         resizeMode: 'contain',
+         bottom: '10%',
+         right: '12%',
          
      }
    
