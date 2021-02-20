@@ -49,78 +49,93 @@ export default class GameSetting extends Component {
                     </View>
                
                 <View>
-                <View style={styles.webcam2}>
-                    <Text>Webcam 2</Text> 
-                </View> 
+                  <View style={styles.webcam2}>
+                      <Text>Webcam 2</Text> 
+                  </View> 
                 </View>
-
-                <View>
 
                 <View style={styles.webcam1}>
                     <Text>Webcam 1</Text> 
                 </View>
-                </View>
                 
-                <View>
-                <Image  style = {styles.tableView}
-                source = {require('../assets/pokertable.png')}
-                />
+                
+                <View style={styles.tableView}>
+                  <Image  style = {styles.tableView}
+                  source = {require('../assets/pokertable.png')}
+                  />
                </View>
 
                 <View>
-                <View style={styles.webcam3}>
-                    <Text>Webcam 3</Text> 
-                </View>
+                  <View style={styles.webcam3}>
+                      <Text>Webcam 3</Text> 
+                  </View>
                 </View>
                 
               
-                <View >
-                <Image style = {{   
-                    width: 50, 
-                    height:50,
-                    resizeMode: 'contain',
-                    bottom: '325%',
-                    left:'735%'
-                    }}
-                    source={require('../assets/table.png')}
-                />
+                <View style={styles.potView}>
+                  <Image style = {{   
+                      width: 50, 
+                      height:50,
+                      resizeMode: 'contain',
+                      }}
+                      source={require('../assets/table.png')}
+                  />
                    
-                    <Text style = {{bottom: '355%', left: '800%',  fontSize: 20 ,fontWeight: 'bold',color: 'white'}}>
-                        Pot: $420
-                    </Text>
+                  <Text style = {{ fontSize: 20 ,fontWeight: 'bold',color: 'white'}}>
+                      Pot: $420
+                  </Text>
                 </View>
                 
                 
-                <View>
                 <View style={styles.webcam4}>
-                    <Text>Webcam 4</Text> 
-                </View>
+                  <View>
+                      <Text>Webcam 4</Text> 
+                  </View>
                 </View>
                 
-                <View>
-                    <Image style = {styles.dealer}
+                <View style={styles.bettingButtonsView}>
+
+                  <TouchableOpacity style={styles.bettingButtons}>
+                    <Text>Raise</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={styles.bettingButtons}>
+                    <Text>Call</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={styles.bettingButtons}>
+                    <Text>Fold</Text>
+                  </TouchableOpacity>
+
+                </View>
+
+
+                <View style = {styles.dealer}>
+                  <Image style = {styles.dealer}
                     
-                    source = {require('../assets/cards.png')}
-                    />
+                  source = {require('../assets/cards.png')}
+                  />
+                </View>
+
+                <View style={styles.chat}>
+                <View>
+                    <Text>Chat</Text> 
+                </View>
                 </View>
                 
-               
-               
-                    <View>
-                    <Image
+                <View style={styles.chipView}>
+                  <Image
                     style = {{
                     width: 40, 
                     height:40,
                     resizeMode: 'contain',
-                    bottom: '70%',
-                    left: '960%'
                     }}
-                     source={require('../assets/chipAmount.png')}
-                    /> 
-                    <Text style = {{  left: '880%', bottom: '97%', fontSize: 20, fontWeight: 'bold' }}>
+                    source={require('../assets/chipAmount.png')}
+                  /> 
+                  <Text style = {{ fontSize: 20, fontWeight: 'bold' }}>
                     100
-                    </Text> 
-                    </View>
+                  </Text> 
+                </View>
                
             </View>
 
@@ -131,11 +146,10 @@ export default class GameSetting extends Component {
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: '#2ecc71',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'flex-start',
+        flex: 1,
+        backgroundColor: '#2ecc71',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
     },
     centeredView: {
         flex: 1,
@@ -153,28 +167,29 @@ const styles = StyleSheet.create({
         padding: 10,
         elevation: 2,
         backgroundColor: "#b2bec3",
-      },
-      button: {
+    },
+    button: {
         borderRadius: 2,
         padding: 10,
         elevation: 2,
         backgroundColor: "#b2bec3",
         top: "3%",
         left: "20%"
-      },
+    },
     buttonOpen: {
         backgroundColor: "#778899",
-      },
+    },
     exitButton:{
         color: '#FFFFFF',
         fontWeight: 'bold',
-      },
+    },
     dealer: {
         width: 125, 
         height:125,
         resizeMode: 'contain',
-        bottom: '110%',
-        left: '120%'
+        bottom: '0%',
+        left: '35%',
+        position: 'absolute'
     },
     textStyle:{
         color: '#FFFFFF',
@@ -196,16 +211,17 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5
-      },
+    },
     
-      webcam1:{
+    webcam1:{
+        position: 'absolute',
         borderRadius: 2,
         borderColor: 'black',
         paddingVertical: 30,
         paddingHorizontal: 10,
         backgroundColor:"#778899",
         top: "35%",
-        right: "155%"
+        left: "1%",
     },
       webcam2:{
         borderRadius: 2,
@@ -213,9 +229,8 @@ const styles = StyleSheet.create({
         paddingVertical: 30,
         paddingHorizontal: 10,
         backgroundColor: "#778899",
-        left:"175%"
-       
-       
+        left:"150%",
+
     },
     webcam3:{
         borderRadius: 2,
@@ -228,13 +243,19 @@ const styles = StyleSheet.create({
       
     },
     webcam4:{
+        position:'absolute',
         borderRadius: 2,
         borderColor: 'black',
         paddingVertical: 30,
         paddingHorizontal: 10,
         backgroundColor:"#778899",
-        bottom: "208%",
-        left: '702%'
+        bottom: "45%",
+        right: "0%"
+    },
+    potView:{
+        position: 'absolute',
+        top: "0%",
+        right: "0%"
     },
     pot:{
         borderRadius: 2,
@@ -243,21 +264,45 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 0,
         right: '300%'
-
-
     },
      chipAmount: {
        top: '500%',
        left: '50%'
      },
-    
+     chipView:{
+       position: 'absolute',
+       right: "0%",
+       bottom: "0%"
+     },
      tableView: {
          width: 400,
          height: 400,
          resizeMode: 'contain',
-         bottom: '10%',
-         right: '12%',
-         
-     }
+         bottom: '4%',
+         right: '4%',
+     },
+     chat:{
+         position:'absolute',
+         borderRadius: 2,
+         borderColor: 'black',
+         paddingVertical: 10,
+         paddingHorizontal: 10,
+         backgroundColor:"#778899",
+         bottom: "0%",
+         right: "20%"
+     },
+    bettingButtonsView:{
+         position: 'absolute',
+         bottom: "0%",
+         left: "0%",
+         flexDirection: 'row',
+    },
+    bettingButtons:{
+         borderRadius: 2,
+         padding: 10,
+         elevation: 2,
+         backgroundColor: "#b2bec3",
+         marginHorizontal: 5
+    }
    
   });
