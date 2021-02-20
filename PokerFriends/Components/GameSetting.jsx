@@ -95,15 +95,15 @@ export default class GameSetting extends Component {
                 
                 <View style={styles.bettingButtonsView}>
 
-                  <TouchableOpacity style={styles.bettingButtons}>
+                  <TouchableOpacity style={[styles.bettingButtons, styles.raiseButt]}>
                     <Text>Raise</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={styles.bettingButtons}>
+                  <TouchableOpacity style={[styles.bettingButtons, styles.callButt]}>
                     <Text>Call</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={styles.bettingButtons}>
+                  <TouchableOpacity style={[styles.bettingButtons, styles.foldButt]}>
                     <Text>Fold</Text>
                   </TouchableOpacity>
 
@@ -301,8 +301,18 @@ const styles = StyleSheet.create({
          borderRadius: 2,
          padding: 10,
          elevation: 2,
-         backgroundColor: "#b2bec3",
-         marginHorizontal: 5
-    }
+         marginHorizontal: 5,
+    },
+    raiseButt:{
+         backgroundColor: "#add8e6"
+    },
+    callButt:{
+      backgroundColor: "#fed8b1"
+    },
+    foldButt:{
+      backgroundColor: "#ffcccb"
+    },
+
+
    
   });
