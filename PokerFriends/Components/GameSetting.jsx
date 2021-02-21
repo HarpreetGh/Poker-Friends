@@ -1,19 +1,27 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet, View, TouchableOpacity, StatusBar, Image,  Modal } from 'react-native';
+import { Text, StyleSheet, View, TouchableOpacity, StatusBar, Image,  Modal, TextInput } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
+
 
 
 export default class GameSetting extends Component {
     state = {
-        modalVisible: false
+        modalVisible: false,
+        raiseVisible: false
       };
-    
+
+
+ 
       setModalVisible = (visible) => {
         this.setState({ modalVisible: visible });
+      }
+      setRaiseVisible = (visible) => {
+        this.setState({ raiseVisible: visible });
       }
     
     render() { 
         const { modalVisible } = this.state;
+        const {raiseVisible} = this.state;
         return (  
             <View style = {styles.container}>
                 <StatusBar hidden/>
@@ -26,6 +34,16 @@ export default class GameSetting extends Component {
                     >
                         <View style = {styles.centeredView}>
                             <View style = {styles.modalView}>
+                              <Text style = {{padding: 5}}>Are you sure you want to leave</Text>
+                                <TouchableOpacity
+                                style={styles.buttonInExit}
+                                onPress={() => {
+                                  this.setModalVisible(!modalVisible)
+                                }}
+                                >
+                                <Text style={ styles.exitStyle } >NO</Text>
+                                </TouchableOpacity>
+                                <View style = {{padding: 5}}></View>
                                 <TouchableOpacity
                                   style={styles.buttonInExit}
                                   onPress={() => {
@@ -34,7 +52,7 @@ export default class GameSetting extends Component {
                                   this.setModalVisible(!modalVisible);
                                   }}
                                 >
-                                    <Text style={ styles.exitStyle }>ARE YOU SURE YOU WANT TO EXIT?</Text>
+                                    <Text style={ styles.exitStyle }>YES</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -93,9 +111,47 @@ export default class GameSetting extends Component {
                   </View>
                 </View>
                 
-                <View style={styles.bettingButtonsView}>
 
-                  <TouchableOpacity style={[styles.bettingButtons, styles.raiseButt]}>
+                <View style={styles.bettingButtonsView}>
+                <Modal
+                      animationType="slide"
+                      transparent={true}
+                      visible={raiseVisible}
+                      
+                    >
+                        <View style = {styles.centeredView}>
+                            <View style = {styles.modalView}>
+                              <Text style = {{padding: 0, fontWeight: 'bold'}}>RAISE</Text>
+                              <TextInput style = 
+                              {{fontSize: 20, padding: 10}} 
+                              defaultValue = {'0'} 
+                              disableFullscreenUI = {true}
+                              >
+                              </TextInput>
+
+                                <TouchableOpacity
+                                style={styles.buttonInExit}
+                                onPress={() => {
+                                  this.setRaiseVisible(!raiseVisible);
+                                }}
+                                >
+                                <Text style = {{fontWeight: 'bold'}}>APPLY</Text>
+                                </TouchableOpacity>
+                                <View style = {{padding: 5}}></View>
+                                <TouchableOpacity
+                                  style={styles.buttonInExit}
+                                  onPress={() => {
+                                    this.setRaiseVisible(!raiseVisible);
+                                  }}
+                                >
+                                    <Text style={ styles.exitStyle }>CANCEL</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Modal>
+                  <TouchableOpacity style={[styles.bettingButtons, styles.raiseButt]}
+                  onPress={() => this.setRaiseVisible(true)}
+                  >
                     <Text>Raise</Text>
                   </TouchableOpacity>
 
@@ -161,12 +217,15 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         justifyContent: "center",
         alignItems: "center",
+       
     },
     buttonInExit: {
         borderRadius: 2,
         padding: 10,
         elevation: 2,
         backgroundColor: "#b2bec3",
+        
+        
     },
     button: {
         borderRadius: 2,
