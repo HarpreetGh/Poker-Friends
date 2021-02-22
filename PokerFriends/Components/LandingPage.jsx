@@ -66,7 +66,7 @@ export default class LandingPage extends Component {
         return (
           <View style={styles.container}>
 
-            <View style={styles.flexContainerTop}>
+            <View style={styles.flexContainer}>
               <SettingsButton/>
               <Balance/>
             </View>
@@ -75,7 +75,7 @@ export default class LandingPage extends Component {
 
             {this.props.LoggedIn? (this.SignedIn()):(this.SignedOut())}
 
-            <View style={styles.flexContainerBottom}>
+            <View style={styles.flexContainer}>
               <HelpButton/>
               <FriendsButton/>
             </View>
@@ -104,13 +104,7 @@ const styles = StyleSheet.create({
     width:"100%",
     marginBottom: 20
   },
-  flexContainerBottom:{
-    flexDirection: 'row',
-    margin: 20,
-    width: 'auto',
-    height: 'auto'
-  },
-  flexContainerTop:{
+  flexContainer:{
     flexDirection: 'row',
     margin: 20,
     width: 'auto',
