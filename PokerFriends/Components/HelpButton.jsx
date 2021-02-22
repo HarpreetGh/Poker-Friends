@@ -102,10 +102,9 @@ export default class HelpButton extends Component {
 const styles = StyleSheet.create({
  
   cornerView: {
-    flex: 1,
     justifyContent: "flex-end",
     alignSelf: 'flex-end',
-    right:10,
+    right: 80,
     bottom: 10
   },
   buttonTextView: {
@@ -144,7 +143,7 @@ const styles = StyleSheet.create({
   textStyle: {
     color: "white",
     fontWeight: "bold",
-    textAlign: "right"
+    textAlign: "center"
   },
   modalText: {
     marginBottom: 35,

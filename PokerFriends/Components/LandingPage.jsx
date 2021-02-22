@@ -6,6 +6,7 @@ import Login from './Login'
 import Register from './Register'
 import firebase from 'firebase'
 import ForgotPassword from './ForgotPassword'
+import FriendsButton from './FriendsButton'
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 const LogOut = () => {
@@ -23,11 +24,6 @@ export default class LandingPage extends Component {
   SignedIn = () =>{
     return(
       <View>
-        <TouchableOpacity style={styles.button} 
-          onPress = {() => LogOut()}>
-              <Text style={styles.textStyle}>Log Out</Text>
-        </TouchableOpacity>
-        
         <TouchableOpacity 
           style={styles.button}
           onPress = {() => {
@@ -37,6 +33,11 @@ export default class LandingPage extends Component {
           }}
         >
           <Text style={styles.textStyle}>Play Game</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} 
+          onPress = {() => LogOut()}>
+              <Text style={styles.textStyle}>Log Out</Text>
         </TouchableOpacity>
       </View>
     )
@@ -64,7 +65,10 @@ export default class LandingPage extends Component {
           <View style={styles.container}>
             <Logo/>
             {this.props.LoggedIn? (this.SignedIn()):(this.SignedOut())}
-            <HelpButton/>
+            <View style={styles.flexContainer}>
+              <HelpButton/>
+              <FriendsButton/>
+            </View>
           </View>
         );
     }
@@ -88,5 +92,11 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     width:"100%",
     marginBottom: 20
+  },
+  flexContainer:{
+    flexDirection: 'row',
+    margin: 20,
+    width: 'auto',
+    height: 'auto'
   }
 });
