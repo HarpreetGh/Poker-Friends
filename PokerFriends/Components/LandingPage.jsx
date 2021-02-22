@@ -45,6 +45,7 @@ export default class LandingPage extends Component {
   SignedOut = () => {
     return(
       <View>
+
         <TouchableOpacity style={styles.button} 
           onPress = {() => this.props.navigation.navigate('Register')}>
               <Text style={styles.textStyle}>Sign Up</Text>
@@ -54,8 +55,7 @@ export default class LandingPage extends Component {
           onPress = {() => this.props.navigation.navigate('Login')}>
               <Text style={styles.textStyle}>Login</Text>
         </TouchableOpacity>
-        
-        
+
       </View>
     )
   }
@@ -79,12 +79,14 @@ const styles = StyleSheet.create({
   textStyle:{
     alignItems: 'center',
     color: '#FFFFFF',
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   button:{
-    borderRadius: 2,
-    marginVertical: 25,
-    padding: 15,
-    backgroundColor: "#778899",
+    backgroundColor: '#27ae60',
+    paddingVertical: 20,
+    padding: 50,
+    borderRadius: 50,
+    width:"100%",
+    marginBottom: 20
   }
 });

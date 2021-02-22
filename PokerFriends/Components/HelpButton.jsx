@@ -8,8 +8,6 @@ import { Image,
         View, 
         TouchableOpacity,
         ScrollView,
-        SafeAreaView,
-        StatusBar, 
         Linking} from "react-native";
 
 export default class HelpButton extends Component {
@@ -132,12 +130,12 @@ const styles = StyleSheet.create({
     elevation: 5
   },
   button: {
-    borderRadius: 2,
+    borderRadius: 50,
     padding: 10,
     elevation: 2
   },
   buttonOpen: {
-    backgroundColor: "#778899",
+    backgroundColor: "#27ae60",
   },
   buttonClose: {
     backgroundColor: "#2196F3",
