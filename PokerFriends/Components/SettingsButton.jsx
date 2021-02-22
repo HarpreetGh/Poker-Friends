@@ -10,13 +10,13 @@ import { Image,
         ScrollView,
         Linking} from "react-native";
 
-export default class FriendsButton extends Component {
+export default class SettingsButton extends Component {
 
   render() {
     return (
       <View style={styles.cornerView}>
         <TouchableOpacity style={styles.button}>
-          <Text style={styles.textStyle}>FRIENDS</Text>
+          <Text style={styles.textStyle}>SETTINGS</Text>
         </TouchableOpacity>
       </View>
     );
@@ -25,10 +25,10 @@ export default class FriendsButton extends Component {
 
 const styles = StyleSheet.create({
   cornerView: {
-    justifyContent: "flex-end",
-    alignSelf: 'flex-end',
-    left: 80,
-    bottom: 10
+    justifyContent: "flex-start",
+    alignSelf: 'flex-start',
+    right: 80,
+    top: 10
   },
   button: {
     borderRadius: 50,

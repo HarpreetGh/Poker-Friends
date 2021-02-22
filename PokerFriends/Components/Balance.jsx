@@ -10,13 +10,16 @@ import { Image,
         ScrollView,
         Linking} from "react-native";
 
-export default class FriendsButton extends Component {
+
+//TODO: Pass in balance value from account to text render
+export default class Balance extends Component {
 
   render() {
     return (
       <View style={styles.cornerView}>
         <TouchableOpacity style={styles.button}>
-          <Text style={styles.textStyle}>FRIENDS</Text>
+        
+          <Text style={styles.textStyle}># Chips</Text>
         </TouchableOpacity>
       </View>
     );
@@ -25,10 +28,10 @@ export default class FriendsButton extends Component {
 
 const styles = StyleSheet.create({
   cornerView: {
-    justifyContent: "flex-end",
-    alignSelf: 'flex-end',
+    justifyContent: "flex-start",
+    alignSelf: 'flex-start',
     left: 80,
-    bottom: 10
+    top: 10
   },
   button: {
     borderRadius: 50,

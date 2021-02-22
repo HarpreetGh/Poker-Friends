@@ -7,6 +7,8 @@ import Register from './Register'
 import firebase from 'firebase'
 import ForgotPassword from './ForgotPassword'
 import FriendsButton from './FriendsButton'
+import SettingsButton from './SettingsButton'
+import Balance from './Balance'
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 const LogOut = () => {
@@ -63,12 +65,21 @@ export default class LandingPage extends Component {
     render(){    
         return (
           <View style={styles.container}>
+
+            <View style={styles.flexContainerTop}>
+              <SettingsButton/>
+              <Balance/>
+            </View>
+            
             <Logo/>
+
             {this.props.LoggedIn? (this.SignedIn()):(this.SignedOut())}
-            <View style={styles.flexContainer}>
+
+            <View style={styles.flexContainerBottom}>
               <HelpButton/>
               <FriendsButton/>
             </View>
+
           </View>
         );
     }
@@ -93,7 +104,13 @@ const styles = StyleSheet.create({
     width:"100%",
     marginBottom: 20
   },
-  flexContainer:{
+  flexContainerBottom:{
+    flexDirection: 'row',
+    margin: 20,
+    width: 'auto',
+    height: 'auto'
+  },
+  flexContainerTop:{
     flexDirection: 'row',
     margin: 20,
     width: 'auto',
