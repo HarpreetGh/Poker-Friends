@@ -18,7 +18,7 @@ export default class LoginForm extends Component {
       .catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
-        Alert.alert(errorCode,errorMessage)
+        Alert.alert( 'ERROR',errorMessage)
       });
     }
 
