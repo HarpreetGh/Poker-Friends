@@ -5,9 +5,9 @@ import Logo from './Logo'
 import Login from './Login'
 import Register from './Register'
 import firebase from 'firebase'
-import ForgotPassword from './ForgotPassword'
+import ForgotPassword from './Account-Settings/ForgotPassword'
 import FriendsButton from './FriendsButton'
-import SettingsButton from './SettingsButton'
+import SettingsButton from './AccountSettings'
 import Balance from './Balance'
 import * as ScreenOrientation from 'expo-screen-orientation';
 
@@ -62,12 +62,23 @@ export default class LandingPage extends Component {
       </View>
     )
   }
+  AccountSettings = () => {
+    return(
+    <View style={styles.SettingcornerView}>
+      <TouchableOpacity style={styles.Settingbutton}
+        onPress = {() => this.props.navigation.navigate('AccountSettings')}>
+          <Text style={styles.SettingtextStyle}>Account SETTINGS</Text>
+      </TouchableOpacity>
+    </View>
+    )
+  }
     render(){    
         return (
           <View style={styles.container}>
 
             <View style={styles.flexContainer}>
-              <SettingsButton/>
+              {this.props.LoggedIn? (this.AccountSettings()):(<Text></Text>)}
+
               <Balance/>
             </View>
             
@@ -109,5 +120,22 @@ const styles = StyleSheet.create({
     margin: 20,
     width: 'auto',
     height: 'auto'
+  },
+  SettingcornerView: {
+    justifyContent: "flex-start",
+    alignSelf: 'flex-start',
+    right: 80,
+    top: 10
+  },
+  Settingbutton: {
+    borderRadius: 50,
+    padding: 10,
+    elevation: 2,
+    backgroundColor: "#27ae60"
+  },
+  SettingtextStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
   }
 });
