@@ -1,5 +1,15 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet, View, TouchableOpacity, StatusBar, Image,  Modal, TextInput } from 'react-native';
+import { Text,
+         StyleSheet,
+         View,
+         TouchableOpacity,
+         StatusBar,
+         Image,
+         Modal,
+         TextInput,
+         BackHandler,
+         Alert
+         } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 
@@ -17,6 +27,31 @@ export default class GameSetting extends Component {
       }
       setRaiseVisible = (visible) => {
         this.setState({ raiseVisible: visible });
+      }
+
+      backAction = () => {
+        Alert.alert("Hold on!", "Are you sure you want to go back?", [
+          {
+            text: "Cancel",
+            onPress: () => null,
+            style: "cancel"
+          },
+          { text: "YES", onPress: () => {
+          this.props.navigation.navigate('LandingPage'),  
+          ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP); } }
+        ]);
+        return true;
+      };
+    
+      componentDidMount() {
+        this.backHandler = BackHandler.addEventListener(
+          "hardwareBackPress",
+          this.backAction
+        );
+      }
+    
+      componentWillUnmount() {
+        this.backHandler.remove();
       }
     
     render() { 
@@ -124,7 +159,8 @@ export default class GameSetting extends Component {
                               <Text style = {{padding: 0, fontWeight: 'bold'}}>RAISE</Text>
                               <TextInput style = 
                               {{fontSize: 20, padding: 10}} 
-                              defaultValue = {'0'} 
+                              placeholder="0"
+                              keyboardType = {'number-pad'}
                               disableFullscreenUI = {true}
                               >
                               </TextInput>
