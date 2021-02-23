@@ -7,7 +7,7 @@ export default class Logo extends Component {
             <KeyboardAvoidingView style={styles.logoContainer}>
             <Image 
               style={styles.logo} 
-              source={require('../Images/placeholderLOGO.png')} />
+              source={require('../assets/placeholderLOGO.png')} />
   
             <Text style={styles.title}> Play Poker with friends! </Text>
           </KeyboardAvoidingView>
