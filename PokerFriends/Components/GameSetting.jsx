@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
          flexDirection: 'row',
     },
     bettingButtons:{
-         borderRadius: 2,
+         borderRadius: 50,
          padding: 10,
          elevation: 2,
          marginHorizontal: 5,
