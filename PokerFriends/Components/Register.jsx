@@ -7,6 +7,7 @@ export default class Register extends Component {
   constructor(props){
     super(props)
     this.state = {
+      username: '',
       email: '',
       password: ''
     }
@@ -14,8 +15,32 @@ export default class Register extends Component {
 
   SignUp(){
     firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
-      .then(() =>{
-      this.props.navigation.navigate('LandingPage')
+      .then((userCredential) =>{
+         //console.log(userCredential);
+        var user = firebase.auth().currentUser;
+          if (user) {
+            user.updateProfile({
+              displayName: this.state.username
+            })
+              .then(() => {
+                //Verification email code commented out
+                /*user.sendEmailVerification()
+                  .then(() => {
+                    console.log("Email sent to", this.state.email)
+                    */
+                    this.props.navigation.navigate('LandingPage')
+                  /*})
+                  .catch(function(error) {
+                    console.log(error)
+                  });*/
+              })
+              .catch(function(error) {
+                console.log(error)
+              })
+          } 
+          else {
+            console.log('user maaaan')
+          }
     })
     .catch((error) => {
       var errorCode = error.code;
@@ -33,12 +58,25 @@ export default class Register extends Component {
             <Logo />
 
             <TextInput
+                placeholder="Username"
+                placeholderTextColor="rgba(255, 255, 255, 0.75)"
+                returnKeyType="next"
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoCompleteType='username'
+                style={styles.input}
+                onChangeText={text => this.setState({username: text})}
+                value={this.state.username}
+            />
+
+            <TextInput
                 placeholder="Email"
                 placeholderTextColor="rgba(255, 255, 255, 0.75)"
                 returnKeyType="next"
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
+                autoCompleteType='email'
                 onSubmitEditing={() => this.passwordInput.focus()}
                 style={styles.input}
                 onChangeText={text => this.setState({email: text})}
@@ -50,6 +88,7 @@ export default class Register extends Component {
                 placeholderTextColor="rgba(255, 255, 255, 0.75)"
                 returnKeyType="go"
                 secureTextEntry
+                autoCompleteType='password'
                 style={styles.input} 
                 onChangeText={text => this.setState({password: text})}
                 value={this.state.password}

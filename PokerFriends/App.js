@@ -6,10 +6,15 @@ import {createStackNavigator} from '@react-navigation/stack'
 import LandingPage from './Components/LandingPage'
 import Register from '../PokerFriends/Components/Register';
 import Login from './Components/Login'
-import ForgotPassword from './Components/ForgotPassword'
+import ForgotPassword from './Components/Account-Settings/ForgotPassword'
 import GameSetting from './Components/GameSetting'
+import AccountSettings from './Components/AccountSettings';
+import ChangeUsername from './Components/Account-Settings/ChangeUsername';
+import ChangeEmail from './Components/Account-Settings/ChangeEmail';
+import DeleteAccount from './Components/Account-Settings/DeleteAccount';
 import * as firebase from 'firebase';
 import 'firebase/auth'
+
 
 const firebaseConfig = {
     apiKey: "AIzaSyBVr4IKgejWBb6uFG_joH5a5tT03j40NRM",
@@ -45,11 +50,19 @@ export default class App extends Component {
           <Stack.Screen name = "LandingPage">
             {(props) => <LandingPage {...props} LoggedIn={this.state.LoggedIn}/>}
           </Stack.Screen>
+          
           <Stack.Screen name = "Login" component = {Login}/>
           <Stack.Screen name = "Register" component = {Register}/>
           
-          <Stack.Screen name = "ForgotPassword" component = {ForgotPassword}/>
           <Stack.Screen name = "GameSetting" component = {GameSetting}/>
+          
+          <Stack.Screen name = "AccountSettings">
+            {(props) => <AccountSettings {...props} LoggedIn={this.state.LoggedIn}/>}
+          </Stack.Screen>
+          <Stack.Screen name = "ChangeUsername" component = {ChangeUsername}/>
+          <Stack.Screen name = "ChangeEmail" component = {ChangeEmail}/>
+          <Stack.Screen name = "ForgotPassword" component = {ForgotPassword}/>
+          <Stack.Screen name = "DeleteAccount" component = {DeleteAccount}/>
         </Stack.Navigator>
       </NavigationContainer>
     );

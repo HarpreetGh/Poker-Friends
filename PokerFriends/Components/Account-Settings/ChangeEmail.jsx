@@ -1,16 +1,35 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, Touchable } from 'react-native';
-import Logo from '../Components/Logo';
+import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, 
+  TouchableOpacity, Touchable, Alert } from 'react-native';
+import Logo from '../Logo';
+import firebase from 'firebase'
 
-export default class ForgotPassword extends Component {
+export default class ChangeEmail extends Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      email: ''
+    }
+  }
+
+  Update(){
+    var user = firebase.auth().currentUser;
+
+    user.updateEmail(this.state.email)
+    .then(() =>{
+      Alert.alert("Email changed to: " + this.state.email)
+      this.props.navigation.navigate('AccountSettings')
+    })
+    .catch(function(error) {
+      console.log(error)
+    });
+  }
     render(){
         return (
             <KeyboardAvoidingView 
               style={styles.container} 
               >
-
                 <Logo />
-
                 <TextInput
                     placeholder="Email"
                     placeholderTextColor="rgba(255, 255, 255, 0.75)"
@@ -21,10 +40,12 @@ export default class ForgotPassword extends Component {
                     onSubmitEditing={() => this.passwordInput.focus()}
                     style={styles.input}
                     ref={(input) => this.emailInput = input}
+                    onChangeText={text => this.setState({email: text})}
+                    value={this.state.email}
                 />
 
-                <TouchableOpacity style={styles.buttonContainer}>
-                    <Text style={styles.sendButtonText}>Send</Text>
+                <TouchableOpacity style={styles.buttonContainer} onPress={() => this.Update()}>
+                    <Text style={styles.sendButtonText}>Change Email</Text>
                 </TouchableOpacity>
 
             </KeyboardAvoidingView>

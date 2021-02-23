@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Touchable, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Touchable, KeyboardAvoidingView, Alert} from 'react-native';
 import firebase from 'firebase'
 
 export default class LoginForm extends Component {
@@ -18,7 +18,7 @@ export default class LoginForm extends Component {
       .catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
-        console.log(errorCode, errorMessage)
+        Alert.alert(errorCode,errorMessage)
       });
     }
 
@@ -34,6 +34,7 @@ export default class LoginForm extends Component {
           returnKeyType="next"
           keyboardType="email-address"
           autoCapitalize="none"
+          autoCompleteType='email'
           autoCorrect={false}
           //onSubmitEditing={() => this.passwordInput.focus()}
           style={styles.input} 
@@ -46,6 +47,7 @@ export default class LoginForm extends Component {
           placeholderTextColor="rgba(255, 255, 255, 0.75)"
           returnKeyType="go"
           secureTextEntry
+          autoCompleteType='password'
           style={styles.input} 
           onChangeText={text => this.setState({password: text})}
           value={this.state.password}
