@@ -7,8 +7,10 @@ import firebase from 'firebase'
 export default class ChangeEmail extends Component {
   constructor(props){
     super(props)
+    var user = firebase.auth().currentUser;
     this.state = {
-      email: ''
+      email: '',
+      oldEmail: user.email
     }
   }
 
@@ -17,7 +19,7 @@ export default class ChangeEmail extends Component {
 
     user.updateEmail(this.state.email)
     .then(() =>{
-      Alert.alert("Email changed to: " + this.state.email)
+      Alert.alert("Email changed","From: " + this.state.oldEmail + " to: " + this.state.email)
       this.props.navigation.navigate('AccountSettings')
     })
     .catch(function(error) {
@@ -31,7 +33,7 @@ export default class ChangeEmail extends Component {
               >
                 <Logo />
                 <TextInput
-                    placeholder="Email"
+                    placeholder={this.state.oldEmail}
                     placeholderTextColor="rgba(255, 255, 255, 0.75)"
                     returnKeyType="next"
                     keyboardType="email-address"

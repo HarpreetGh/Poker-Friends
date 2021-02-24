@@ -14,7 +14,6 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 const LogOut = () => {
   firebase.auth().signOut()
   .then(() => {
-    console.log('worked?')
   // Sign-out successful.
   }).catch((error) => {
     console.log(error)
@@ -23,6 +22,7 @@ const LogOut = () => {
 }
 
 export default class LandingPage extends Component {
+    
   SignedIn = () =>{
     return(
       <View>
@@ -62,12 +62,13 @@ export default class LandingPage extends Component {
       </View>
     )
   }
+
   AccountSettings = () => {
     return(
     <View style={styles.SettingcornerView}>
       <TouchableOpacity style={styles.Settingbutton}
         onPress = {() => this.props.navigation.navigate('AccountSettings')}>
-          <Text style={styles.SettingtextStyle}>Account SETTINGS</Text>
+          <Text style={styles.SettingtextStyle}>Account Settings</Text>
       </TouchableOpacity>
     </View>
     )
@@ -88,7 +89,7 @@ export default class LandingPage extends Component {
 
             <View style={styles.flexContainer}>
               <HelpButton/>
-              <FriendsButton/>
+              <FriendsButton navigation = {this.props.navigation}/>
             </View>
 
           </View>

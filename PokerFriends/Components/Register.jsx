@@ -1,5 +1,6 @@
 import React, { Component, useState } from 'react'
-import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, Touchable } from 'react-native';
+import { StyleSheet, Text, View, Image, KeyboardAvoidingView, 
+  TextInput, TouchableOpacity, Touchable, Alert } from 'react-native';
 import Logo from '../Components/Logo';
 import firebase from 'firebase'
 
@@ -9,44 +10,46 @@ export default class Register extends Component {
     this.state = {
       username: '',
       email: '',
-      password: ''
+      password: '',
+      time: ''
     }
   }
 
   SignUp(){
     firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then((userCredential) =>{
-         //console.log(userCredential);
         var user = firebase.auth().currentUser;
           if (user) {
+            this.setState({username: this.state.username+"#"+user.uid})
             user.updateProfile({
               displayName: this.state.username
             })
               .then(() => {
-                //Verification email code commented out
-                /*user.sendEmailVerification()
-                  .then(() => {
-                    console.log("Email sent to", this.state.email)
-                    */
-                    this.props.navigation.navigate('LandingPage')
-                  /*})
-                  .catch(function(error) {
-                    console.log(error)
-                  });*/
+                this.InitializeUserInDB(user)
+                this.props.navigation.navigate('LandingPage')
               })
               .catch(function(error) {
                 console.log(error)
               })
-          } 
-          else {
-            console.log('user maaaan')
           }
     })
     .catch((error) => {
       var errorCode = error.code;
       var errorMessage = error.message;
-      console.log(errorCode, errorMessage);
-      // ..
+      Alert.alert(errorCode, errorMessage);
+    });
+  }
+
+  InitializeUserInDB(user){
+    firebase.database().ref('users/' + user.uid ).set({
+      username: this.state.username,
+      email: this.state.email,
+      chips: 1000,
+      friends: '',
+      games: 0,
+      wins: 0,
+      chips_lost: 0,
+      chips_won: 0,
     });
   }
 
