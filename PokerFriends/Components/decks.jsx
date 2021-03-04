@@ -5,9 +5,27 @@ const CARDIMG = []
 
 export default class Deck {
     constructor (cards = freshDeck()) { 
+        for(var i = 0; i < 52; i++)
+        {
+            cards[i].image = CARDIMG[i]
+        }
         this.cards = cards
-   
     }
+
+    get numberOfCards() {
+       return this.cards.length
+    }
+
+    shuffle(){
+        for(let i = this.numberOfCards -1; i > 0; i--) {
+            const newIndex = Math.floor(Math.random() * (i+1))
+            const oldIndex = this.cards[newIndex]
+            this.cards[newIndex] = this.cards[i]
+            this.cards[i] = oldIndex
+        }
+
+    }
+
 }
 
  class Cards {
@@ -27,17 +45,13 @@ function freshDeck() {
         CARDIMG[i] = '../assets/deckOfCards/PNG/' + (i+1) + '.png';
      }
 
-   
-   
-        return SUITS.flatMap(suit => {
-            return VALUE.map(value => {
-                return CARDIMG.forEach(image => {
-                     return new Cards(suit, value, image)
-                })
-                 
-            })
+        return VALUE.flatMap(suit => {
+            return SUITS.map(value => {
+                return new Cards(suit, value)
+            });
             
-        })
+        });
         
         
 }
+

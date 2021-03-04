@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Deck from './decks'
  
 const mydeck = new Deck()
+mydeck.shuffle()
 console.log(mydeck.cards)
 
 
