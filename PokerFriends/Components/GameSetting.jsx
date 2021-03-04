@@ -1,4 +1,10 @@
 import React, { Component } from 'react';
+import Deck from './decks'
+ 
+const mydeck = new Deck()
+console.log(mydeck.cards)
+
+
 import { Text,
          StyleSheet,
          View,
@@ -15,6 +21,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 
 
 export default class GameSetting extends Component {
+  
     state = {
         modalVisible: false,
         raiseVisible: false
@@ -55,6 +62,8 @@ export default class GameSetting extends Component {
       }
     
     render() { 
+        
+        
         const { modalVisible } = this.state;
         const {raiseVisible} = this.state;
         return (  
@@ -228,7 +237,7 @@ export default class GameSetting extends Component {
                     100
                   </Text> 
                 </View>
-               
+
             </View>
 
          );
