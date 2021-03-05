@@ -45,8 +45,8 @@ function freshDeck() {
         CARDIMG[i] = '../assets/deckOfCards/PNG/' + (i+1) + '.png';
      }
 
-        return SUITS.flatMap(suit => {
-            return VALUE.map(value => {
+        return VALUE.flatMap(value => {
+            return SUITS.map(suit => {
                 return new Cards(suit, value)
             });
             
