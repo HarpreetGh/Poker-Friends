@@ -1,11 +1,4 @@
-import React, { Component } from 'react';
-import Deck from './decks'
- 
-const mydeck = new Deck()
-mydeck.shuffle()
-console.log(mydeck.cards)
-
-
+import React, { Component, useState} from 'react';
 import { Text,
          StyleSheet,
          View,
@@ -15,19 +8,44 @@ import { Text,
          Modal,
          TextInput,
          BackHandler,
-         Alert
+         Alert,
+         Animated,
          } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
+import Deck from './decks'
+
+const mydeck = new Deck()
+mydeck.shuffle()
+console.log(mydeck.cards)
 
 
 export default class GameSetting extends Component {
-  
-    state = {
+
+
+    state = { 
+        value: new Animated.Value(0),
+        value2: new Animated.ValueXY({x:0, y:0}),
         modalVisible: false,
         raiseVisible: false
       };
 
+      moveBB() {
+        Animated.timing(this.state.value, {
+          toValue: 185,
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+      }
+
+      moveSB() {
+        Animated.timing(this.state.value2, {
+          toValue: {x: 225, y: -75},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+
+      }
 
  
       setModalVisible = (visible) => {
@@ -60,6 +78,56 @@ export default class GameSetting extends Component {
     
       componentWillUnmount() {
         this.backHandler.remove();
+      }
+
+      positionOne = () => {
+        return(
+          <View>
+          <Animated.View
+                style = {[{
+                  left: this.state.value,
+                
+                }]}>
+                <View 
+                  style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'black',
+                  justifyContent: 'center',
+                  top: '150%',
+                  right: '1400%'
+                  }}>
+                  <TouchableOpacity onPress = {this.moveBB.bind(this)}>
+                    
+                  <Text 
+                  style = {{ textAlign: 'center',color: 'white'}}>
+
+                  BB</Text>
+
+                 </TouchableOpacity>
+                </View>
+                </Animated.View>
+
+                <Animated.View 
+                style = { this.state.value2.getLayout()}>
+
+                <View
+                 style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'white',
+                  justifyContent: 'center',
+                  top: '350%',
+                  right: '2300%'}}>
+                    <TouchableOpacity onPress = {this.moveSB.bind(this)}>
+                  <Text style = {{textAlign: 'center'}}>SB</Text>
+                  </TouchableOpacity>
+                </View>
+                </Animated.View>
+                </View>
+        )
       }
     
     render() { 
@@ -239,6 +307,11 @@ export default class GameSetting extends Component {
                   </Text> 
                 </View>
 
+                {this.positionOne()}
+
+             
+           
+
             </View>
 
          );
@@ -403,7 +476,7 @@ const styles = StyleSheet.create({
          flexDirection: 'row',
     },
     bettingButtons:{
-         borderRadius: 2,
+         borderRadius: 50,
          padding: 10,
          elevation: 2,
          marginHorizontal: 5,
