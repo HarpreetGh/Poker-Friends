@@ -5,10 +5,6 @@ const CARDIMG = []
 
 export default class Deck {
     constructor (cards = freshDeck()) { 
-        for(var i = 0; i < 52; i++)
-        {
-            cards[i].image = CARDIMG[i]
-        }
         this.cards = cards
     }
 
@@ -38,19 +34,13 @@ export default class Deck {
 
 
 function freshDeck() {
-    var i;
-     for (i = 0; i < 52; i ++)
-     {
-        //CARDIMG[i] = new Image();
-        CARDIMG[i] = '../assets/deckOfCards/PNG/' + (i+1) + '.png';
-     }
-
-        return VALUE.flatMap(value => {
-            return SUITS.map(suit => {
-                return new Cards(suit, value)
-            });
-            
+    return VALUE.flatMap(value => {
+        return SUITS.map(suit => {
+            return new Cards(suit, value, 
+                ('../assets/deckOfCards/PNG/' + value + suit + '.png'))
         });
+        
+    });
         
         
 }
