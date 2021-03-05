@@ -15,15 +15,16 @@ import { Text,
          Modal,
          TextInput,
          BackHandler,
-         Alert
+         Alert,
+         Animated
          } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 
 
-export default class GameSetting extends Component {
-  
-    state = {
+export default class GameSetting extends Component {  
+
+      state = {
         modalVisible: false,
         raiseVisible: false
       };
@@ -63,8 +64,7 @@ export default class GameSetting extends Component {
       }
     
     render() { 
-        
-        
+    
         const { modalVisible } = this.state;
         const {raiseVisible} = this.state;
         return (  
@@ -239,6 +239,37 @@ export default class GameSetting extends Component {
                   </Text> 
                 </View>
 
+                <View 
+                  style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'black',
+                  justifyContent: 'center',
+                  top: '51%',
+                  right: '80%'
+                  }}>
+
+                  <Text 
+                  style = {{
+                  textAlign: 'center',
+                  color: 'white'
+                 }}>BB</Text>
+                </View>
+
+                <View
+                 style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'white',
+                  justifyContent: 'center',
+                  top: '51%',
+                  right: '95%'}}>
+
+                  <Text style = {{textAlign: 'center'}}>SB</Text>
+                </View>
+                
             </View>
 
          );
