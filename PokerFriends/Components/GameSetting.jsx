@@ -24,28 +24,90 @@ export default class GameSetting extends Component {
 
 
     state = { 
-        value: new Animated.Value(0),
+        value1: new Animated.Value(0),
         value2: new Animated.ValueXY({x:0, y:0}),
+        value3: new Animated.ValueXY({x:185, y:0}),
+        value4: new Animated.ValueXY({x: 225, y: -75}),
+        value5: new Animated.ValueXY({x: 400, y: 80}),
+        value6: new Animated.ValueXY({x:415, y:-75}),
+        value7: new Animated.ValueXY({x: -225 , y: 75}),
+        value8: new Animated.ValueXY({x:625, y:0}), 
         modalVisible: false,
-        raiseVisible: false
+        raiseVisible: false,
+        fiveCardsFin: 0
       };
 
       moveBB() {
-        Animated.timing(this.state.value, {
+        Animated.timing(this.state.value1, {
           toValue: 185,
           duration: 1000,
           useNativeDriver: false
         }).start();
       }
 
-      moveSB() {
-        Animated.timing(this.state.value2, {
-          toValue: {x: 225, y: -75},
+       moveSB() {
+         Animated.timing(this.state.value2, {
+           toValue: {x: 225, y: -75},
+           duration: 1000,
+           useNativeDriver: false
+         }).start();
+       }
+
+      moveBB2() {
+        Animated.timing(this.state.value3, {
+          toValue: {x: 400, y: 80},
           duration: 1000,
           useNativeDriver: false
         }).start();
 
       }
+
+      moveSB2() {
+        Animated.timing(this.state.value4, {
+          toValue:{x:415, y:-75},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+
+      }
+
+      moveBB3() {
+        Animated.timing(this.state.value5, {
+          toValue: {x: -225 , y: 75},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+
+      }
+
+      moveSB3() {
+        Animated.timing(this.state.value6, {
+          toValue:{x:625, y:0},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+
+      }
+
+      moveBB4() {
+        Animated.timing(this.state.value7, {
+          toValue: {x: 0 , y: 0},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+
+      }
+
+      moveSB4() {
+        Animated.timing(this.state.value8, {
+          toValue:{x:0, y:0},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+
+      }
+   
+      
 
  
       setModalVisible = (visible) => {
@@ -80,14 +142,51 @@ export default class GameSetting extends Component {
         this.backHandler.remove();
       }
 
-      positionOne = () => {
-        return(
-          <View>
+      transitionBlinds(){
+        //This first if statement should only be done in the
+        //beginning of each game(New Lobby)
+        if(this.state.fiveCardsFin == 0) {
+          return <View>
+            <Animated.View>
+              <View 
+                style = {{ 
+                width: 25, 
+                height: 25, 
+                borderRadius: 25,
+                backgroundColor: 'black',
+                justifyContent: 'center',
+                top: '150%',
+                right: '1400%'
+                }}>
+                <Text 
+                  style = {{ textAlign: 'center',color: 'white'}}>
+                  BB
+                </Text>
+              </View>
+            </Animated.View>
+            <Animated.View>
+             <View
+                style = {{ 
+                width: 25, 
+                height: 25, 
+                borderRadius: 25,
+                backgroundColor: 'white',
+                justifyContent: 'center',
+                top: '350%',
+                right: '2300%'}}>
+                <Text style = {{textAlign: 'center'}}>SB</Text>
+              </View>
+            </Animated.View>
+          </View>
+
+        }
+
+        else if(this.state.fiveCardsFin == 1) {
+         return <View>
           <Animated.View
-                style = {[{
-                  left: this.state.value,
-                
-                }]}>
+                style = {{
+                  left: this.state.value1
+                }}>
                 <View 
                   style = {{ 
                   width: 25, 
@@ -98,14 +197,10 @@ export default class GameSetting extends Component {
                   top: '150%',
                   right: '1400%'
                   }}>
-                  <TouchableOpacity onPress = {this.moveBB.bind(this)}>
-                    
+                   {this.moveBB()}
                   <Text 
                   style = {{ textAlign: 'center',color: 'white'}}>
-
                   BB</Text>
-
-                 </TouchableOpacity>
                 </View>
                 </Animated.View>
 
@@ -121,17 +216,147 @@ export default class GameSetting extends Component {
                   justifyContent: 'center',
                   top: '350%',
                   right: '2300%'}}>
-                    <TouchableOpacity onPress = {this.moveSB.bind(this)}>
+                  {this.moveSB()}
                   <Text style = {{textAlign: 'center'}}>SB</Text>
-                  </TouchableOpacity>
+    
                 </View>
                 </Animated.View>
+               
                 </View>
-        )
+        
+
+        }
+        else if(this.state.fiveCardsFin == 2) {
+          return <View>
+          <Animated.View
+                style = {this.state.value3.getLayout()}>
+                <View 
+                  style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'black',
+                  justifyContent: 'center',
+                  top: '150%',
+                  right: '1400%'
+                  }}>
+                   {this.moveBB2()}
+                  <Text 
+                  style = {{ textAlign: 'center',color: 'white'}}>
+                  BB</Text>
+                </View>
+                </Animated.View>
+
+                <Animated.View 
+                style = {this.state.value4.getLayout()}>
+
+                <View
+                 style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'white',
+                  justifyContent: 'center',
+                  top: '350%',
+                  right: '2300%'}}>
+                  {this.moveSB2()}
+                  <Text style = {{textAlign: 'center'}}>SB</Text>
+    
+                </View>
+                </Animated.View>
+               
+                </View>
+
+        }
+        else if (this.state.fiveCardsFin == 3) {
+          return <View>
+          <Animated.View
+                style = {this.state.value5.getLayout()}>
+                <View 
+                  style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'black',
+                  justifyContent: 'center',
+                  top: '150%',
+                  right: '1400%'
+                  }}>
+                   {this.moveBB3()}
+                  <Text 
+                  style = {{ textAlign: 'center',color: 'white'}}>
+                  BB</Text>
+                </View>
+                </Animated.View>
+
+                <Animated.View 
+                style = {this.state.value6.getLayout()}>
+
+                <View
+                 style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'white',
+                  justifyContent: 'center',
+                  top: '350%',
+                  right: '2300%'}}>
+                  {this.moveSB3()}
+                  <Text style = {{textAlign: 'center'}}>SB</Text>
+    
+                </View>
+                </Animated.View>
+               
+                </View>
+        }
+
+        else if(this.state.fiveCardsFin == 4) {
+          return <View>
+          <Animated.View
+                style = {this.state.value7.getLayout()}>
+                <View 
+                  style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'black',
+                  justifyContent: 'center',
+                  top: '150%',
+                  right: '1400%'
+                  }}>
+                   {this.moveBB4()}
+                  <Text 
+                  style = {{ textAlign: 'center',color: 'white'}}>
+                  BB</Text>
+                </View>
+                </Animated.View>
+
+                <Animated.View 
+                style = {this.state.value8.getLayout()}>
+
+                <View
+                 style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'white',
+                  justifyContent: 'center',
+                  top: '350%',
+                  right: '2300%'}}>
+                  {this.moveSB4()}
+                  <Text style = {{textAlign: 'center'}}>SB</Text>
+    
+                </View>
+                </Animated.View>
+               
+                </View>
+
+        }
       }
+
+     
     
     render() { 
-        
         
         const { modalVisible } = this.state;
         const {raiseVisible} = this.state;
@@ -306,8 +531,8 @@ export default class GameSetting extends Component {
                     100
                   </Text> 
                 </View>
-
-                {this.positionOne()}
+                
+                {this.transitionBlinds()}
 
              
            
