@@ -1,4 +1,4 @@
-import React, { Component, useState} from 'react';
+import React, { Component} from 'react';
 import { Text,
          StyleSheet,
          View,
@@ -14,10 +14,12 @@ import { Text,
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 import Deck from './decks'
+import CardDealing from './cardDealing'
 
-const mydeck = new Deck()
-mydeck.shuffle()
-console.log(mydeck.cards)
+
+// const mydeck = new Deck()
+// mydeck.shuffle()
+// console.log(mydeck.cards)
 
 
 export default class GameSetting extends Component {
@@ -471,6 +473,7 @@ export default class GameSetting extends Component {
                                 <TouchableOpacity
                                 style={styles.buttonInExit}
                                 onPress={() => {
+                                  //this.raiseAnimation()
                                   this.setRaiseVisible(!raiseVisible);
                                 }}
                                 >
@@ -534,9 +537,7 @@ export default class GameSetting extends Component {
                 
                 {this.transitionBlinds()}
 
-             
-           
-
+               <CardDealing></CardDealing>
             </View>
 
          );
