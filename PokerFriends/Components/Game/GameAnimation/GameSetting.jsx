@@ -13,7 +13,7 @@ import { Text,
          } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
-import Deck from './decks'
+import Deck from '../../decks'
 import CardDealing from './cardDealing'
 
 
@@ -419,7 +419,7 @@ export default class GameSetting extends Component {
                 
                 <View style={styles.tableView}>
                   <Image  style = {styles.tableView}
-                  source = {require('../assets/pokertable.png')}
+                  source = {require('../../../assets/pokertable.png')}
                   />
                </View>
 
@@ -436,7 +436,7 @@ export default class GameSetting extends Component {
                       height:50,
                       resizeMode: 'contain',
                       }}
-                      source={require('../assets/table.png')}
+                      source={require('../../../assets/table.png')}
                   />
                    
                   <Text style = {{ fontSize: 20 ,fontWeight: 'bold',color: 'white'}}>
@@ -505,13 +505,17 @@ export default class GameSetting extends Component {
                     <Text>Fold</Text>
                   </TouchableOpacity>
 
+                  <TouchableOpacity style={[styles.bettingButtons, {backgroundColor:"#D6A2E8"}]}>
+                    <Text>Check</Text>
+                  </TouchableOpacity>
+
                 </View>
 
 
                 <View style = {styles.dealer}>
                   <Image style = {styles.dealer}
                     
-                  source = {require('../assets/cards.png')}
+                  source = {require('../../../assets/cards.png')}
                   />
                 </View>
 
@@ -528,7 +532,7 @@ export default class GameSetting extends Component {
                     height:40,
                     resizeMode: 'contain',
                     }}
-                    source={require('../assets/chipAmount.png')}
+                    source={require('../../../assets/chipAmount.png')}
                   /> 
                   <Text style = {{ fontSize: 20, fontWeight: 'bold' }}>
                     100

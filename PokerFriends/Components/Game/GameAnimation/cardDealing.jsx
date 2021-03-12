@@ -64,11 +64,11 @@ export default class CardDealing extends Component {
             <View style = {styles.container}>
                 <View>
                     <Animated.View style ={[styles.flipCard, frontAnimatedStyle]}>
-                        <Image style = {styles.cardImage} source = {require("../assets/deckOfCards/PNG/♥K.png")}/>
+                        <Image style = {styles.cardImage} source = {require("../../../assets/deckOfCards/PNG/♥K.png")}/>
                     </Animated.View>
 
                     <Animated.View style = {[styles.flipCard ,backAnimatedStyle,  styles.flipCardBack]}>
-                        <Image style = {styles.cardImage}  source = {require('../assets/cardBack.png')}/>
+                        <Image style = {styles.cardImage}  source = {require('../../../assets/cardBack.png')}/>
                     </Animated.View>
                 </View>
             <TouchableOpacity onPress = {() =>this.flipCard()}>
