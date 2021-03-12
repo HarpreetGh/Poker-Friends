@@ -34,11 +34,20 @@ export default class GameSetting extends Component {
         value6: new Animated.ValueXY({x:415, y:-75}),
         value7: new Animated.ValueXY({x: -225 , y: 75}),
         value8: new Animated.ValueXY({x:625, y:0}), 
+        valueFoldCard: new Animated.ValueXY({x: 25, y: 25}),
         modalVisible: false,
         raiseVisible: false,
         fiveCardsFin: 0
       };
 
+      foldCard() {
+        Animated.timing(this.state.valueFoldCard, {
+          toValue: {x: -515, y: 375},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+      }
+      
       moveBB() {
         Animated.timing(this.state.value1, {
           toValue: 185,
@@ -501,9 +510,10 @@ export default class GameSetting extends Component {
                     <Text>Call</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={[styles.bettingButtons, styles.foldButt]}>
+                  <TouchableOpacity style={[styles.bettingButtons, styles.foldButt]} onPress = {() => this.foldCard()}>
                     <Text>Fold</Text>
                   </TouchableOpacity>
+
 
                   <TouchableOpacity style={[styles.bettingButtons, {backgroundColor:"#D6A2E8"}]}>
                     <Text>Check</Text>
@@ -542,6 +552,13 @@ export default class GameSetting extends Component {
                 {this.transitionBlinds()}
 
                <CardDealing></CardDealing>
+
+               <View style = {styles.foldContainer}>
+                    <Animated.View style = {[styles.foldCard, this.state.valueFoldCard.getLayout()]}>
+                      <Image style = {styles.cardImage} source = {require("../../../assets/deckOfCards/PNG/♥J.png")}/>
+                    </Animated.View>
+               </View>
+
             </View>
 
          );
@@ -720,6 +737,20 @@ const styles = StyleSheet.create({
     foldButt:{
       backgroundColor: "#ffcccb"
     },
+    cardImage: {
+      width: 100,
+      height: 100,
+      resizeMode: 'contain'
+    },
+    foldCard: {
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    foldContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center'
+    }
 
 
    
