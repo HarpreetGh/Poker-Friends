@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component} from 'react';
 import { Text,
          StyleSheet,
          View,
@@ -8,18 +8,117 @@ import { Text,
          Modal,
          TextInput,
          BackHandler,
-         Alert
+         Alert,
+         Animated,
          } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
+import Deck from '../../decks'
+import CardDealing from './cardDealing'
+
+
+// const mydeck = new Deck()
+// mydeck.shuffle()
+// console.log(mydeck.cards)
 
 
 export default class GameSetting extends Component {
-    state = {
+
+
+    state = { 
+        value1: new Animated.Value(0),
+        value2: new Animated.ValueXY({x:0, y:0}),
+        value3: new Animated.ValueXY({x:185, y:0}),
+        value4: new Animated.ValueXY({x: 225, y: -75}),
+        value5: new Animated.ValueXY({x: 400, y: 80}),
+        value6: new Animated.ValueXY({x:415, y:-75}),
+        value7: new Animated.ValueXY({x: -225 , y: 75}),
+        value8: new Animated.ValueXY({x:625, y:0}), 
+        valueFoldCard: new Animated.ValueXY({x: 25, y: 25}),
         modalVisible: false,
-        raiseVisible: false
+        raiseVisible: false,
+        fiveCardsFin: 0
       };
 
+      foldCard() {
+        Animated.timing(this.state.valueFoldCard, {
+          toValue: {x: -515, y: 375},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+      }
+      
+      moveBB() {
+        Animated.timing(this.state.value1, {
+          toValue: 185,
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+      }
+
+       moveSB() {
+         Animated.timing(this.state.value2, {
+           toValue: {x: 225, y: -75},
+           duration: 1000,
+           useNativeDriver: false
+         }).start();
+       }
+
+      moveBB2() {
+        Animated.timing(this.state.value3, {
+          toValue: {x: 400, y: 80},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+
+      }
+
+      moveSB2() {
+        Animated.timing(this.state.value4, {
+          toValue:{x:415, y:-75},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+
+      }
+
+      moveBB3() {
+        Animated.timing(this.state.value5, {
+          toValue: {x: -225 , y: 75},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+
+      }
+
+      moveSB3() {
+        Animated.timing(this.state.value6, {
+          toValue:{x:625, y:0},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+
+      }
+
+      moveBB4() {
+        Animated.timing(this.state.value7, {
+          toValue: {x: 0 , y: 0},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+
+      }
+
+      moveSB4() {
+        Animated.timing(this.state.value8, {
+          toValue:{x:0, y:0},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+
+      }
+   
+      
 
  
       setModalVisible = (visible) => {
@@ -53,8 +152,223 @@ export default class GameSetting extends Component {
       componentWillUnmount() {
         this.backHandler.remove();
       }
+
+      transitionBlinds(){
+        //This first if statement should only be done in the
+        //beginning of each game(New Lobby)
+        if(this.state.fiveCardsFin == 0) {
+          return <View>
+            <Animated.View>
+              <View 
+                style = {{ 
+                width: 25, 
+                height: 25, 
+                borderRadius: 25,
+                backgroundColor: 'black',
+                justifyContent: 'center',
+                top: '150%',
+                right: '1400%'
+                }}>
+                <Text 
+                  style = {{ textAlign: 'center',color: 'white'}}>
+                  BB
+                </Text>
+              </View>
+            </Animated.View>
+            <Animated.View>
+             <View
+                style = {{ 
+                width: 25, 
+                height: 25, 
+                borderRadius: 25,
+                backgroundColor: 'white',
+                justifyContent: 'center',
+                top: '350%',
+                right: '2300%'}}>
+                <Text style = {{textAlign: 'center'}}>SB</Text>
+              </View>
+            </Animated.View>
+          </View>
+
+        }
+
+        else if(this.state.fiveCardsFin == 1) {
+         return <View>
+          <Animated.View
+                style = {{
+                  left: this.state.value1
+                }}>
+                <View 
+                  style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'black',
+                  justifyContent: 'center',
+                  top: '150%',
+                  right: '1400%'
+                  }}>
+                   {this.moveBB()}
+                  <Text 
+                  style = {{ textAlign: 'center',color: 'white'}}>
+                  BB</Text>
+                </View>
+                </Animated.View>
+
+                <Animated.View 
+                style = { this.state.value2.getLayout()}>
+
+                <View
+                 style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'white',
+                  justifyContent: 'center',
+                  top: '350%',
+                  right: '2300%'}}>
+                  {this.moveSB()}
+                  <Text style = {{textAlign: 'center'}}>SB</Text>
+    
+                </View>
+                </Animated.View>
+               
+                </View>
+        
+
+        }
+        else if(this.state.fiveCardsFin == 2) {
+          return <View>
+          <Animated.View
+                style = {this.state.value3.getLayout()}>
+                <View 
+                  style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'black',
+                  justifyContent: 'center',
+                  top: '150%',
+                  right: '1400%'
+                  }}>
+                   {this.moveBB2()}
+                  <Text 
+                  style = {{ textAlign: 'center',color: 'white'}}>
+                  BB</Text>
+                </View>
+                </Animated.View>
+
+                <Animated.View 
+                style = {this.state.value4.getLayout()}>
+
+                <View
+                 style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'white',
+                  justifyContent: 'center',
+                  top: '350%',
+                  right: '2300%'}}>
+                  {this.moveSB2()}
+                  <Text style = {{textAlign: 'center'}}>SB</Text>
+    
+                </View>
+                </Animated.View>
+               
+                </View>
+
+        }
+        else if (this.state.fiveCardsFin == 3) {
+          return <View>
+          <Animated.View
+                style = {this.state.value5.getLayout()}>
+                <View 
+                  style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'black',
+                  justifyContent: 'center',
+                  top: '150%',
+                  right: '1400%'
+                  }}>
+                   {this.moveBB3()}
+                  <Text 
+                  style = {{ textAlign: 'center',color: 'white'}}>
+                  BB</Text>
+                </View>
+                </Animated.View>
+
+                <Animated.View 
+                style = {this.state.value6.getLayout()}>
+
+                <View
+                 style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'white',
+                  justifyContent: 'center',
+                  top: '350%',
+                  right: '2300%'}}>
+                  {this.moveSB3()}
+                  <Text style = {{textAlign: 'center'}}>SB</Text>
+    
+                </View>
+                </Animated.View>
+               
+                </View>
+        }
+
+        else if(this.state.fiveCardsFin == 4) {
+          return <View>
+          <Animated.View
+                style = {this.state.value7.getLayout()}>
+                <View 
+                  style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'black',
+                  justifyContent: 'center',
+                  top: '150%',
+                  right: '1400%'
+                  }}>
+                   {this.moveBB4()}
+                  <Text 
+                  style = {{ textAlign: 'center',color: 'white'}}>
+                  BB</Text>
+                </View>
+                </Animated.View>
+
+                <Animated.View 
+                style = {this.state.value8.getLayout()}>
+
+                <View
+                 style = {{ 
+                  width: 25, 
+                  height: 25, 
+                  borderRadius: 25,
+                  backgroundColor: 'white',
+                  justifyContent: 'center',
+                  top: '350%',
+                  right: '2300%'}}>
+                  {this.moveSB4()}
+                  <Text style = {{textAlign: 'center'}}>SB</Text>
+    
+                </View>
+                </Animated.View>
+               
+                </View>
+
+        }
+      }
+
+     
     
     render() { 
+        
         const { modalVisible } = this.state;
         const {raiseVisible} = this.state;
         return (  
@@ -114,7 +428,7 @@ export default class GameSetting extends Component {
                 
                 <View style={styles.tableView}>
                   <Image  style = {styles.tableView}
-                  source = {require('../assets/pokertable.png')}
+                  source = {require('../../../assets/pokertable.png')}
                   />
                </View>
 
@@ -131,7 +445,7 @@ export default class GameSetting extends Component {
                       height:50,
                       resizeMode: 'contain',
                       }}
-                      source={require('../assets/table.png')}
+                      source={require('../../../assets/table.png')}
                   />
                    
                   <Text style = {{ fontSize: 20 ,fontWeight: 'bold',color: 'white'}}>
@@ -168,6 +482,7 @@ export default class GameSetting extends Component {
                                 <TouchableOpacity
                                 style={styles.buttonInExit}
                                 onPress={() => {
+                                  //this.raiseAnimation()
                                   this.setRaiseVisible(!raiseVisible);
                                 }}
                                 >
@@ -195,8 +510,13 @@ export default class GameSetting extends Component {
                     <Text>Call</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={[styles.bettingButtons, styles.foldButt]}>
+                  <TouchableOpacity style={[styles.bettingButtons, styles.foldButt]} onPress = {() => this.foldCard()}>
                     <Text>Fold</Text>
+                  </TouchableOpacity>
+
+
+                  <TouchableOpacity style={[styles.bettingButtons, {backgroundColor:"#D6A2E8"}]}>
+                    <Text>Check</Text>
                   </TouchableOpacity>
 
                 </View>
@@ -205,7 +525,7 @@ export default class GameSetting extends Component {
                 <View style = {styles.dealer}>
                   <Image style = {styles.dealer}
                     
-                  source = {require('../assets/cards.png')}
+                  source = {require('../../../assets/cards.png')}
                   />
                 </View>
 
@@ -222,13 +542,23 @@ export default class GameSetting extends Component {
                     height:40,
                     resizeMode: 'contain',
                     }}
-                    source={require('../assets/chipAmount.png')}
+                    source={require('../../../assets/chipAmount.png')}
                   /> 
                   <Text style = {{ fontSize: 20, fontWeight: 'bold' }}>
                     100
                   </Text> 
                 </View>
-               
+                
+                {this.transitionBlinds()}
+
+               <CardDealing></CardDealing>
+
+               <View style = {styles.foldContainer}>
+                    <Animated.View style = {[styles.foldCard, this.state.valueFoldCard.getLayout()]}>
+                      <Image style = {styles.cardImage} source = {require("../../../assets/deckOfCards/PNG/♥J.png")}/>
+                    </Animated.View>
+               </View>
+
             </View>
 
          );
@@ -407,6 +737,20 @@ const styles = StyleSheet.create({
     foldButt:{
       backgroundColor: "#ffcccb"
     },
+    cardImage: {
+      width: 100,
+      height: 100,
+      resizeMode: 'contain'
+    },
+    foldCard: {
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    foldContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center'
+    }
 
 
    

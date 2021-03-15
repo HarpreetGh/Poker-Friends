@@ -7,7 +7,7 @@ import LandingPage from './Components/LandingPage'
 import Register from '../PokerFriends/Components/Register';
 import Login from './Components/Login'
 import ForgotPassword from './Components/Account-Settings/ForgotPassword'
-import GameSetting from './Components/GameSetting'
+import GameSetting from './Components/Game/GameAnimation/GameSetting'
 import AccountSettings from './Components/AccountSettings';
 import ChangeUsername from './Components/Account-Settings/ChangeUsername';
 import ChangeEmail from './Components/Account-Settings/ChangeEmail';
