@@ -37,7 +37,7 @@ function freshDeck() {
     return VALUE.flatMap(value => {
         return SUITS.map(suit => {
             return new Cards(suit, value,
-                ('../assets/deckOfCards/PNG/' + suit + value + '.png'))
+               ('../../../assets/deckOfCards/PNG/' + suit + value + '.png'))
         });
         
     });

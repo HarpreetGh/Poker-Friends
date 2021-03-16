@@ -8,12 +8,26 @@ import {
      Text
     } from 'react-native';
 
-//import Deck from './decks'
+import Deck from '../../decks'
+
+const gameDeck = new Deck()
 
 
 
 export default class CardDealing extends Component {
-    
+      
+        
+        playersDecks = [
+                    {
+                    card1: gameDeck.cards.shift(),
+                    }
+                ];
+
+      shuffleCards(){
+        gameDeck.shuffle()
+
+      }
+
       UNSAFE_componentWillMount() {
           this.animatedValue = new Animated.Value(0);
           this.value = 0;
@@ -48,8 +62,13 @@ export default class CardDealing extends Component {
              }).start();
           }
       }
+    
      
     render() {
+        console.log(gameDeck.cards.length)
+        this.shuffleCards()
+      
+        
          const frontAnimatedStyle = {
              transform: [
                  {rotateY: this.frontInterpolate}
@@ -64,16 +83,32 @@ export default class CardDealing extends Component {
             <View style = {styles.container}>
                 <View>
                     <Animated.View style ={[styles.flipCard, frontAnimatedStyle]}>
-                        <Image style = {styles.cardImage} source = {require("../../../assets/deckOfCards/PNG/♥K.png")}/>
+                        <Image style = {styles.cardImage} source = {require('../../../assets/cardBack.png')}/>
                     </Animated.View>
 
                     <Animated.View style = {[styles.flipCard ,backAnimatedStyle,  styles.flipCardBack]}>
-                        <Image style = {styles.cardImage}  source = {require('../../../assets/cardBack.png')}/>
+                        <View style = {{position: 'absolute',
+                            flex: 1,
+                            borderRadius: 2,
+                            alignItems: 'center',
+                            justifyContent:'center',
+                            paddingVertical: 15,
+                            paddingHorizontal: 15,
+                            backgroundColor:"white",}}>
+
+                            <Text>{this.playersDecks[0].card1.suit}</Text>
+                            <Text>{this.playersDecks[0].card1.value}</Text>
+                         
+                          
+                           
+                            
+                        </View>
                     </Animated.View>
                 </View>
-            <TouchableOpacity onPress = {() =>this.flipCard()}>
-                <Text>Flip</Text>
-            </TouchableOpacity>
+
+            {/* We call this at the end of the round, because it flips all cards. */}
+           {this.flipCard()}   
+            
             </View>
             
         );
@@ -87,8 +122,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     cardImage: {
-        width: 100,
-        height: 100,
+        width: 75,
+        height: 75,
         resizeMode: 'contain'
     },
     flipCard: {
@@ -99,6 +134,7 @@ const styles = StyleSheet.create({
     flipCardBack: {
         position: 'absolute',
         top: 0,
-    }
+    },
+    
 
 })
