@@ -35,9 +35,22 @@ export default class GameSetting extends Component {
         value7: new Animated.ValueXY({x: -225 , y: 75}),
         value8: new Animated.ValueXY({x:625, y:0}), 
         valueFoldCard: new Animated.ValueXY({x: 25, y: 25}),
+        playerCards: new Animated.ValueXY({x:0, y:0}),
+        playerCards2: new Animated.ValueXY({x:0, y:0}),
+        playerCards3: new Animated.ValueXY({x:0, y:0}),
+        playerCards4: new Animated.ValueXY({x:0, y:0}),
+        playerCards5: new Animated.ValueXY({x:0, y:0}),
+        playerCards6: new Animated.ValueXY({x:0, y:0}),
+        playerCards7: new Animated.ValueXY({x:0, y:0}),
+        playerCards8: new Animated.ValueXY({x:0, y:0}),
+       
+
+
         modalVisible: false,
         raiseVisible: false,
-        fiveCardsFin: 0
+
+        fiveCardsFin: 0,
+        playerCardsGiven: 1 
       };
 
       foldCard() {
@@ -116,6 +129,75 @@ export default class GameSetting extends Component {
           useNativeDriver: false
         }).start();
 
+      }
+
+      movePlayer1Cards() {
+        Animated.timing(this.state.playerCards, {
+          toValue:{x:-350, y:-45},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+
+      }
+      
+      movePlayer1_2ndCards() {
+        Animated.timing(this.state.playerCards2, {
+          toValue:{x:-320, y:-45},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+
+      }
+
+      movePlayer2Cards() {
+        Animated.timing(this.state.playerCards3, {
+          toValue:{x:-290, y:-270},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+        
+      }
+      movePlayer2_2ndCards() {
+        Animated.timing(this.state.playerCards4, {
+          toValue:{x:-260, y:-270},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+        
+      }
+
+      movePlayer3Cards() {
+        Animated.timing(this.state.playerCards5, {
+          toValue:{x:150, y:-270},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+        
+      }
+      movePlayer3_2ndCards() {
+        Animated.timing(this.state.playerCards6, {
+          toValue:{x:120, y:-270},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+        
+      }
+
+      movePlayer4Cards() {
+        Animated.timing(this.state.playerCards7, {
+          toValue:{x:320, y:-35},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+        
+      }
+      movePlayer4_2ndCards() {
+        Animated.timing(this.state.playerCards8, {
+          toValue:{x:290, y:-35},
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
+        
       }
    
       
@@ -365,6 +447,61 @@ export default class GameSetting extends Component {
         }
       }
 
+      giveOutCards() {
+       
+      return <View>
+                <View style = {{right: '390%', top: '75%'}}>
+                  <Animated.View style = {this.state.playerCards.getLayout()}>
+                    <CardDealing>{this.movePlayer1Cards()}</CardDealing>
+                  </Animated.View>
+                </View>
+
+                <View style = {{right: '390%', top: '75%'}}>
+                  <Animated.View style = {this.state.playerCards2.getLayout()}>
+                    <CardDealing>{this.movePlayer1_2ndCards()}</CardDealing>
+                  </Animated.View> 
+                  
+                </View>
+                <View style = {{right: '390%', top: '75%'}}>
+                  <Animated.View style = {this.state.playerCards3.getLayout()}>
+                    <CardDealing>{this.movePlayer2Cards()}</CardDealing>
+                  </Animated.View>
+                </View>
+
+                <View style = {{right: '390%', top: '75%'}}>
+                  <Animated.View style = {this.state.playerCards4.getLayout()}>
+                    <CardDealing>{this.movePlayer2_2ndCards()}</CardDealing>
+                  </Animated.View> 
+                  
+                </View>
+                <View style = {{right: '390%', top: '75%', zIndex: 1}}>
+                  <Animated.View style = {this.state.playerCards5.getLayout()}>
+                    <CardDealing>{this.movePlayer3Cards()}</CardDealing>
+                  </Animated.View>
+                </View>
+
+                <View style = {{right: '390%', top: '75%'}}>
+                  <Animated.View style = {this.state.playerCards6.getLayout()}>
+                    <CardDealing>{this.movePlayer3_2ndCards()}</CardDealing>
+                  </Animated.View> 
+                </View>
+
+                <View style = {{right: '390%', top: '75%', zIndex: 1}}>
+                  <Animated.View style = {this.state.playerCards7.getLayout()}>
+                    <CardDealing>{this.movePlayer4Cards()}</CardDealing>
+                  </Animated.View>
+                </View>
+
+                <View style = {{right: '390%', top: '75%'}}>
+                  <Animated.View style = {this.state.playerCards8.getLayout()}>
+                    <CardDealing>{this.movePlayer4_2ndCards()}</CardDealing>
+                  </Animated.View> 
+                </View>
+               
+
+              </View>
+      }
+
      
     
     render() { 
@@ -559,6 +696,9 @@ export default class GameSetting extends Component {
                     </Animated.View>
                </View>
 
+                {this.giveOutCards()}
+              
+                
             </View>
 
          );
@@ -609,12 +749,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     dealer: {
-        width: 125, 
-        height:125,
+        width: 150, 
+        height:150,
         resizeMode: 'contain',
         bottom: '0%',
         left: '35%',
-        position: 'absolute'
+        position: 'absolute',
+        //Change zIndex to have cards behind hand
+        zIndex: 1
     },
     textStyle:{
         color: '#FFFFFF',
