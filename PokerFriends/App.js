@@ -13,6 +13,7 @@ import ChangeUsername from './Components/Account-Settings/ChangeUsername';
 import ChangeEmail from './Components/Account-Settings/ChangeEmail';
 import DeleteAccount from './Components/Account-Settings/DeleteAccount';
 import FriendsList from './Components/FriendsList'
+import CreateGame from './Components/CreateGame'
 import Firebaseinit from './firebase' //Intializes Firebase
 import firebase from 'firebase';
 
@@ -43,6 +44,7 @@ export default class App extends Component {
           
           <Stack.Screen name = "FriendsList" component = {FriendsList}/>
           <Stack.Screen name = "GameSetting" component = {GameSetting}/>
+          <Stack.Screen name = "CreateGame" component = {CreateGame}/>
           
           <Stack.Screen name = "AccountSettings">
             {(props) => <AccountSettings {...props} LoggedIn={this.state.LoggedIn}/>}

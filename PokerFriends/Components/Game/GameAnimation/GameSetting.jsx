@@ -1,15 +1,7 @@
 import React, { Component} from 'react';
-import { Text,
-         StyleSheet,
-         View,
-         TouchableOpacity,
-         StatusBar,
-         Image,
-         Modal,
-         TextInput,
-         BackHandler,
-         Alert,
-         Animated,
+import { Text, StyleSheet, View, TouchableOpacity,
+         StatusBar, Image, Modal, TextInput,
+         BackHandler, Alert, Animated, Dimensions
          } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
@@ -17,23 +9,31 @@ import Deck from '../../decks'
 import CardDealing from './cardDealing'
 
 
-// const mydeck = new Deck()
-// mydeck.shuffle()
-// console.log(mydeck.cards)
-
-
 export default class GameSetting extends Component {
-
-
     state = { 
-        value1: new Animated.Value(0),
-        value2: new Animated.ValueXY({x:0, y:0}),
-        value3: new Animated.ValueXY({x:185, y:0}),
-        value4: new Animated.ValueXY({x: 225, y: -75}),
-        value5: new Animated.ValueXY({x: 400, y: 80}),
-        value6: new Animated.ValueXY({x:415, y:-75}),
-        value7: new Animated.ValueXY({x: -225 , y: 75}),
-        value8: new Animated.ValueXY({x:625, y:0}), 
+        animationBB: [ new Animated.Value(0), 
+          new Animated.ValueXY({x:185, y:0}), 
+          new Animated.ValueXY({x: 400, y: 80}), 
+          new Animated.ValueXY({x: -225 , y: 75})
+        ],
+        animationSB: [ new Animated.ValueXY({x:0, y:0}),
+          new Animated.ValueXY({x: 225, y: -75}),
+          new Animated.ValueXY({x:415, y:-75}),
+          new Animated.ValueXY({x:625, y:0})
+        ],
+        newValueBB: [ 185, 
+          {x: 400, y: 80}, 
+          {x: -225 , y: 75}, 
+          {x: 0 , y: 0}
+        ],
+        newValueSB: [ {x: 225, y: -75}, 
+          {x:415, y:-75},
+          {x:625, y:0}, 
+          {x:0, y:0},
+        ],
+
+
+        valueFoldCard: new Animated.ValueXY({x: 25, y: 25}),
         valueFoldCard: new Animated.ValueXY({x: 25, y: 25}),
         playerCards: new Animated.ValueXY({x:0, y:0}),
         playerCards2: new Animated.ValueXY({x:0, y:0}),
@@ -43,14 +43,28 @@ export default class GameSetting extends Component {
         playerCards6: new Animated.ValueXY({x:0, y:0}),
         playerCards7: new Animated.ValueXY({x:0, y:0}),
         playerCards8: new Animated.ValueXY({x:0, y:0}),
-       
 
 
         modalVisible: false,
         raiseVisible: false,
+        fiveCardsFin: 4,
 
-        fiveCardsFin: 0,
-        playerCardsGiven: 1 
+        matchID: "public/match",
+        game:{
+          balance: [0,0,0,0],
+          board: ["♣2", "♦5", "♥10", "♠A", "♣J"],
+          deck: ["♠A", "♣J"],
+          move: ["raise", "call", "fold", "call"],
+          players: ["Abe#45", "Bob#89", "Alice#90", "Janet#02"],
+          pot: 40,
+          ready: [true, false, true, false],
+          size: 4,
+          player_cards: [{rank: 9, card: ["♠7", "♥9"]},{rank: 2, card: ["♣3", "♦3"]},
+            {rank: 7, card: ["♥2", "♦8"]},{rank: 5, card: ["♠6", "♦5"]}],
+          pause: false,
+          turn: 3,
+          round: 2,
+        }
       };
 
       foldCard() {
@@ -61,77 +75,23 @@ export default class GameSetting extends Component {
         }).start();
       }
       
-      moveBB() {
-        Animated.timing(this.state.value1, {
-          toValue: 185,
+      moveBB(player) {
+        Animated.timing(this.state.animationBB[player], {
+          toValue: this.state.newValueBB[player],
           duration: 1000,
           useNativeDriver: false
         }).start();
       }
 
-       moveSB() {
-         Animated.timing(this.state.value2, {
-           toValue: {x: 225, y: -75},
+       moveSB(player) {
+         Animated.timing(this.state.animationSB[player], {
+           toValue: this.state.newValueSB[player],
            duration: 1000,
            useNativeDriver: false
          }).start();
        }
 
-      moveBB2() {
-        Animated.timing(this.state.value3, {
-          toValue: {x: 400, y: 80},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-
-      }
-
-      moveSB2() {
-        Animated.timing(this.state.value4, {
-          toValue:{x:415, y:-75},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-
-      }
-
-      moveBB3() {
-        Animated.timing(this.state.value5, {
-          toValue: {x: -225 , y: 75},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-
-      }
-
-      moveSB3() {
-        Animated.timing(this.state.value6, {
-          toValue:{x:625, y:0},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-
-      }
-
-      moveBB4() {
-        Animated.timing(this.state.value7, {
-          toValue: {x: 0 , y: 0},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-
-      }
-
-      moveSB4() {
-        Animated.timing(this.state.value8, {
-          toValue:{x:0, y:0},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-
-      }
-
-      movePlayer1Cards() {
+       movePlayer1Cards() {
         Animated.timing(this.state.playerCards, {
           toValue:{x:-350, y:-45},
           duration: 1000,
@@ -199,7 +159,6 @@ export default class GameSetting extends Component {
         }).start();
         
       }
-   
       
 
  
@@ -229,6 +188,7 @@ export default class GameSetting extends Component {
           "hardwareBackPress",
           this.backAction
         );
+        //this.setState({width: Dimensions.get('window').width})
       }
     
       componentWillUnmount() {
@@ -238,7 +198,7 @@ export default class GameSetting extends Component {
       transitionBlinds(){
         //This first if statement should only be done in the
         //beginning of each game(New Lobby)
-        if(this.state.fiveCardsFin == 0) {
+        if(this.state.fiveCardsFin == 0){
           return <View>
             <Animated.View>
               <View 
@@ -258,7 +218,7 @@ export default class GameSetting extends Component {
               </View>
             </Animated.View>
             <Animated.View>
-             <View
+            <View
                 style = {{ 
                 width: 25, 
                 height: 25, 
@@ -271,184 +231,81 @@ export default class GameSetting extends Component {
               </View>
             </Animated.View>
           </View>
-
         }
-
-        else if(this.state.fiveCardsFin == 1) {
-         return <View>
-          <Animated.View
-                style = {{
-                  left: this.state.value1
+        else if(this.state.fiveCardsFin < 5){
+          index = this.state.fiveCardsFin - 1
+          
+          if(index == 0){
+            bb = (
+              <Animated.View
+                style = {{left: this.state.animationBB[index]}}>
+              <View 
+                style = {{ 
+                width: 25, 
+                height: 25, 
+                borderRadius: 25,
+                backgroundColor: 'black',
+                justifyContent: 'center',
+                top: '150%',
+                right: '1400%'
                 }}>
-                <View 
-                  style = {{ 
-                  width: 25, 
-                  height: 25, 
-                  borderRadius: 25,
-                  backgroundColor: 'black',
-                  justifyContent: 'center',
-                  top: '150%',
-                  right: '1400%'
-                  }}>
-                   {this.moveBB()}
-                  <Text 
-                  style = {{ textAlign: 'center',color: 'white'}}>
-                  BB</Text>
-                </View>
-                </Animated.View>
+                  {this.moveBB(index)}
+                <Text 
+                style = {{ textAlign: 'center',color: 'white'}}>
+                BB</Text>
+              </View>
+            </Animated.View>
+            )
+          }
+          else{
+            bb = (
+            <Animated.View
+              style = {this.state.animationBB[index].getLayout()}>
+              <View 
+                style = {{ 
+                width: 25, 
+                height: 25, 
+                borderRadius: 25,
+                backgroundColor: 'black',
+                justifyContent: 'center',
+                top: '150%',
+                right: '1400%'
+                }}>
+                  {this.moveBB(index)}
+                <Text 
+                style = {{ textAlign: 'center',color: 'white'}}>
+                BB</Text>
+              </View>
+            </Animated.View>
+            )
+          }
 
-                <Animated.View 
-                style = { this.state.value2.getLayout()}>
+          return (
+          <View>
+            {bb}
+            <Animated.View 
+            style = { this.state.animationSB[index].getLayout()}>
 
-                <View
-                 style = {{ 
-                  width: 25, 
-                  height: 25, 
-                  borderRadius: 25,
-                  backgroundColor: 'white',
-                  justifyContent: 'center',
-                  top: '350%',
-                  right: '2300%'}}>
-                  {this.moveSB()}
-                  <Text style = {{textAlign: 'center'}}>SB</Text>
-    
-                </View>
-                </Animated.View>
-               
-                </View>
-        
-
-        }
-        else if(this.state.fiveCardsFin == 2) {
-          return <View>
-          <Animated.View
-                style = {this.state.value3.getLayout()}>
-                <View 
-                  style = {{ 
-                  width: 25, 
-                  height: 25, 
-                  borderRadius: 25,
-                  backgroundColor: 'black',
-                  justifyContent: 'center',
-                  top: '150%',
-                  right: '1400%'
-                  }}>
-                   {this.moveBB2()}
-                  <Text 
-                  style = {{ textAlign: 'center',color: 'white'}}>
-                  BB</Text>
-                </View>
-                </Animated.View>
-
-                <Animated.View 
-                style = {this.state.value4.getLayout()}>
-
-                <View
-                 style = {{ 
-                  width: 25, 
-                  height: 25, 
-                  borderRadius: 25,
-                  backgroundColor: 'white',
-                  justifyContent: 'center',
-                  top: '350%',
-                  right: '2300%'}}>
-                  {this.moveSB2()}
-                  <Text style = {{textAlign: 'center'}}>SB</Text>
-    
-                </View>
-                </Animated.View>
-               
-                </View>
-
-        }
-        else if (this.state.fiveCardsFin == 3) {
-          return <View>
-          <Animated.View
-                style = {this.state.value5.getLayout()}>
-                <View 
-                  style = {{ 
-                  width: 25, 
-                  height: 25, 
-                  borderRadius: 25,
-                  backgroundColor: 'black',
-                  justifyContent: 'center',
-                  top: '150%',
-                  right: '1400%'
-                  }}>
-                   {this.moveBB3()}
-                  <Text 
-                  style = {{ textAlign: 'center',color: 'white'}}>
-                  BB</Text>
-                </View>
-                </Animated.View>
-
-                <Animated.View 
-                style = {this.state.value6.getLayout()}>
-
-                <View
-                 style = {{ 
-                  width: 25, 
-                  height: 25, 
-                  borderRadius: 25,
-                  backgroundColor: 'white',
-                  justifyContent: 'center',
-                  top: '350%',
-                  right: '2300%'}}>
-                  {this.moveSB3()}
-                  <Text style = {{textAlign: 'center'}}>SB</Text>
-    
-                </View>
-                </Animated.View>
-               
-                </View>
-        }
-
-        else if(this.state.fiveCardsFin == 4) {
-          return <View>
-          <Animated.View
-                style = {this.state.value7.getLayout()}>
-                <View 
-                  style = {{ 
-                  width: 25, 
-                  height: 25, 
-                  borderRadius: 25,
-                  backgroundColor: 'black',
-                  justifyContent: 'center',
-                  top: '150%',
-                  right: '1400%'
-                  }}>
-                   {this.moveBB4()}
-                  <Text 
-                  style = {{ textAlign: 'center',color: 'white'}}>
-                  BB</Text>
-                </View>
-                </Animated.View>
-
-                <Animated.View 
-                style = {this.state.value8.getLayout()}>
-
-                <View
-                 style = {{ 
-                  width: 25, 
-                  height: 25, 
-                  borderRadius: 25,
-                  backgroundColor: 'white',
-                  justifyContent: 'center',
-                  top: '350%',
-                  right: '2300%'}}>
-                  {this.moveSB4()}
-                  <Text style = {{textAlign: 'center'}}>SB</Text>
-    
-                </View>
-                </Animated.View>
-               
-                </View>
-
+              <View
+                style = {{ 
+                width: 25, 
+                height: 25, 
+                borderRadius: 25,
+                backgroundColor: 'white',
+                justifyContent: 'center',
+                top: '350%',
+                right: '2300%'}}>
+                {this.moveSB(index)}
+                <Text style = {{textAlign: 'center'}}>SB</Text>
+  
+              </View>
+            </Animated.View>
+          </View>
+          )
         }
       }
 
       giveOutCards() {
-       
       return <View>
                 <View style = {{right: '390%', top: '75%'}}>
                   <Animated.View style = {this.state.playerCards.getLayout()}>
@@ -502,204 +359,211 @@ export default class GameSetting extends Component {
               </View>
       }
 
+      quitView(){
+        const { modalVisible } = this.state;
+        return(
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible} 
+        >
+          <View style = {styles.centeredView}>
+            <View style = {styles.modalView}>
+              
+              <Text style = {{padding: 5}}>Are you sure you want to leave</Text>
+              
+              <TouchableOpacity
+                style={styles.buttonInExit}
+                onPress={() => {
+                  this.setModalVisible(!modalVisible)
+                }}
+                >
+                  <Text style={ styles.exitStyle } >NO</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={styles.buttonInExit}
+                onPress={() => {
+                  this.props.navigation.navigate('LandingPage')
+                  ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+                  this.setModalVisible(!modalVisible)
+                }}
+              >
+                <Text style={ styles.exitStyle }>YES</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        )
+      }
+
+      raiseView(){
+        const {raiseVisible} = this.state;
+        return (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={raiseVisible}
+        >
+          <View style = {styles.centeredView}>
+              <View style = {styles.modalView}>
+                <Text style = {{padding: 0, fontWeight: 'bold'}}>RAISE</Text>
+                <TextInput style = 
+                {{fontSize: 20, padding: 10}} 
+                placeholder="0"
+                keyboardType = {'number-pad'}
+                disableFullscreenUI = {true}
+                />
+
+                <TouchableOpacity
+                style={styles.buttonInExit}
+                onPress={() => {
+                  //this.raiseAnimation()
+                  this.setRaiseVisible(!raiseVisible);
+                }}
+                >
+                  <Text style = {{fontWeight: 'bold'}}>APPLY</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.buttonInExit}
+                  onPress={() => {
+                    this.setRaiseVisible(!raiseVisible);
+                  }}
+                >
+                  <Text style={ styles.exitStyle }>CANCEL</Text>
+                </TouchableOpacity>
+              </View>
+          </View>
+        </Modal>
+        )
+      }
+
+      actionsView(){
+        return (
+          <View style={styles.bettingButtonsView}>
+              
+              {this.raiseView()}
+
+              <TouchableOpacity style={[styles.bettingButtons, styles.raiseButt]}
+              onPress={() => this.setRaiseVisible(true)}
+              >
+                <Text>Raise</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={[styles.bettingButtons, styles.callButt]}>
+                <Text>Call</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={[styles.bettingButtons, styles.foldButt]} onPress = {() => this.foldCard()}>
+                <Text>Fold</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={[styles.bettingButtons, {backgroundColor:"#D6A2E8"}]}>
+                <Text>Check</Text>
+              </TouchableOpacity>
+
+            </View>
+        )
+      }
      
     
     render() { 
-        
-        const { modalVisible } = this.state;
-        const {raiseVisible} = this.state;
         return (  
-            <View style = {styles.container}>
-                <StatusBar hidden/>
-
-                    <Modal
-                      animationType="slide"
                       transparent={true}
-                      visible={modalVisible}
-                      
-                    >
-                        <View style = {styles.centeredView}>
-                            <View style = {styles.modalView}>
-                              <Text style = {{padding: 5}}>Are you sure you want to leave</Text>
-                                <TouchableOpacity
-                                style={styles.buttonInExit}
-                                onPress={() => {
-                                  this.setModalVisible(!modalVisible)
-                                }}
-                                >
-                                <Text style={ styles.exitStyle } >NO</Text>
-                                </TouchableOpacity>
-                                <View style = {{padding: 5}}></View>
-                                <TouchableOpacity
-                                  style={styles.buttonInExit}
-                                  onPress={() => {
-                                  this.props.navigation.navigate('LandingPage')
-                                  ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-                                  this.setModalVisible(!modalVisible);
-                                  }}
-                                >
-                                    <Text style={ styles.exitStyle }>YES</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </Modal>
-                    <View>
-                    <TouchableOpacity
-                      style={[styles.button, styles.buttonOpen]}
-                      onPress={() => this.setModalVisible(true)}
-                    >
-                      <Text style ={styles.textStyle} >EXIT</Text>
-                    </TouchableOpacity>
-                    </View>
-               
-                <View>
-                  <View style={styles.webcam2}>
-                      <Text>Webcam 2</Text> 
-                  </View> 
-                </View>
+          <View style = {styles.container}>
+            {/*<StatusBar hidden/>*/}
 
-                <View style={styles.webcam1}>
-                    <Text>Webcam 1</Text> 
-                </View>
-                
-                
-                <View style={styles.tableView}>
-                  <Image  style = {styles.tableView}
-                  source = {require('../../../assets/pokertable.png')}
-                  />
-               </View>
+            {this.quitView()}
 
-                <View>
-                  <View style={styles.webcam3}>
-                      <Text>Webcam 3</Text> 
-                  </View>
-                </View>
-                
-              
-                <View style={styles.potView}>
-                  <Image style = {{   
-                      width: 50, 
-                      height:50,
-                      resizeMode: 'contain',
-                      }}
-                      source={require('../../../assets/table.png')}
-                  />
-                   
-                  <Text style = {{ fontSize: 20 ,fontWeight: 'bold',color: 'white'}}>
-                      Pot: $420
-                  </Text>
-                </View>
-                
-                
-                <View style={styles.webcam4}>
-                  <View>
-                      <Text>Webcam 4</Text> 
-                  </View>
-                </View>
-                
-
-                <View style={styles.bettingButtonsView}>
-                <Modal
-                      animationType="slide"
-                      transparent={true}
-                      visible={raiseVisible}
-                      
-                    >
-                        <View style = {styles.centeredView}>
-                            <View style = {styles.modalView}>
-                              <Text style = {{padding: 0, fontWeight: 'bold'}}>RAISE</Text>
-                              <TextInput style = 
-                              {{fontSize: 20, padding: 10}} 
-                              placeholder="0"
-                              keyboardType = {'number-pad'}
-                              disableFullscreenUI = {true}
-                              >
-                              </TextInput>
-
-                                <TouchableOpacity
-                                style={styles.buttonInExit}
-                                onPress={() => {
-                                  //this.raiseAnimation()
-                                  this.setRaiseVisible(!raiseVisible);
-                                }}
-                                >
-                                <Text style = {{fontWeight: 'bold'}}>APPLY</Text>
-                                </TouchableOpacity>
-                                <View style = {{padding: 5}}></View>
-                                <TouchableOpacity
-                                  style={styles.buttonInExit}
-                                  onPress={() => {
-                                    this.setRaiseVisible(!raiseVisible);
-                                  }}
-                                >
-                                    <Text style={ styles.exitStyle }>CANCEL</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </Modal>
-                  <TouchableOpacity style={[styles.bettingButtons, styles.raiseButt]}
-                  onPress={() => this.setRaiseVisible(true)}
-                  >
-                    <Text>Raise</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity style={[styles.bettingButtons, styles.callButt]}>
-                    <Text>Call</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity style={[styles.bettingButtons, styles.foldButt]} onPress = {() => this.foldCard()}>
-                    <Text>Fold</Text>
-                  </TouchableOpacity>
-
-
-                  <TouchableOpacity style={[styles.bettingButtons, {backgroundColor:"#D6A2E8"}]}>
-                    <Text>Check</Text>
-                  </TouchableOpacity>
-
-                </View>
-
-
-                <View style = {styles.dealer}>
-                  <Image style = {styles.dealer}
-                    
-                  source = {require('../../../assets/cards.png')}
-                  />
-                </View>
-
-                <View style={styles.chat}>
-                <View>
-                    <Text>Chat</Text> 
-                </View>
-                </View>
-                
-                <View style={styles.chipView}>
-                  <Image
-                    style = {{
-                    width: 40, 
-                    height:40,
-                    resizeMode: 'contain',
-                    }}
-                    source={require('../../../assets/chipAmount.png')}
-                  /> 
-                  <Text style = {{ fontSize: 20, fontWeight: 'bold' }}>
-                    100
-                  </Text> 
-                </View>
-                
-                {this.transitionBlinds()}
-
-               <CardDealing></CardDealing>
-
-               <View style = {styles.foldContainer}>
-                    <Animated.View style = {[styles.foldCard, this.state.valueFoldCard.getLayout()]}>
-                      <Image style = {styles.cardImage} source = {require("../../../assets/deckOfCards/PNG/♥J.png")}/>
-                    </Animated.View>
-               </View>
-
-                {this.giveOutCards()}
-              
-                
+            <View>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonOpen]}
+                onPress={() => this.setModalVisible(true)}
+              >
+                <Text style ={styles.textStyle} >EXIT</Text>
+              </TouchableOpacity>
             </View>
+
+            <View style={styles.webcam1}>
+                <Text>Webcam 1</Text> 
+            </View>
+
+            <View>
+              <View style={styles.webcam2}>
+                  <Text>Webcam 2</Text> 
+              </View>
+            </View>
+            
+
+            <Image  style = {styles.tableView}
+              source = {require('../../../assets/pokertable.png')}
+            />
+
+            <View>
+              <View style={styles.webcam3}>
+                  <Text>Webcam 3</Text> 
+              </View>
+            </View>    
+            
+            <View style={styles.potView}>
+              <Image style = {{   
+                  width: 50, 
+                  height:50,
+                  resizeMode: 'contain',
+                  }}
+                  source={require('../../../assets/table.png')}
+              />
+                
+              <Text style = {{ fontSize: 20 ,fontWeight: 'bold',color: 'white'}}>
+                  Pot: $420
+              </Text>
+            </View>
+                
+                
+            <View style={styles.webcam4}>
+              <Text>Webcam 4</Text> 
+            </View>
+                
+
+            {this.actionsView()}
+
+            <View style = {styles.dealer}>
+              <Image style = {styles.dealer}
+              source = {require('../../../assets/cards.png')}
+              />
+            </View>
+
+            <View style={styles.chat}>
+              <Text>Chat</Text> 
+            </View>
+                
+            <View style={styles.chipView}>
+              <Image
+                style = {{
+                width: 40, 
+                height:40,
+                resizeMode: 'contain',
+                }}
+                source={require('../../../assets/chipAmount.png')}
+              /> 
+              <Text style = {{ fontSize: 20, fontWeight: 'bold' }}>
+                100
+              </Text> 
+            </View>
+                
+            {this.transitionBlinds()}
+
+            <CardDealing></CardDealing>
+
+            <View style = {styles.foldContainer}>
+              <Animated.View style = {[styles.foldCard, this.state.valueFoldCard.getLayout()]}>
+                <Image style = {styles.cardImage} source = {require("../../../assets/deckOfCards/PNG/♥J.png")}/>
+              </Animated.View>
+            </View>
+
+            {this.giveOutCards()}
+          </View>
 
          );
     }
@@ -707,6 +571,11 @@ export default class GameSetting extends Component {
  
 
 const styles = StyleSheet.create({
+    exitButton2: {
+      alignSelf:'center',
+      flex: 1
+      //width: 'auto',
+    },
     container: {
         flex: 1,
         backgroundColor: '#2ecc71',
@@ -749,14 +618,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     dealer: {
-        width: 150, 
-        height:150,
+        width: 125, 
+        height:125,
         resizeMode: 'contain',
         bottom: '0%',
         left: '35%',
-        position: 'absolute',
-        //Change zIndex to have cards behind hand
-        zIndex: 1
+        position: 'absolute'
     },
     textStyle:{
         color: '#FFFFFF',
@@ -788,7 +655,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         backgroundColor:"#778899",
         top: "35%",
-        left: "1%",
+        left: "1%"
     },
       webcam2:{
         borderRadius: 2,
@@ -845,7 +712,7 @@ const styles = StyleSheet.create({
          width: 400,
          height: 400,
          resizeMode: 'contain',
-         bottom: '4%',
+         bottom: '5%',
          right: '4%',
      },
      chat:{
