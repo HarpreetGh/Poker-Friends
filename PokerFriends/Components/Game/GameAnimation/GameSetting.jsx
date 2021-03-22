@@ -10,7 +10,9 @@ import CardDealing from './cardDealing'
 
 
 export default class GameSetting extends Component {
-    state = { 
+  constructor(props){
+    super(props)
+    this.state = { 
         animationBB: [ new Animated.Value(0), 
           new Animated.ValueXY({x:185, y:0}), 
           new Animated.ValueXY({x: 400, y: 80}), 
@@ -32,25 +34,39 @@ export default class GameSetting extends Component {
           {x:0, y:0},
         ],
 
-
         valueFoldCard: new Animated.ValueXY({x: 25, y: 25}),
-        valueFoldCard: new Animated.ValueXY({x: 25, y: 25}),
-        playerCards: new Animated.ValueXY({x:0, y:0}),
-        playerCards2: new Animated.ValueXY({x:0, y:0}),
-        playerCards3: new Animated.ValueXY({x:0, y:0}),
-        playerCards4: new Animated.ValueXY({x:0, y:0}),
-        playerCards5: new Animated.ValueXY({x:0, y:0}),
-        playerCards6: new Animated.ValueXY({x:0, y:0}),
-        playerCards7: new Animated.ValueXY({x:0, y:0}),
-        playerCards8: new Animated.ValueXY({x:0, y:0}),
+        playerCardAnimations: [new Animated.ValueXY({x:0, y:0}), 
+          new Animated.ValueXY({x:0, y:0}),
+          new Animated.ValueXY({x:0, y:0}),
+          new Animated.ValueXY({x:0, y:0}),
+          new Animated.ValueXY({x:0, y:0}),
+          new Animated.ValueXY({x:0, y:0}),
+          new Animated.ValueXY({x:0, y:0}),
+          new Animated.ValueXY({x:0, y:0}),
+        ],
 
+        playerNewValues: [ 
+          {x:-350, y:-45},
+          {x:-320, y:-45},
+          {x:-290, y:-270},
+          {x:-260, y:-270},
+          {x:150, y:-270},
+          {x:120, y:-270},
+          {x:320, y:-35},
+          {x:290, y:-35},
+        ],
 
         modalVisible: false,
         raiseVisible: false,
         fiveCardsFin: 4,
 
-        matchID: "public/match",
-        game:{
+        matchName: this.props.matchName,
+        matchType: this.props.matchType,
+        game: this.props.game,
+        myCards: this.props.myCards,
+
+        example_matchName: "public/match",
+        example_game:{
           balance: [0,0,0,0],
           board: ["♣2", "♦5", "♥10", "♠A", "♣J"],
           deck: ["♠A", "♣J"],
@@ -64,8 +80,10 @@ export default class GameSetting extends Component {
           pause: false,
           turn: 3,
           round: 2,
-        }
+        },
+        example_myCards: []
       };
+  }
 
       foldCard() {
         Animated.timing(this.state.valueFoldCard, {
@@ -91,75 +109,7 @@ export default class GameSetting extends Component {
          }).start();
        }
 
-       movePlayer1Cards() {
-        Animated.timing(this.state.playerCards, {
-          toValue:{x:-350, y:-45},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-
-      }
-      
-      movePlayer1_2ndCards() {
-        Animated.timing(this.state.playerCards2, {
-          toValue:{x:-320, y:-45},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-
-      }
-
-      movePlayer2Cards() {
-        Animated.timing(this.state.playerCards3, {
-          toValue:{x:-290, y:-270},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
         
-      }
-      movePlayer2_2ndCards() {
-        Animated.timing(this.state.playerCards4, {
-          toValue:{x:-260, y:-270},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-        
-      }
-
-      movePlayer3Cards() {
-        Animated.timing(this.state.playerCards5, {
-          toValue:{x:150, y:-270},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-        
-      }
-      movePlayer3_2ndCards() {
-        Animated.timing(this.state.playerCards6, {
-          toValue:{x:120, y:-270},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-        
-      }
-
-      movePlayer4Cards() {
-        Animated.timing(this.state.playerCards7, {
-          toValue:{x:320, y:-35},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-        
-      }
-      movePlayer4_2ndCards() {
-        Animated.timing(this.state.playerCards8, {
-          toValue:{x:290, y:-35},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-        
-      }
-      
 
  
       setModalVisible = (visible) => {
@@ -305,58 +255,21 @@ export default class GameSetting extends Component {
         }
       }
 
-      giveOutCards() {
-      return <View>
-                <View style = {{right: '390%', top: '75%'}}>
-                  <Animated.View style = {this.state.playerCards.getLayout()}>
-                    <CardDealing>{this.movePlayer1Cards()}</CardDealing>
-                  </Animated.View>
-                </View>
+      cardDeal(suit,value,i) {
+        return (<View style = {{right: '390%', top: '75%'}}>
+          <Animated.View style = {this.state.playerCardAnimations[i].getLayout()}>
+            <CardDealing suit={suit} value={value}>{this.movePlayerCards(i)}</CardDealing>
+          </Animated.View>
+        </View>
+        )
+      }
 
-                <View style = {{right: '390%', top: '75%'}}>
-                  <Animated.View style = {this.state.playerCards2.getLayout()}>
-                    <CardDealing>{this.movePlayer1_2ndCards()}</CardDealing>
-                  </Animated.View> 
-                  
-                </View>
-                <View style = {{right: '390%', top: '75%'}}>
-                  <Animated.View style = {this.state.playerCards3.getLayout()}>
-                    <CardDealing>{this.movePlayer2Cards()}</CardDealing>
-                  </Animated.View>
-                </View>
-
-                <View style = {{right: '390%', top: '75%'}}>
-                  <Animated.View style = {this.state.playerCards4.getLayout()}>
-                    <CardDealing>{this.movePlayer2_2ndCards()}</CardDealing>
-                  </Animated.View> 
-                  
-                </View>
-                <View style = {{right: '390%', top: '75%', zIndex: 1}}>
-                  <Animated.View style = {this.state.playerCards5.getLayout()}>
-                    <CardDealing>{this.movePlayer3Cards()}</CardDealing>
-                  </Animated.View>
-                </View>
-
-                <View style = {{right: '390%', top: '75%'}}>
-                  <Animated.View style = {this.state.playerCards6.getLayout()}>
-                    <CardDealing>{this.movePlayer3_2ndCards()}</CardDealing>
-                  </Animated.View> 
-                </View>
-
-                <View style = {{right: '390%', top: '75%', zIndex: 1}}>
-                  <Animated.View style = {this.state.playerCards7.getLayout()}>
-                    <CardDealing>{this.movePlayer4Cards()}</CardDealing>
-                  </Animated.View>
-                </View>
-
-                <View style = {{right: '390%', top: '75%'}}>
-                  <Animated.View style = {this.state.playerCards8.getLayout()}>
-                    <CardDealing>{this.movePlayer4_2ndCards()}</CardDealing>
-                  </Animated.View> 
-                </View>
-               
-
-              </View>
+      movePlayerCards(card) {
+        Animated.timing(this.state.playerCardAnimations[card], {
+          toValue: this.state.playerNewValues[card],
+          duration: 1000,
+          useNativeDriver: false
+        }).start();
       }
 
       quitView(){
@@ -470,7 +383,6 @@ export default class GameSetting extends Component {
     
     render() { 
         return (  
-                      transparent={true}
           <View style = {styles.container}>
             {/*<StatusBar hidden/>*/}
 
@@ -481,7 +393,7 @@ export default class GameSetting extends Component {
                 style={[styles.button, styles.buttonOpen]}
                 onPress={() => this.setModalVisible(true)}
               >
-                <Text style ={styles.textStyle} >EXIT</Text>
+                <Text style ={styles.textStyle}>EXIT</Text>
               </TouchableOpacity>
             </View>
 
@@ -554,15 +466,17 @@ export default class GameSetting extends Component {
                 
             {this.transitionBlinds()}
 
-            <CardDealing></CardDealing>
-
             <View style = {styles.foldContainer}>
               <Animated.View style = {[styles.foldCard, this.state.valueFoldCard.getLayout()]}>
                 <Image style = {styles.cardImage} source = {require("../../../assets/deckOfCards/PNG/♥J.png")}/>
               </Animated.View>
             </View>
 
-            {this.giveOutCards()}
+          
+            <View>
+              {this.state.myCards.map((card,i)=> this.cardDeal(card.suit, card.value, i))}
+            </View>
+
           </View>
 
          );

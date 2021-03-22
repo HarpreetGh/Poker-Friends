@@ -50,6 +50,7 @@ export default class Register extends Component {
       wins: 0,
       chips_lost: 0,
       chips_won: 0,
+      in_game: ''
     });
   }
 

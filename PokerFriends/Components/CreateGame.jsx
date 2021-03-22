@@ -2,12 +2,14 @@ import React, { Component, useState } from 'react'
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, Touchable } from 'react-native';
 import Logo from './Logo';
 import firebase from 'firebase'
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 export default class CreateGame extends Component {
   constructor(props){
     super(props)
     this.state = {
-      name: ''
+      name: '',
+      buyIn: ''
     }
   }
   /*
@@ -21,19 +23,41 @@ export default class CreateGame extends Component {
   */
 
   createGame(type){
+    console.log('create game triggered')
+    var user = firebase.auth().currentUser;
+    //var username = user.displayName.slice(0, user.displayName.indexOf('#'))
+    var username = user.displayName
+    
     var d = new Date
-    firebase.database().ref('games/' + type + 'match-' + this.name + d.getTime()).set({
-      balance: [0],
+    var matchName = type + '_' + this.state.name +"-"+ d.getTime();
+
+    firebase.database().ref('games/' + type + '/' + matchName).set({
+      balance: [this.state.buyIn],
       board: [''],
+      buyIn: Number(this.state.buyIn),
       deck: [''],
       move: [''],
-      phase: 0,
-      player_cards: [{rank: 0, card: ['']}],
+      pause: true,
+      turn: 0,
+      player_cards: [{rank: 0, cards: ['']}],
+      players: [username],
       pot: 0,
       ready: [false],
       round: 0,
       size: 1,
     });
+    
+    if(type === 'public'){
+      firebase.database().ref('games/list/' + matchName).set({
+        size:1
+      }); 
+    }
+
+    var updates = {};
+    updates['/users/'+ user.uid +'/in_game'] = matchName;
+    firebase.database().ref().update(updates);
+
+    console.log('create game finished')
   }
 
   render(){
@@ -55,10 +79,22 @@ export default class CreateGame extends Component {
                 value={this.state.name}
             />
 
+            <TextInput
+                placeholder="Buy In"
+                placeholderTextColor="rgba(255, 255, 255, 0.75)"
+                returnKeyType="next"
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType='number-pad'
+                style={styles.input}
+                onChangeText={text => this.setState({buyIn: text})}
+                value={this.state.buyIn}
+            />
+
             <TouchableOpacity style={styles.buttonContainer}
               onPress={() => {
-                this.createGame('public/')
-                this.props.navigation.navigate('GameSetting')
+                this.createGame('public')
+                this.props.navigation.navigate('GameController')
                 ScreenOrientation.lockAsync
                 (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT)  
               }}>
@@ -67,8 +103,8 @@ export default class CreateGame extends Component {
 
             <TouchableOpacity style={styles.buttonContainer}
               onPress={() => {
-                this.createGame('private/')
-                this.props.navigation.navigate('GameSetting')
+                this.createGame('private')
+                this.props.navigation.navigate('GameController')
                 ScreenOrientation.lockAsync
                 (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT)  
               }}>

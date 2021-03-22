@@ -29,7 +29,7 @@ export default class LandingPage extends Component {
         <TouchableOpacity 
           style={styles.button}
           onPress = {() => {
-            this.props.navigation.navigate('GameSetting'); 
+            this.props.navigation.navigate('GameController'); ///// 'GameSetting'
             ScreenOrientation.lockAsync
             (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
           }}
@@ -89,7 +89,7 @@ export default class LandingPage extends Component {
             <View style={styles.flexContainer}>
               {this.props.LoggedIn? (this.AccountSettings()):(<Text></Text>)}
 
-              <Balance/>
+              {/*<Balance/>*/}
             </View>
             
             <Logo/>

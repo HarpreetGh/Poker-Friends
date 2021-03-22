@@ -8,6 +8,7 @@ import Register from '../PokerFriends/Components/Register';
 import Login from './Components/Login'
 import ForgotPassword from './Components/Account-Settings/ForgotPassword'
 import GameSetting from './Components/Game/GameAnimation/GameSetting'
+import GameController from './Components/Game/GameController'
 import AccountSettings from './Components/AccountSettings';
 import ChangeUsername from './Components/Account-Settings/ChangeUsername';
 import ChangeEmail from './Components/Account-Settings/ChangeEmail';
@@ -44,6 +45,7 @@ export default class App extends Component {
           
           <Stack.Screen name = "FriendsList" component = {FriendsList}/>
           <Stack.Screen name = "GameSetting" component = {GameSetting}/>
+          <Stack.Screen name = "GameController" component = {GameController}/>
           <Stack.Screen name = "CreateGame" component = {CreateGame}/>
           
           <Stack.Screen name = "AccountSettings">
