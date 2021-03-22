@@ -43,6 +43,7 @@ export default class GameSetting extends Component {
         playerCards6: new Animated.ValueXY({x:0, y:0}),
         playerCards7: new Animated.ValueXY({x:0, y:0}),
         playerCards8: new Animated.ValueXY({x:0, y:0}),
+        fadeAnimation: new Animated.Value(0),
        
 
 
@@ -50,7 +51,9 @@ export default class GameSetting extends Component {
         raiseVisible: false,
 
         fiveCardsFin: 0,
-        playerCardsGiven: 1 
+        playerCardsGiven: 1,
+        gamePot: 0,
+        raiseAmount: 0
       };
 
       foldCard() {
@@ -199,10 +202,29 @@ export default class GameSetting extends Component {
         }).start();
         
       }
-   
-      
 
- 
+      
+      fadeIn() {
+        Animated.timing(this.state.fadeAnimation, {
+          toValue: 1,
+          duration: 4000
+        }).start(() => this.fadeOut());
+
+      }
+
+      fadeOut() {
+        Animated.timing(this.state.fadeAnimation, {
+          toValue: 0,
+          duration: 3000,
+        }).start();
+        
+      }
+    
+
+      raisePot() {
+        this.setState({gamePot: this.state.gamePot + Number(this.state.raiseAmount)});
+      }
+   
       setModalVisible = (visible) => {
         this.setState({ modalVisible: visible });
       }
@@ -586,15 +608,24 @@ export default class GameSetting extends Component {
                   />
                    
                   <Text style = {{ fontSize: 20 ,fontWeight: 'bold',color: 'white'}}>
-                      Pot: $420
+                      Pot: {this.state.gamePot}
                   </Text>
                 </View>
                 
-                
+
                 <View style={styles.webcam4}>
                   <View>
                       <Text>Webcam 4</Text> 
                   </View>
+                  <Animated.View
+                    style={[
+                      {
+                        opacity: this.state.fadeAnimation
+                      }
+                    ]}
+                  >
+                    <Text>testing</Text>
+                  </Animated.View>
                 </View>
                 
 
@@ -611,6 +642,10 @@ export default class GameSetting extends Component {
                               <TextInput style = 
                               {{fontSize: 20, padding: 10}} 
                               placeholder="0"
+                              value={this.state.raiseAmount}
+                              onChangeText={(raiseAmount) => { 
+                                this.setState({raiseAmount});
+                              }}
                               keyboardType = {'number-pad'}
                               disableFullscreenUI = {true}
                               >
@@ -621,6 +656,8 @@ export default class GameSetting extends Component {
                                 onPress={() => {
                                   //this.raiseAnimation()
                                   this.setRaiseVisible(!raiseVisible);
+                                  this.raisePot();
+                                  this.fadeIn();
                                 }}
                                 >
                                 <Text style = {{fontWeight: 'bold'}}>APPLY</Text>
@@ -817,7 +854,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         backgroundColor:"#778899",
         bottom: "45%",
-        right: "0%"
+        right: "0%",
+        alignContent: "center"
     },
     potView:{
         position: 'absolute',
