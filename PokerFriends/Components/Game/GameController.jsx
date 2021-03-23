@@ -23,7 +23,7 @@ export default class GameSetting extends Component {
       matchType:'', 
       game: {},
       myCards: [],
-      playerNum: 5, //fake value
+      playerNum: 0, //fake value
       
       deck: [],
       user: {},
@@ -32,33 +32,52 @@ export default class GameSetting extends Component {
       ready: false,
     };
 
-    var user = firebase.auth().currentUser;
-    this.getUserData(user.uid); //Also gets Game Data
-
+    //this.gameData(this.state.matchType, this.state.fullMatchName)
   }
 
-  getUserData(userID){
-    firebase.database().ref('/users/' + userID).once('value').then((snapshot) => {
+  componentDidMount(){
+    this.getData();
+    //this.gameData(matchData[0], matchData[1]);
+  }
+  /*componentWillUnmount(){
+
+  }*/
+
+  async getData(){
+    var user = firebase.auth().currentUser;
+    console.log('getData')
+    //const a = await this.getUserData(user.uid)
+    //const b = await this.getGameData(this.state.matchType,this.state.fullMatchName)
+
+    const userData = await firebase.database().ref('/users/' + user.uid).once('value').then(async (snapshot) => {
       this.setState({user: snapshot.val()})
       
       const fullMatchName = snapshot.val().in_game
       var indexOfType = fullMatchName.indexOf('_')
       const matchType = fullMatchName.substring(0, indexOfType)
-      
-      this.setState({fullMatchName: fullMatchName})
-      this.setState({matchType: matchType})
-      this.setState({matchName: fullMatchName.substring(indexOfType+1)})
-      this.getGameData(matchType, fullMatchName)
+      return [fullMatchName, matchType, fullMatchName.substring(indexOfType+1), snapshot.val()]
     });
+    this.setState({fullMatchName: userData[0]})
+    this.setState({matchType: userData[1]})
+    this.setState({matchName: userData[2]})
+    this.setState({user: userData[3]})
+
+    this.gameData(userData[1], userData[0])
+  }
+  
+  fail(){
+    console.log('faill')
   }
 
-  getGameData(matchType, matchName){
+  async gameData(matchType, matchName){
+    console.log(matchType, matchName)
     firebase.database().ref('/games/'+ matchType + '/' + matchName).on('value', (snapshot) => {
-      this.setState({game: snapshot.val()})
-      //console.log(this.state.game)
+      const data =  snapshot.val()
+      this.setState({game: data}) 
+      console.log('game update recieved')
       
-      this.checkHost()
-    });
+      this.checkHost(data)
+    })
   }
 
   setupCards(){
@@ -84,33 +103,39 @@ export default class GameSetting extends Component {
     //firebase.database().ref().update(updates);
   }
 
-  checkHost(){
-    var playerNum = this.state.game.players.indexOf(this.state.user.username)
-    if(playerNum == 0){
-      this.setState({host: true})
+  checkHost(game){
+    if(game.turn == 0){ 
+      //if it's the intial state of round check host
+      //so cards can be shuffled and other things
       
-      if(this.state.game.turn == 0){
+      var playerNum = game.players.indexOf(this.state.user.username)
+      if(playerNum == 0){
+        this.setState({host: true})
         this.shuffleCards()
         this.giveOutCards()
         var myCardHold = this.state.myCards[playerNum]
         //^ We do this here to avoid the auto fetch feature of firebase
         this.setupCards()
         this.setState({myCards: myCardHold})
+        /*
+        else{
+          this.setState({myCards: this.state.game.player_cards[playerNum].myCards})
+        }*/
+        //console.log("host is true");
       }
       else{
-        this.setState({myCards: this.state.game.player_cards[playerNum].myCards})
+        this.setState({host: false})
+        //this.setState({myCards: this.state.game.player_cards[playerNum].myCards})
+        //if we are not the host that means the cards have already been uploaded to DB
+
+        //console.log("host is false")
       }
-      //console.log("host is true");
+      
+      this.setState({playerNum: playerNum})
     }
     else{
-      this.setState({host: false})
-      this.setState({myCards: this.state.game.player_cards[playerNum].myCards})
-      //if we are not the host that means the cards have already been uploaded to DB
-
-      //console.log("host is false")
+      this.setState({myCards: game.player_cards[this.state.playerNum].myCards})
     }
-    
-    this.setState({playerNum: playerNum})
     this.setState({ready: true})
   }
 
