@@ -1,8 +1,10 @@
 import 'react-native-gesture-handler';
 import React, { Component, useState, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, StatusBar } from 'react-native';
 import{NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack'
+
+
 import LandingPage from './Components/LandingPage'
 import Register from '../PokerFriends/Components/Register';
 import Login from './Components/Login'
@@ -12,6 +14,8 @@ import AccountSettings from './Components/AccountSettings';
 import ChangeUsername from './Components/Account-Settings/ChangeUsername';
 import ChangeEmail from './Components/Account-Settings/ChangeEmail';
 import DeleteAccount from './Components/Account-Settings/DeleteAccount';
+import AccountStats from './Components/AccountStats'
+
 import * as firebase from 'firebase';
 import 'firebase/auth'
 
@@ -46,6 +50,7 @@ export default class App extends Component {
   render(){ 
     return (
       <NavigationContainer>
+        
         <Stack.Navigator  screenOptions={{headerShown: false}}>
           <Stack.Screen name = "LandingPage">
             {(props) => <LandingPage {...props} LoggedIn={this.state.LoggedIn}/>}
@@ -63,6 +68,7 @@ export default class App extends Component {
           <Stack.Screen name = "ChangeEmail" component = {ChangeEmail}/>
           <Stack.Screen name = "ForgotPassword" component = {ForgotPassword}/>
           <Stack.Screen name = "DeleteAccount" component = {DeleteAccount}/>
+          <Stack.Screen name = "AccountStats" component = {AccountStats}/>
         </Stack.Navigator>
       </NavigationContainer>
     );
