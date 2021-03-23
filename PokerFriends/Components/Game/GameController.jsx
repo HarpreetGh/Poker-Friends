@@ -80,29 +80,6 @@ export default class GameSetting extends Component {
     })
   }
 
-  setupCards(){
-    var playerCards = this.state.myCards.map((cards) => {
-      var obj = {
-        rank: 10,
-        myCards: cards
-      } 
-      return obj
-    })
-    //example output: [{rank: 10, myCards: [Card, Card]}, {rank: 10, myCards: [Card, Card]}]
-
-    var editGame = {...this.state.game}
-    editGame.player_cards = playerCards;
-    editGame.deck = this.state.deck;
-    this.setState({game: editGame})
-
-    var updates = {};
-    updates['/games/'+ this.state.matchType + '/' + this.state.fullMatchName + '/player_cards'] = playerCards;
-    updates['/games/'+ this.state.matchType + '/' + this.state.fullMatchName + '/deck'] = this.state.deck;
-    updates['/games/'+ this.state.matchType + '/' + this.state.fullMatchName + '/turn'] = 1;
-    
-    //firebase.database().ref().update(updates);
-  }
-
   checkHost(game){
     if(game.turn == 0){ 
       //if it's the intial state of round check host
@@ -112,15 +89,10 @@ export default class GameSetting extends Component {
       if(playerNum == 0){
         this.setState({host: true})
         this.shuffleCards()
-        this.giveOutCards()
-        var myCardHold = this.state.myCards[playerNum]
+        var cards = this.giveOutCards()
+        
+        this.setupCards(cards[0],cards[1])
         //^ We do this here to avoid the auto fetch feature of firebase
-        this.setupCards()
-        this.setState({myCards: myCardHold})
-        /*
-        else{
-          this.setState({myCards: this.state.game.player_cards[playerNum].myCards})
-        }*/
         //console.log("host is true");
       }
       else{
@@ -149,15 +121,41 @@ export default class GameSetting extends Component {
       playerDecks.push([gameDeck.cards.shift(), gameDeck.cards.shift()])
     }
     //output: [ [card, card], [card, card] ]
-    this.setState({myCards: playerDecks})
+    this.setState({myCards: playerDecks[0]})
+
+    var playerRanks = playerDecks.map((cards) => {
+      var obj = {
+        rank: 10,
+        myCards: cards
+      } 
+      return obj
+    })
+    //example output: [{rank: 10, myCards: [Card, Card]}, {rank: 10, myCards: [Card, Card]}]
+
+    
 
     var deck = []
     for(var i = 0; i < 5; i++){
       deck.push(gameDeck.cards.shift())
     }
-    this.setState({deck: deck})
+    //this.setState({deck: deck})
+    return [playerRanks, deck]
   }
-  
+
+  setupCards(playerCards, deck){
+    var editGame = {...this.state.game}
+    editGame.player_cards = playerCards;
+    editGame.deck = deck;
+    this.setState({game: editGame})
+
+    var updates = {};
+    updates['/games/'+ this.state.matchType + '/' + this.state.fullMatchName + '/player_cards'] = playerCards;
+    updates['/games/'+ this.state.matchType + '/' + this.state.fullMatchName + '/deck'] = deck;
+    updates['/games/'+ this.state.matchType + '/' + this.state.fullMatchName + '/turn'] = 1;
+    
+    firebase.database().ref().update(updates);
+  }
+
   updateGame(newGameData){
     var currGame = this.state.game
 
