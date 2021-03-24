@@ -1,18 +1,29 @@
 import React, {Component} from 'react';
 import {View, Text, StyleSheet} from 'react-native'
+import firebase from 'firebase'
 
 
 
 export default class AccountStats extends Component {
-    state = {  }
-
+    
+    // constructor(props){
+    //     super(props)
+        
+    //     this.state = {
+    //       user: {}
+    //     }
+    //     var user = firebase.auth().currentUser;
+    //     firebase.database().ref('/users/' + user.uid).once('value').then((snapshot) => {
+    //     this.setState({user: snapshot.val()})
+    // });
+    //   }
 
 
     render() { 
         return ( 
         <View style = {styles.container}>
             <View>
-                <Text style = {styles.title}>"Players" Stats</Text>
+                <Text style = {styles.title}> Stats</Text>
             </View>
 
             <View>
@@ -48,14 +59,15 @@ const styles = StyleSheet.create({
         backgroundColor: '#2ecc71',
         alignItems: 'center',
         justifyContent: 'center',
+        
       },
       title:{
-        bottom: '600%',
+        bottom: '150%',
         fontSize: 25
       },
       StatHolder: {
         borderRadius: 50,
-
+        margin: 20,
         padding: 10,
         elevation: 2,
         backgroundColor: "#27ae60"

@@ -133,7 +133,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     padding: 10,
     elevation: 2,
-    backgroundColor: "#27ae60"
+    backgroundColor: "#27ae60",
+    top: '125%'
   },
   flexContainer:{
     flexDirection: 'row',
