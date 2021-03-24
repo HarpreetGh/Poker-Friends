@@ -50,6 +50,8 @@ export default class LandingPage extends Component {
           onPress = {() => LogOut()}>
               <Text style={styles.textStyle}>Log Out</Text>
         </TouchableOpacity>
+
+        
       </View>
     )
   }
@@ -82,6 +84,16 @@ export default class LandingPage extends Component {
     </View>
     )
   }
+  AccountStatistics = () => {
+    return(
+    <View >
+      <TouchableOpacity style = {styles.accountStatsButton} 
+        onPress = {() => this.props.navigation.navigate('AccountStats')}>
+          <Text style={styles.SettingtextStyle}>Account Stats</Text>
+      </TouchableOpacity>
+    </View>
+    )
+  }
     render(){    
         return (
           <View style={styles.container}>
@@ -95,6 +107,8 @@ export default class LandingPage extends Component {
             <Logo/>
 
             {this.props.LoggedIn? (this.SignedIn()):(this.SignedOut())}
+
+            {this.props.LoggedIn? (this.AccountStatistics()):(<Text>PLEASE LOG IN TO SEE STATS</Text>)}
 
             <View style={styles.flexContainer}>
               <HelpButton/>
@@ -124,6 +138,13 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     width:"100%",
     marginBottom: 20
+  },
+  accountStatsButton: {
+    borderRadius: 50,
+    padding: 10,
+    elevation: 2,
+    backgroundColor: "#27ae60",
+    top: '125%'
   },
   flexContainer:{
     flexDirection: 'row',
