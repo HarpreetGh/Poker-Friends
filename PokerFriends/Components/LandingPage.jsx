@@ -14,7 +14,6 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 const LogOut = () => {
   firebase.auth().signOut()
   .then(() => {
-    console.log('worked?')
   // Sign-out successful.
   }).catch((error) => {
     console.log(error)
@@ -23,18 +22,28 @@ const LogOut = () => {
 }
 
 export default class LandingPage extends Component {
+    
   SignedIn = () =>{
     return(
       <View>
         <TouchableOpacity 
           style={styles.button}
           onPress = {() => {
-            this.props.navigation.navigate('GameSetting'); 
+            this.props.navigation.navigate('GameController'); ///// 'GameSetting'
             ScreenOrientation.lockAsync
             (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
           }}
         >
           <Text style={styles.textStyle}>Play Game</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.button}
+          onPress = {() => {
+            this.props.navigation.navigate('CreateGame'); 
+          }}
+        >
+          <Text style={styles.textStyle}>Create Game</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.button} 
@@ -64,12 +73,13 @@ export default class LandingPage extends Component {
       </View>
     )
   }
+
   AccountSettings = () => {
     return(
     <View style={styles.SettingcornerView}>
       <TouchableOpacity style={styles.Settingbutton}
         onPress = {() => this.props.navigation.navigate('AccountSettings')}>
-          <Text style={styles.SettingtextStyle}>Account SETTINGS</Text>
+          <Text style={styles.SettingtextStyle}>Account Settings</Text>
       </TouchableOpacity>
     </View>
     )
@@ -91,7 +101,7 @@ export default class LandingPage extends Component {
             <View style={styles.flexContainer}>
               {this.props.LoggedIn? (this.AccountSettings()):(<Text></Text>)}
 
-              <Balance/>
+              {/*<Balance/>*/}
             </View>
             
             <Logo/>
@@ -102,7 +112,7 @@ export default class LandingPage extends Component {
 
             <View style={styles.flexContainer}>
               <HelpButton/>
-              <FriendsButton/>
+              <FriendsButton navigation = {this.props.navigation}/>
             </View>
 
           </View>

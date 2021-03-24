@@ -21,7 +21,7 @@ export default class DeleteAccount extends Component {
         this.props.navigation.navigate('LandingPage')
       })
       .catch(function(error) {
-        console.log(error)
+        Alert.alert("Error: ", "Please Log out, then Login again!")
       });
   }
     render(){
