@@ -39,11 +39,12 @@ export default class CreateGame extends Component {
       move: [''],
       pause: true,
       turn: 0,
+      turnStart: true,
       player_cards: [{rank: 0, cards: ['']}],
       players: [username],
       pot: 0,
       ready: [false],
-      round: 0,
+      round: 1,
       size: 1,
     });
     

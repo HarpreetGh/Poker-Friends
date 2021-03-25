@@ -79,43 +79,168 @@ export default class GameSetting extends Component {
       this.checkHost(data)
     })
   }
-
+  /*
   checkHost(game){
-    if(game.turn == 0){ 
-      //if it's the intial state of round check host
-      //so cards can be shuffled and other things
-      
-      var playerNum = game.players.indexOf(this.state.user.username)
-      if(playerNum == 0){
-        this.setState({host: true})
-        this.shuffleCards()
-        var cards = this.giveOutCards()
+    if(!this.state.host){
+      if(game.turn == 0){ 
+        //if it's the intial state of round check host
+        //so cards can be shuffled and other things
         
-        this.setupCards(cards[0],cards[1])
-        //^ We do this here to avoid the auto fetch feature of firebase
-        //console.log("host is true");
+        var playerNum = game.players.indexOf(this.state.user.username)
+        if(playerNum == 0){
+          this.setState({host: true})
+
+          this.shuffleCards()
+          var cards = this.giveOutCards()
+          this.setupCards(cards[0],cards[1])
+        }
+        else{
+          this.setState({host: false})
+        }
+        this.setState({playerNum: playerNum})
       }
       else{
-        this.setState({host: false})
-        //this.setState({myCards: this.state.game.player_cards[playerNum].myCards})
-        //if we are not the host that means the cards have already been uploaded to DB
-
-        //console.log("host is false")
+        this.setState({myCards: game.player_cards[this.state.playerNum].myCards})
       }
-      
-      this.setState({playerNum: playerNum})
     }
-    else{
-      this.setState({myCards: game.player_cards[this.state.playerNum].myCards})
+    this.setState({ready: true})
+
+  }
+  */
+ checkHost(game){
+    if(!this.state.host){
+      if(game.turn == 0){ 
+        var playerNum = game.players.indexOf(this.state.user.username)
+        this.setState({host: playerNum == 0})
+        this.setState({playerNum: playerNum})
+      }
+    }
+    this.gameTurnAction()
+  }
+
+  /*
+  turn = 0 //initial, shuffle cards and upload to database, 
+  turn = 1 //buy in phase and distrute cards to players
+  turn = 2 //place 3 cards on board, and players can fold/raise/check/call 
+  turn = 3 //place 4th card, bet
+  turn = 4 //place 5th card, bet
+  turn = 5 //show cards, last turn and winner takes pot. RESET turn to 0
+  */
+
+  gameTurnAction(){
+    //check if all players are ready, by seeing if any player is not ready
+    const allPlayersReady = !this.state.game.ready.includes(false)
+    const turnStart = this.state.game.turnStart
+    //check if start of game turn.
+
+    if(this.state.host){
+      var game = {...this.state.game}
+      var updates = {};
+      const matchPath = '/games/'+ this.state.matchType + '/' + this.state.fullMatchName
+
+      if(game.turn == 0){
+        var cards = this.giveOutCards()
+        game.player_cards = cards[0];
+        game.deck = cards[1];
+        game.turn++
+
+        updates[matchPath + '/player_cards'] = game.player_cards;
+        updates[matchPath + '/deck'] = game.deck;
+        updates[matchPath + '/turn'] = game.turn;
+      }
+
+      else if(game.turn == 1){
+        if(turnStart){
+          this.setState({myCards: game.player_cards[this.state.playerNum].myCards})
+          updates[matchPath + '/turnStart'] = false
+        }
+        else if(allPlayersReady){
+          game.turn++
+          updates[matchPath + '/turn'] = game.turn
+          updates[matchPath + '/ready'] = game.ready.fill(false)
+          updates[matchPath + '/turnStart'] = true
+        }
+      }
+
+      else if(1 < game.turn && game.turn < 5){ //game.turn 2,3,4
+        if(turnStart){
+          if(game.turn == 2){
+            console.log("1", game.deck)
+            game.board = game.deck.splice(0,3)
+            console.log('2', game.board, game.deck)
+          }
+          else{ //game.turn 3 and 4
+            game.board.push(game.deck.splice(0,1))
+          }
+          updates[matchPath + '/board'] = game.board
+          updates[matchPath + '/deck'] = game.deck
+          updates[matchPath + '/turnStart'] = false
+        }
+        else if(allPlayersReady){
+          game.turn++
+          updates[matchPath + '/turn'] = game.turn
+          updates[matchPath + '/ready'] = game.ready.fill(false)
+          updates[matchPath + '/turnStart'] = true
+        }
+      }
+
+      else{
+        //Figure out who won and give them pot
+        const roundWinner = this.findRoundWinner()
+        game.balance[roundWinner] += game.pot
+        game.round++
+        //game.turn = 0
+        //game.pot = 0
+       
+        updates[matchPath + '/turn'] = 0
+        updates[matchPath + '/ready'] = game.ready.fill(false)
+        updates[matchPath + '/balance'] = game.balance
+        updates[matchPath + '/round'] = game.round
+        updates[matchPath + '/pot'] = 0
+        updates[matchPath + '/turnStart'] = true
+      }
+
+      if(Object.keys(updates).length > 0){
+        firebase.database().ref().update(updates);
+      }
+    }
+    
+    else{ //all players but host
+      if(this.state.game.turn == 1 && turnStart){
+        this.setState({myCards: this.state.game.player_cards[this.state.playerNum].myCards})
+      }
     }
     this.setState({ready: true})
   }
 
-  shuffleCards(){
-    gameDeck.shuffle()
+  findRoundWinner(game){
+    var hands = game.player_cards.sort(function(a, b){return a.rank - b.rank}); //sorts from small to high
+    var highestRank = hands[0].rank
+
+    var indexOfHighestRanks = []
+    for(var i = 0; i < game.size; i++){
+      if(highestRank == game.player_cards[i].rank){
+        indexOfHighestRanks.push(i)
+      }
+    }
+
+    var roundWinner;
+    if(indexOfHighestRanks.length == 1){
+      roundWinner = indexOfHighestRanks[0]
+    }
+    else{
+      roundWinner = CompareCards(indexOfHighestRanks, game.player_cards)
+    }
+    return roundWinner
+  }
+
+  CompareCards(indexs, cards){
+
   }
 
   giveOutCards() {
+    gameDeck.shuffle()
+
     var playerDecks = []
     for(var i = 0; i < (this.state.game.size * 2); i+=2){
       playerDecks.push([gameDeck.cards.shift(), gameDeck.cards.shift()])
@@ -132,28 +257,12 @@ export default class GameSetting extends Component {
     })
     //example output: [{rank: 10, myCards: [Card, Card]}, {rank: 10, myCards: [Card, Card]}]
 
-    
-
     var deck = []
     for(var i = 0; i < 5; i++){
       deck.push(gameDeck.cards.shift())
     }
     //this.setState({deck: deck})
     return [playerRanks, deck]
-  }
-
-  setupCards(playerCards, deck){
-    var editGame = {...this.state.game}
-    editGame.player_cards = playerCards;
-    editGame.deck = deck;
-    this.setState({game: editGame})
-
-    var updates = {};
-    updates['/games/'+ this.state.matchType + '/' + this.state.fullMatchName + '/player_cards'] = playerCards;
-    updates['/games/'+ this.state.matchType + '/' + this.state.fullMatchName + '/deck'] = deck;
-    updates['/games/'+ this.state.matchType + '/' + this.state.fullMatchName + '/turn'] = 1;
-    
-    firebase.database().ref().update(updates);
   }
 
   updateGame(newGameData){
@@ -168,7 +277,9 @@ export default class GameSetting extends Component {
         updates[matchLocation + keys[i]] = newGameData[keys[i]];
       }
     }
-    firebase.database().ref().update(updates);
+    if(Object.keys(updates).length > 0){
+      firebase.database().ref().update(updates);
+    }
   }
     
   leaveGame(){ //When player wants leave game in progress

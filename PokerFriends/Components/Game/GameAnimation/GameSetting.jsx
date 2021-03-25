@@ -60,15 +60,18 @@ export default class GameSetting extends Component {
         raiseVisible: false,
         fiveCardsFin: 4,
 
-        matchName: this.props.matchName,
-        matchType: this.props.matchType,
-        game: this.props.game,
-        myCards: this.props.myCards,
+        /*
+        USE THESE PROPERTIES THAT ARE PASSED DOWN FROM GAMECONTROLLER
+        this.props.matchName,
+        this.props.matchType,
+        this.props.game,
+        this.props.myCards,
+        */
 
         example_matchName: "public/match",
         example_game:{
           balance: [0,0,0,0],
-          board: ["♣2", "♦5", "♥10", "♠A", "♣J"],
+          board: ["♣2", "♦5", "♥10"],
           deck: ["♠A", "♣J"],
           move: ["raise", "call", "fold", "call"],
           players: ["Abe#45", "Bob#89", "Alice#90", "Janet#02"],
@@ -398,12 +401,13 @@ export default class GameSetting extends Component {
             </View>
 
             <View style={styles.webcam1}>
-                <Text>Webcam 1</Text> 
+                <Text>Webcam 1</Text>
+                {/* {<Text>{this.props.game.players[0]}</Text>} */}
             </View>
 
             <View>
               <View style={styles.webcam2}>
-                  <Text>Webcam 2</Text> 
+                  <Text>Webcam 2</Text>
               </View>
             </View>
             
@@ -474,7 +478,7 @@ export default class GameSetting extends Component {
 
           
             <View>
-              {this.state.myCards.map((card,i)=> this.cardDeal(card.suit, card.value, i))}
+              {this.props.myCards.map((card,i)=> this.cardDeal(card.suit, card.value, i))}
             </View>
 
           </View>
