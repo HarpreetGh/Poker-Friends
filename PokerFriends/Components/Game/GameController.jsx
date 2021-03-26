@@ -107,6 +107,7 @@ export default class GameSetting extends Component {
 
   }
   */
+
  checkHost(game){
     if(!this.state.host){
       if(game.turn == 0){ 
@@ -230,6 +231,9 @@ export default class GameSetting extends Component {
     }
     else{
       roundWinner = CompareCards(indexOfHighestRanks, game.player_cards)
+      //index would be [0,3] or [1,2,3] or whatever amount of players have same # of cards
+      //game.player_cards is [{rank: 2, myCards: [Card, Card]}, {rank: 2, myCards: [Card, Card]}]
+      //Card = {suit: 'heart', value: '3', image: 'somefilepath'}
     }
     return roundWinner
   }
