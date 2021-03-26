@@ -170,7 +170,7 @@ export default class GameSetting extends Component {
             console.log('2', game.board, game.deck)
           }
           else{ //game.turn 3 and 4
-            game.board.push(game.deck.splice(0,1))
+            game.board.push(...game.deck.splice(0,1))
           }
           updates[matchPath + '/board'] = game.board
           updates[matchPath + '/deck'] = game.deck

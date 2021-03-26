@@ -12,82 +12,100 @@ import CardDealing from './cardDealing'
 export default class GameSetting extends Component {
   constructor(props){
     super(props)
-    this.state = { 
-        animationBB: [ new Animated.Value(0), 
-          new Animated.ValueXY({x:185, y:0}), 
-          new Animated.ValueXY({x: 400, y: 80}), 
-          new Animated.ValueXY({x: -225 , y: 75})
-        ],
-        animationSB: [ new Animated.ValueXY({x:0, y:0}),
-          new Animated.ValueXY({x: 225, y: -75}),
-          new Animated.ValueXY({x:415, y:-75}),
-          new Animated.ValueXY({x:625, y:0})
-        ],
-        newValueBB: [ 185, 
-          {x: 400, y: 80}, 
-          {x: -225 , y: 75}, 
-          {x: 0 , y: 0}
-        ],
-        newValueSB: [ {x: 225, y: -75}, 
-          {x:415, y:-75},
-          {x:625, y:0}, 
-          {x:0, y:0},
-        ],
+    this.state = {
+      animationBB: [
+        new Animated.Value(0),
+        new Animated.ValueXY({ x: 185, y: 0 }),
+        new Animated.ValueXY({ x: 400, y: 80 }),
+        new Animated.ValueXY({ x: -225, y: 75 }),
+      ],
+      animationSB: [
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 225, y: -75 }),
+        new Animated.ValueXY({ x: 415, y: -75 }),
+        new Animated.ValueXY({ x: 625, y: 0 }),
+      ],
+      newValueBB: [185, { x: 400, y: 80 }, { x: -225, y: 75 }, { x: 0, y: 0 }],
+      newValueSB: [
+        { x: 225, y: -75 },
+        { x: 415, y: -75 },
+        { x: 625, y: 0 },
+        { x: 0, y: 0 },
+      ],
 
-        valueFoldCard: new Animated.ValueXY({x: 25, y: 25}),
-        playerCardAnimations: [new Animated.ValueXY({x:0, y:0}), 
-          new Animated.ValueXY({x:0, y:0}),
-          new Animated.ValueXY({x:0, y:0}),
-          new Animated.ValueXY({x:0, y:0}),
-          new Animated.ValueXY({x:0, y:0}),
-          new Animated.ValueXY({x:0, y:0}),
-          new Animated.ValueXY({x:0, y:0}),
-          new Animated.ValueXY({x:0, y:0}),
+      valueFoldCard: new Animated.ValueXY({ x: 25, y: 25 }),
+      playerCardAnimations: [
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+      ],
+
+      tableCardsStart: [
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+      ],
+      tableCardsMove: [
+        { x: -145, y: -150 },
+        { x: -95, y: -150 },
+        { x: -45, y: -150 },
+        { x: 5, y: -150 },
+        { x: 55, y: -150 },
+      ],
+
+      playerNewValues: [
+        { x: -350, y: -45 },
+        { x: -320, y: -45 },
+        { x: -290, y: -270 },
+        { x: -260, y: -270 },
+        { x: 150, y: -270 },
+        { x: 120, y: -270 },
+        { x: 320, y: -35 },
+        { x: 290, y: -35 },
+      ],
+
+      modalVisible: false,
+      raiseVisible: false,
+      fiveCardsFin: 4,
+
+      // USE THIS STUFF
+      // this.props.matchName,
+      // this.props.matchType,
+      // this.props.game,
+      // this.props.myCards,
+
+      example_matchName: "public/match",
+      example_game: {
+        balance: [0, 0, 0, 0],
+        board: ["♣2", "♦5", "♥10"],
+        deck: ["♠A", "♣J"],
+        move: ["raise", "call", "fold", "call"],
+        players: ["Abe#45", "Bob#89", "Alice#90", "Janet#02"],
+        pot: 40,
+        ready: [true, false, true, false],
+        size: 4,
+        player_cards: [
+          { rank: 9, card: ["♠7", "♥9"] },
+          { rank: 2, card: ["♣3", "♦3"] },
+          { rank: 7, card: ["♥2", "♦8"] },
+          { rank: 5, card: ["♠6", "♦5"] },
         ],
-
-        playerNewValues: [ 
-          {x:-350, y:-45},
-          {x:-320, y:-45},
-          {x:-290, y:-270},
-          {x:-260, y:-270},
-          {x:150, y:-270},
-          {x:120, y:-270},
-          {x:320, y:-35},
-          {x:290, y:-35},
-        ],
-
-        modalVisible: false,
-        raiseVisible: false,
-        fiveCardsFin: 4,
-
-        /*
-        USE THESE PROPERTIES THAT ARE PASSED DOWN FROM GAMECONTROLLER
-        this.props.matchName,
-        this.props.matchType,
-        this.props.game,
-        this.props.myCards,
-        */
-
-        example_matchName: "public/match",
-        example_game:{
-          balance: [0,0,0,0],
-          board: ["♣2", "♦5", "♥10"],
-          deck: ["♠A", "♣J"],
-          move: ["raise", "call", "fold", "call"],
-          players: ["Abe#45", "Bob#89", "Alice#90", "Janet#02"],
-          pot: 40,
-          ready: [true, false, true, false],
-          size: 4,
-          player_cards: [{rank: 9, card: ["♠7", "♥9"]},{rank: 2, card: ["♣3", "♦3"]},
-            {rank: 7, card: ["♥2", "♦8"]},{rank: 5, card: ["♠6", "♦5"]}],
-          pause: false,
-          turn: 3,
-          round: 2,
-        },
-        example_myCards: []
-      };
+        pause: false,
+        turn: 3,
+        round: 2,
+      },
+      example_myCards: [],
+    };
   }
-
+  //Use state variable called round 1 = flop 2 = turn 3 = river
+      
       foldCard() {
         Animated.timing(this.state.valueFoldCard, {
           toValue: {x: -515, y: 375},
@@ -258,6 +276,37 @@ export default class GameSetting extends Component {
         }
       }
 
+      flopTurnRiver(suit,value, i){
+        return (
+          <View style = {{right: '390%', top: '75%'}}>
+            <Animated.View style = {this.state.tableCardsStart[i].getLayout()}>
+              <View style = {
+                {position: 'absolute',
+                  flex: 1,
+                  borderRadius: 2,
+                  alignItems: 'center',
+                  justifyContent:'center',
+                  paddingVertical: 15,
+                  paddingHorizontal: 15,
+                  backgroundColor:"white",}}
+              >
+                <Text>{suit}</Text>
+                <Text>{value}</Text>
+                {this.moveTableCards(i)}
+              </View>
+            </Animated.View>
+          </View>
+        )
+      }
+
+       moveTableCards(card){
+         Animated.timing(this.state.tableCardsStart[card], {
+           toValue: this.state.tableCardsMove[card],
+           duration: 1000,
+           useNativeDriver: false
+         }).start();
+       }
+
       cardDeal(suit,value,i) {
         return (<View style = {{right: '390%', top: '75%'}}>
           <Animated.View style = {this.state.playerCardAnimations[i].getLayout()}>
@@ -385,6 +434,8 @@ export default class GameSetting extends Component {
      
     
     render() { 
+      console.log(this.props.game.deck)
+      
         return (  
           <View style = {styles.container}>
             {/*<StatusBar hidden/>*/}
@@ -479,8 +530,15 @@ export default class GameSetting extends Component {
           
             <View>
               {this.props.myCards.map((card,i)=> this.cardDeal(card.suit, card.value, i))}
-            </View>
 
+              {/* {this.props.game.deck.map((card,i)=> this.flopTurnRiver(card.suit, card.value, i))} */}
+              
+              {this.props.game.board.map((card,i)=> this.flopTurnRiver(card.suit, card.value, i))}
+
+            </View>
+                  {/* {this.flop(this.props.game.deck.shift(),2,3)}
+                                {this.turn(1)}
+                                {this.river(1)} */}
           </View>
 
          );
