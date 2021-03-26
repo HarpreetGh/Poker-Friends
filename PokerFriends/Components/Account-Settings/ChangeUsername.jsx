@@ -7,31 +7,21 @@ import firebase from 'firebase'
 export default class ChangeUsername extends Component {
   constructor(props){
     super(props)
+    var user = firebase.auth().currentUser;
+    console.log(user.displayName)
     this.state = {
       newUsername: '',
-      oldUsername: ''
-    }
-    //this.GetUsername()
-  }
-/*
-   GetUsername () {
-    var user = firebase.auth().currentUser;
-    if (user != null) {
-      user.providerData.forEach(function(profile){
-        console.log(profile.displayName)
-        this.setState({oldUsername: profile.displayName})
-      });
+      oldUsername: user.displayName.slice(0, user.displayName.indexOf('#'))
     }
   }
-  */
 
   UpdateUsername(){
     var user = firebase.auth().currentUser;
     user.updateProfile({
-      displayName: this.state.newUsername
+      displayName: this.state.newUsername+"#"+user.uid
     })
     .then(() => {
-      Alert.alert("Username changed from: " + this.state.oldUsername + 
+      Alert.alert("Username changed", "From: " + this.state.oldUsername + 
         " to: " + this.state.newUsername)
       this.props.navigation.navigate('AccountSettings')
     })

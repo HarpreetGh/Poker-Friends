@@ -10,40 +10,24 @@ import {
 
 import Deck from '../../decks'
 
-const gameDeck = new Deck()
+export default class CardDealing extends Component {    
 
-
-
-export default class CardDealing extends Component {
-      
-        
-        playersDecks = [
-                    {
-                    card1: gameDeck.cards.shift(),
-                    }
-                ];
-
-      shuffleCards(){
-        gameDeck.shuffle()
-
+    UNSAFE_componentWillMount() {
+        this.animatedValue = new Animated.Value(0);
+        this.value = 0;
+        this.animatedValue.addListener(({value}) =>{
+            this.value = value;
+        })
+        this.frontInterpolate = this.animatedValue.interpolate({
+            inputRange: [0, 180],
+            outputRange: ['0deg', '180deg'],
+        })
+        this.backInterpolate = this.animatedValue.interpolate({
+            inputRange:[0,180],
+            outputRange: ['180deg', '360deg']
+        })
       }
 
-      UNSAFE_componentWillMount() {
-          this.animatedValue = new Animated.Value(0);
-          this.value = 0;
-          this.animatedValue.addListener(({value}) =>{
-              this.value = value;
-          })
-          this.frontInterpolate = this.animatedValue.interpolate({
-              inputRange: [0, 180],
-              outputRange: ['0deg', '180deg'],
-          })
-          this.backInterpolate = this.animatedValue.interpolate({
-              inputRange:[0,180],
-              outputRange: ['180deg', '360deg']
-          })
-
-      }
       flipCard() {
           if(this.value >= 90){
              Animated.spring(this.animatedValue, {
@@ -65,10 +49,6 @@ export default class CardDealing extends Component {
     
      
     render() {
-        console.log(gameDeck.cards.length)
-        this.shuffleCards()
-      
-        
          const frontAnimatedStyle = {
              transform: [
                  {rotateY: this.frontInterpolate}
@@ -79,6 +59,7 @@ export default class CardDealing extends Component {
                  {rotateY: this.backInterpolate}
              ]
          }
+         
         return (
             <View style = {styles.container}>
                 <View>
@@ -96,11 +77,8 @@ export default class CardDealing extends Component {
                             paddingHorizontal: 15,
                             backgroundColor:"white",}}>
 
-                            <Text>{this.playersDecks[0].card1.suit}</Text>
-                            <Text>{this.playersDecks[0].card1.value}</Text>
-                         
-                          
-                           
+                            <Text>{this.props.suit}</Text>
+                            <Text>{this.props.value}</Text>
                             
                         </View>
                     </Animated.View>

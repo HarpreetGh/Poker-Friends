@@ -1,15 +1,7 @@
 import React, { Component} from 'react';
-import { Text,
-         StyleSheet,
-         View,
-         TouchableOpacity,
-         StatusBar,
-         Image,
-         Modal,
-         TextInput,
-         BackHandler,
-         Alert,
-         Animated,
+import { Text, StyleSheet, View, TouchableOpacity,
+         StatusBar, Image, Modal, TextInput,
+         BackHandler, Alert, Animated, Dimensions
          } from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
@@ -17,921 +9,759 @@ import Deck from '../../decks'
 import CardDealing from './cardDealing'
 
 
-// const mydeck = new Deck()
-// mydeck.shuffle()
-// console.log(mydeck.cards)
-
-
 export default class GameSetting extends Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      animationBB: [
+        new Animated.Value(0),
+        new Animated.ValueXY({ x: 185, y: 0 }),
+        new Animated.ValueXY({ x: 400, y: 80 }),
+        new Animated.ValueXY({ x: -225, y: 75 }),
+      ],
+      animationSB: [
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 225, y: -75 }),
+        new Animated.ValueXY({ x: 415, y: -75 }),
+        new Animated.ValueXY({ x: 625, y: 0 }),
+      ],
+      newValueBB: [185, { x: 400, y: 80 }, { x: -225, y: 75 }, { x: 0, y: 0 }],
+      newValueSB: [
+        { x: 225, y: -75 },
+        { x: 415, y: -75 },
+        { x: 625, y: 0 },
+        { x: 0, y: 0 },
+      ],
 
+      valueFoldCard: new Animated.ValueXY({ x: 25, y: 25 }),
+      playerCardAnimations: [
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+      ],
 
-    state = { 
-        value1: new Animated.Value(0),
-        value2: new Animated.ValueXY({x:0, y:0}),
-        value3: new Animated.ValueXY({x:185, y:0}),
-        value4: new Animated.ValueXY({x: 225, y: -75}),
-        value5: new Animated.ValueXY({x: 400, y: 80}),
-        value6: new Animated.ValueXY({x:415, y:-75}),
-        value7: new Animated.ValueXY({x: -225 , y: 75}),
-        value8: new Animated.ValueXY({x:625, y:0}), 
-        valueFoldCard: new Animated.ValueXY({x: 25, y: 25}),
-        playerCards: new Animated.ValueXY({x:0, y:0}),
-        playerCards2: new Animated.ValueXY({x:0, y:0}),
-        playerCards3: new Animated.ValueXY({x:0, y:0}),
-        playerCards4: new Animated.ValueXY({x:0, y:0}),
-        playerCards5: new Animated.ValueXY({x:0, y:0}),
-        playerCards6: new Animated.ValueXY({x:0, y:0}),
-        playerCards7: new Animated.ValueXY({x:0, y:0}),
-        playerCards8: new Animated.ValueXY({x:0, y:0}),
-        fadeAnimation: new Animated.Value(0),
-       
+      tableCardsStart: [
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+        new Animated.ValueXY({ x: 0, y: 0 }),
+      ],
+      tableCardsMove: [
+        { x: -145, y: -150 },
+        { x: -95, y: -150 },
+        { x: -45, y: -150 },
+        { x: 5, y: -150 },
+        { x: 55, y: -150 },
+      ],
 
+      playerNewValues: [
+        { x: -350, y: -45 },
+        { x: -320, y: -45 },
+        { x: -290, y: -270 },
+        { x: -260, y: -270 },
+        { x: 150, y: -270 },
+        { x: 120, y: -270 },
+        { x: 320, y: -35 },
+        { x: 290, y: -35 },
+      ],
 
-        modalVisible: false,
-        raiseVisible: false,
+      modalVisible: false,
+      raiseVisible: false,
+      fiveCardsFin: 4,
 
-        fiveCardsFin: 0,
-        playerCardsGiven: 1,
-        gamePot: 0,
-        raiseAmount: 0
-      };
+      playerCardsGiven: 1,
+      gamePot: 0,
+      raiseAmount: 0,
 
-      foldCard() {
-        Animated.timing(this.state.valueFoldCard, {
-          toValue: {x: -515, y: 375},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-      }
+      // USE THIS STUFF
+      // this.props.matchName,
+      // this.props.matchType,
+      // this.props.game,
+      // this.props.myCards,
+
+      example_matchName: "public/match",
+      example_game: {
+        balance: [0, 0, 0, 0],
+        board: ["♣2", "♦5", "♥10"],
+        deck: ["♠A", "♣J"],
+        move: ["raise", "call", "fold", "call"],
+        players: ["Abe#45", "Bob#89", "Alice#90", "Janet#02"],
+        pot: 40,
+        ready: [true, false, true, false],
+        size: 4,
+        player_cards: [
+          { rank: 9, card: ["♠7", "♥9"] },
+          { rank: 2, card: ["♣3", "♦3"] },
+          { rank: 7, card: ["♥2", "♦8"] },
+          { rank: 5, card: ["♠6", "♦5"] },
+        ],
+        pause: false,
+        turn: 3,
+        round: 2,
+      },
+      example_myCards: [],
+    };
+  }
+  //Use state variable called round 1 = flop 2 = turn 3 = river
       
-      moveBB() {
-        Animated.timing(this.state.value1, {
-          toValue: 185,
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-      }
+    foldCard() {
+      Animated.timing(this.state.valueFoldCard, {
+        toValue: {x: -515, y: 375},
+        duration: 1000,
+        useNativeDriver: false
+      }).start();
+    }
+    
+    moveBB(player) {
+      Animated.timing(this.state.animationBB[player], {
+        toValue: this.state.newValueBB[player],
+        duration: 1000,
+        useNativeDriver: false
+      }).start();
+    }
 
-       moveSB() {
-         Animated.timing(this.state.value2, {
-           toValue: {x: 225, y: -75},
-           duration: 1000,
-           useNativeDriver: false
-         }).start();
-       }
-
-      moveBB2() {
-        Animated.timing(this.state.value3, {
-          toValue: {x: 400, y: 80},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-
-      }
-
-      moveSB2() {
-        Animated.timing(this.state.value4, {
-          toValue:{x:415, y:-75},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-
-      }
-
-      moveBB3() {
-        Animated.timing(this.state.value5, {
-          toValue: {x: -225 , y: 75},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-
-      }
-
-      moveSB3() {
-        Animated.timing(this.state.value6, {
-          toValue:{x:625, y:0},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-
-      }
-
-      moveBB4() {
-        Animated.timing(this.state.value7, {
-          toValue: {x: 0 , y: 0},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-
-      }
-
-      moveSB4() {
-        Animated.timing(this.state.value8, {
-          toValue:{x:0, y:0},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-
-      }
-
-      movePlayer1Cards() {
-        Animated.timing(this.state.playerCards, {
-          toValue:{x:-350, y:-45},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-
-      }
+    moveSB(player) {
+      Animated.timing(this.state.animationSB[player], {
+        toValue: this.state.newValueSB[player],
+        duration: 1000,
+        useNativeDriver: false
+      }).start();
+    }
       
-      movePlayer1_2ndCards() {
-        Animated.timing(this.state.playerCards2, {
-          toValue:{x:-320, y:-45},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
+    fadeIn() {
+      Animated.timing(this.state.fadeAnimation, {
+        toValue: 1,
+        duration: 4000
+      }).start(() => this.fadeOut());
+    }
 
-      }
-
-      movePlayer2Cards() {
-        Animated.timing(this.state.playerCards3, {
-          toValue:{x:-290, y:-270},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-        
-      }
-      movePlayer2_2ndCards() {
-        Animated.timing(this.state.playerCards4, {
-          toValue:{x:-260, y:-270},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-        
-      }
-
-      movePlayer3Cards() {
-        Animated.timing(this.state.playerCards5, {
-          toValue:{x:150, y:-270},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-        
-      }
-      movePlayer3_2ndCards() {
-        Animated.timing(this.state.playerCards6, {
-          toValue:{x:120, y:-270},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-        
-      }
-
-      movePlayer4Cards() {
-        Animated.timing(this.state.playerCards7, {
-          toValue:{x:320, y:-35},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-        
-      }
-      movePlayer4_2ndCards() {
-        Animated.timing(this.state.playerCards8, {
-          toValue:{x:290, y:-35},
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-        
-      }
-
+    fadeOut() {
+      Animated.timing(this.state.fadeAnimation, {
+        toValue: 0,
+        duration: 3000,
+      }).start();
       
-      fadeIn() {
-        Animated.timing(this.state.fadeAnimation, {
-          toValue: 1,
-          duration: 4000
-        }).start(() => this.fadeOut());
+    }
 
+    raisePot() {
+      this.setState({gamePot: this.state.gamePot + Number(this.state.raiseAmount)});
+    }
+  
+    setModalVisible = (visible) => {
+      this.setState({ modalVisible: visible });
+    }
+    setRaiseVisible = (visible) => {
+      this.setState({ raiseVisible: visible });
+    }
+
+    backAction = () => {
+      Alert.alert("Hold on!", "Are you sure you want to go back?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel"
+        },
+        { text: "YES", onPress: () => {
+        this.props.navigation.navigate('LandingPage'),  
+        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP); } }
+      ]);
+      return true;
+    };
+  
+    componentDidMount() {
+      this.backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        this.backAction
+      );
+      //this.setState({width: Dimensions.get('window').width})
+    }
+  
+    componentWillUnmount() {
+      this.backHandler.remove();
+    }
+
+    transitionBlinds(){
+      //This first if statement should only be done in the
+      //beginning of each game(New Lobby)
+      if(this.state.fiveCardsFin == 0){
+        return <View>
+          <Animated.View>
+            <View 
+              style = {{ 
+              width: 25, 
+              height: 25, 
+              borderRadius: 25,
+              backgroundColor: 'black',
+              justifyContent: 'center',
+              top: '150%',
+              right: '1400%'
+              }}>
+              <Text 
+                style = {{ textAlign: 'center',color: 'white'}}>
+                BB
+              </Text>
+            </View>
+          </Animated.View>
+          <Animated.View>
+          <View
+              style = {{ 
+              width: 25, 
+              height: 25, 
+              borderRadius: 25,
+              backgroundColor: 'white',
+              justifyContent: 'center',
+              top: '350%',
+              right: '2300%'}}>
+              <Text style = {{textAlign: 'center'}}>SB</Text>
+            </View>
+          </Animated.View>
+        </View>
       }
-
-      fadeOut() {
-        Animated.timing(this.state.fadeAnimation, {
-          toValue: 0,
-          duration: 3000,
-        }).start();
+      else if(this.state.fiveCardsFin < 5){
+        index = this.state.fiveCardsFin - 1
         
-      }
-    
+        if(index == 0){
+          bb = (
+            <Animated.View
+              style = {{left: this.state.animationBB[index]}}>
+            <View 
+              style = {{ 
+              width: 25, 
+              height: 25, 
+              borderRadius: 25,
+              backgroundColor: 'black',
+              justifyContent: 'center',
+              top: '150%',
+              right: '1400%'
+              }}>
+                {this.moveBB(index)}
+              <Text 
+              style = {{ textAlign: 'center',color: 'white'}}>
+              BB</Text>
+            </View>
+          </Animated.View>
+          )
+        }
+        else{
+          bb = (
+          <Animated.View
+            style = {this.state.animationBB[index].getLayout()}>
+            <View 
+              style = {{ 
+              width: 25, 
+              height: 25, 
+              borderRadius: 25,
+              backgroundColor: 'black',
+              justifyContent: 'center',
+              top: '150%',
+              right: '1400%'
+              }}>
+                {this.moveBB(index)}
+              <Text 
+              style = {{ textAlign: 'center',color: 'white'}}>
+              BB</Text>
+            </View>
+          </Animated.View>
+          )
+        }
 
-      raisePot() {
-        this.setState({gamePot: this.state.gamePot + Number(this.state.raiseAmount)});
-      }
-   
-      setModalVisible = (visible) => {
-        this.setState({ modalVisible: visible });
-      }
-      setRaiseVisible = (visible) => {
-        this.setState({ raiseVisible: visible });
-      }
+        return (
+        <View>
+          {bb}
+          <Animated.View 
+          style = { this.state.animationSB[index].getLayout()}>
 
-      backAction = () => {
-        Alert.alert("Hold on!", "Are you sure you want to go back?", [
-          {
-            text: "Cancel",
-            onPress: () => null,
-            style: "cancel"
-          },
-          { text: "YES", onPress: () => {
-          this.props.navigation.navigate('LandingPage'),  
-          ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP); } }
-        ]);
-        return true;
-      };
-    
-      componentDidMount() {
-        this.backHandler = BackHandler.addEventListener(
-          "hardwareBackPress",
-          this.backAction
-        );
-      }
-    
-      componentWillUnmount() {
-        this.backHandler.remove();
-      }
+            <View
+              style = {{ 
+              width: 25, 
+              height: 25, 
+              borderRadius: 25,
+              backgroundColor: 'white',
+              justifyContent: 'center',
+              top: '350%',
+              right: '2300%'}}>
+              {this.moveSB(index)}
+              <Text style = {{textAlign: 'center'}}>SB</Text>
 
-      transitionBlinds(){
-        //This first if statement should only be done in the
-        //beginning of each game(New Lobby)
-        if(this.state.fiveCardsFin == 0) {
-          return <View>
-            <Animated.View>
-              <View 
-                style = {{ 
-                width: 25, 
-                height: 25, 
-                borderRadius: 25,
-                backgroundColor: 'black',
-                justifyContent: 'center',
-                top: '150%',
-                right: '1400%'
-                }}>
-                <Text 
-                  style = {{ textAlign: 'center',color: 'white'}}>
-                  BB
-                </Text>
-              </View>
-            </Animated.View>
-            <Animated.View>
-             <View
-                style = {{ 
-                width: 25, 
-                height: 25, 
-                borderRadius: 25,
-                backgroundColor: 'white',
-                justifyContent: 'center',
-                top: '350%',
-                right: '2300%'}}>
-                <Text style = {{textAlign: 'center'}}>SB</Text>
-              </View>
+            </View>
+          </Animated.View>
+        </View>
+        )
+      }
+    }
+
+    flopTurnRiver(suit,value, i){
+      return (
+        <View style = {{right: '390%', top: '75%'}}>
+          <Animated.View style = {this.state.tableCardsStart[i].getLayout()}>
+            <View style = {
+              {position: 'absolute',
+                flex: 1,
+                borderRadius: 2,
+                alignItems: 'center',
+                justifyContent:'center',
+                paddingVertical: 15,
+                paddingHorizontal: 15,
+                backgroundColor:"white",}}
+            >
+              <Text>{suit}</Text>
+              <Text>{value}</Text>
+              {this.moveTableCards(i)}
+            </View>
+          </Animated.View>
+        </View>
+      )
+    }
+
+    moveTableCards(card){
+      Animated.timing(this.state.tableCardsStart[card], {
+        toValue: this.state.tableCardsMove[card],
+        duration: 1000,
+        useNativeDriver: false
+      }).start();
+    }
+
+    cardDeal(suit,value,i) {
+      return (<View style = {{right: '390%', top: '75%'}}>
+        <Animated.View style = {this.state.playerCardAnimations[i].getLayout()}>
+          <CardDealing suit={suit} value={value}>{this.movePlayerCards(i)}</CardDealing>
+        </Animated.View>
+      </View>
+      )
+    }
+
+    movePlayerCards(card) {
+      Animated.timing(this.state.playerCardAnimations[card], {
+        toValue: this.state.playerNewValues[card],
+        duration: 1000,
+        useNativeDriver: false
+      }).start();
+    }
+
+    quitView(){
+      const { modalVisible } = this.state;
+      return(
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible} 
+      >
+        <View style = {styles.centeredView}>
+          <View style = {styles.modalView}>
+            
+            <Text style = {{padding: 5}}>Are you sure you want to leave</Text>
+            
+            <TouchableOpacity
+              style={styles.buttonInExit}
+              onPress={() => {
+                this.setModalVisible(!modalVisible)
+              }}
+              >
+                <Text style={ styles.exitStyle } >NO</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={styles.buttonInExit}
+              onPress={() => {
+                this.props.navigation.navigate('LandingPage')
+                ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+                this.setModalVisible(!modalVisible)
+              }}
+            >
+              <Text style={ styles.exitStyle }>YES</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      )
+    }
+
+    raiseView(){
+      const {raiseVisible} = this.state;
+      return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={raiseVisible}
+      >
+        <View style = {styles.centeredView}>
+            <View style = {styles.modalView}>
+              <Text style = {{padding: 0, fontWeight: 'bold'}}>RAISE</Text>
+              <TextInput style = 
+                {{fontSize: 20, padding: 10}} 
+                placeholder="0"
+                value={this.state.raiseAmount}
+                onChangeText={(raiseAmount) => { 
+                  this.setState({raiseAmount});
+                }}
+                keyboardType = {'number-pad'}
+                disableFullscreenUI = {true}
+              />
+
+              <TouchableOpacity
+                style={styles.buttonInExit}
+                onPress={() => {
+                  //this.raiseAnimation()
+                  this.setRaiseVisible(!raiseVisible);
+                  this.raisePot();
+                  this.fadeIn();
+                }}
+              >
+                <Text style = {{fontWeight: 'bold'}}>APPLY</Text>
+              </TouchableOpacity>
+              
+              <View style = {{padding: 5}}></View>
+              <TouchableOpacity
+                style={styles.buttonInExit}
+                onPress={() => {
+                  this.setRaiseVisible(!raiseVisible);
+                }}
+              >
+                <Text style={ styles.exitStyle }>CANCEL</Text>
+              </TouchableOpacity>
+            </View>
+        </View>
+      </Modal>
+      )
+    }
+
+    actionsView(){
+      return (
+        <View style={styles.bettingButtonsView}>
+            
+            {this.raiseView()}
+
+            <TouchableOpacity style={[styles.bettingButtons, styles.raiseButt]}
+            onPress={() => this.setRaiseVisible(true)}
+            >
+              <Text>Raise</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.bettingButtons, styles.callButt]}>
+              <Text>Call</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.bettingButtons, styles.foldButt]} onPress = {() => this.foldCard()}>
+              <Text>Fold</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.bettingButtons, {backgroundColor:"#D6A2E8"}]}>
+              <Text>Check</Text>
+            </TouchableOpacity>
+
+          </View>
+      )
+    }
+    
+    render() { 
+      console.log(this.props.game.deck)
+      
+      return (  
+        <View style = {styles.container}>
+          {/*<StatusBar hidden/>*/}
+
+          {this.quitView()}
+
+          <View>
+            <TouchableOpacity
+              style={[styles.button, styles.buttonOpen]}
+              onPress={() => this.setModalVisible(true)}
+            >
+              <Text style ={styles.textStyle}>EXIT</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.webcam1}>
+              <Text>Webcam 1</Text>
+              {/* {<Text>{this.props.game.players[0]}</Text>} */}
+          </View>
+
+          <View>
+            <View style={styles.webcam2}>
+                <Text>Webcam 2</Text>
+            </View>
+          </View>
+          
+
+          <Image  style = {styles.tableView}
+            source = {require('../../../assets/pokertable.png')}
+          />
+
+          <View>
+            <View style={styles.webcam3}>
+                <Text>Webcam 3</Text> 
+            </View>
+          </View> 
+
+          <View style={styles.potView}>
+            <Image style = {{   
+              width: 50, 
+              height:50,
+              resizeMode: 'contain',
+              }}
+              source={require('../../../assets/table.png')}
+            />
+              
+            <Text style = {{ fontSize: 20 ,fontWeight: 'bold',color: 'white'}}>
+              Pot: {this.state.gamePot}
+            </Text>
+          </View>
+          
+          <View style={styles.webcam4}>
+            <View>
+              <Text>Webcam 4</Text> 
+            </View>
+
+            <Animated.View
+              style={[
+                {opacity: this.state.fadeAnimation}
+              ]}
+            >
+              <Text>testing</Text>
             </Animated.View>
           </View>
 
-        }
+          {this.actionsView()}
 
-        else if(this.state.fiveCardsFin == 1) {
-         return <View>
-          <Animated.View
-                style = {{
-                  left: this.state.value1
-                }}>
-                <View 
-                  style = {{ 
-                  width: 25, 
-                  height: 25, 
-                  borderRadius: 25,
-                  backgroundColor: 'black',
-                  justifyContent: 'center',
-                  top: '150%',
-                  right: '1400%'
-                  }}>
-                   {this.moveBB()}
-                  <Text 
-                  style = {{ textAlign: 'center',color: 'white'}}>
-                  BB</Text>
-                </View>
-                </Animated.View>
-
-                <Animated.View 
-                style = { this.state.value2.getLayout()}>
-
-                <View
-                 style = {{ 
-                  width: 25, 
-                  height: 25, 
-                  borderRadius: 25,
-                  backgroundColor: 'white',
-                  justifyContent: 'center',
-                  top: '350%',
-                  right: '2300%'}}>
-                  {this.moveSB()}
-                  <Text style = {{textAlign: 'center'}}>SB</Text>
-    
-                </View>
-                </Animated.View>
-               
-                </View>
-        
-
-        }
-        else if(this.state.fiveCardsFin == 2) {
-          return <View>
-          <Animated.View
-                style = {this.state.value3.getLayout()}>
-                <View 
-                  style = {{ 
-                  width: 25, 
-                  height: 25, 
-                  borderRadius: 25,
-                  backgroundColor: 'black',
-                  justifyContent: 'center',
-                  top: '150%',
-                  right: '1400%'
-                  }}>
-                   {this.moveBB2()}
-                  <Text 
-                  style = {{ textAlign: 'center',color: 'white'}}>
-                  BB</Text>
-                </View>
-                </Animated.View>
-
-                <Animated.View 
-                style = {this.state.value4.getLayout()}>
-
-                <View
-                 style = {{ 
-                  width: 25, 
-                  height: 25, 
-                  borderRadius: 25,
-                  backgroundColor: 'white',
-                  justifyContent: 'center',
-                  top: '350%',
-                  right: '2300%'}}>
-                  {this.moveSB2()}
-                  <Text style = {{textAlign: 'center'}}>SB</Text>
-    
-                </View>
-                </Animated.View>
-               
-                </View>
-
-        }
-        else if (this.state.fiveCardsFin == 3) {
-          return <View>
-          <Animated.View
-                style = {this.state.value5.getLayout()}>
-                <View 
-                  style = {{ 
-                  width: 25, 
-                  height: 25, 
-                  borderRadius: 25,
-                  backgroundColor: 'black',
-                  justifyContent: 'center',
-                  top: '150%',
-                  right: '1400%'
-                  }}>
-                   {this.moveBB3()}
-                  <Text 
-                  style = {{ textAlign: 'center',color: 'white'}}>
-                  BB</Text>
-                </View>
-                </Animated.View>
-
-                <Animated.View 
-                style = {this.state.value6.getLayout()}>
-
-                <View
-                 style = {{ 
-                  width: 25, 
-                  height: 25, 
-                  borderRadius: 25,
-                  backgroundColor: 'white',
-                  justifyContent: 'center',
-                  top: '350%',
-                  right: '2300%'}}>
-                  {this.moveSB3()}
-                  <Text style = {{textAlign: 'center'}}>SB</Text>
-    
-                </View>
-                </Animated.View>
-               
-                </View>
-        }
-
-        else if(this.state.fiveCardsFin == 4) {
-          return <View>
-          <Animated.View
-                style = {this.state.value7.getLayout()}>
-                <View 
-                  style = {{ 
-                  width: 25, 
-                  height: 25, 
-                  borderRadius: 25,
-                  backgroundColor: 'black',
-                  justifyContent: 'center',
-                  top: '150%',
-                  right: '1400%'
-                  }}>
-                   {this.moveBB4()}
-                  <Text 
-                  style = {{ textAlign: 'center',color: 'white'}}>
-                  BB</Text>
-                </View>
-                </Animated.View>
-
-                <Animated.View 
-                style = {this.state.value8.getLayout()}>
-
-                <View
-                 style = {{ 
-                  width: 25, 
-                  height: 25, 
-                  borderRadius: 25,
-                  backgroundColor: 'white',
-                  justifyContent: 'center',
-                  top: '350%',
-                  right: '2300%'}}>
-                  {this.moveSB4()}
-                  <Text style = {{textAlign: 'center'}}>SB</Text>
-    
-                </View>
-                </Animated.View>
-               
-                </View>
-
-        }
-      }
-
-      giveOutCards() {
-       
-      return <View>
-                <View style = {{right: '390%', top: '75%'}}>
-                  <Animated.View style = {this.state.playerCards.getLayout()}>
-                    <CardDealing>{this.movePlayer1Cards()}</CardDealing>
-                  </Animated.View>
-                </View>
-
-                <View style = {{right: '390%', top: '75%'}}>
-                  <Animated.View style = {this.state.playerCards2.getLayout()}>
-                    <CardDealing>{this.movePlayer1_2ndCards()}</CardDealing>
-                  </Animated.View> 
-                  
-                </View>
-                <View style = {{right: '390%', top: '75%'}}>
-                  <Animated.View style = {this.state.playerCards3.getLayout()}>
-                    <CardDealing>{this.movePlayer2Cards()}</CardDealing>
-                  </Animated.View>
-                </View>
-
-                <View style = {{right: '390%', top: '75%'}}>
-                  <Animated.View style = {this.state.playerCards4.getLayout()}>
-                    <CardDealing>{this.movePlayer2_2ndCards()}</CardDealing>
-                  </Animated.View> 
-                  
-                </View>
-                <View style = {{right: '390%', top: '75%', zIndex: 1}}>
-                  <Animated.View style = {this.state.playerCards5.getLayout()}>
-                    <CardDealing>{this.movePlayer3Cards()}</CardDealing>
-                  </Animated.View>
-                </View>
-
-                <View style = {{right: '390%', top: '75%'}}>
-                  <Animated.View style = {this.state.playerCards6.getLayout()}>
-                    <CardDealing>{this.movePlayer3_2ndCards()}</CardDealing>
-                  </Animated.View> 
-                </View>
-
-                <View style = {{right: '390%', top: '75%', zIndex: 1}}>
-                  <Animated.View style = {this.state.playerCards7.getLayout()}>
-                    <CardDealing>{this.movePlayer4Cards()}</CardDealing>
-                  </Animated.View>
-                </View>
-
-                <View style = {{right: '390%', top: '75%'}}>
-                  <Animated.View style = {this.state.playerCards8.getLayout()}>
-                    <CardDealing>{this.movePlayer4_2ndCards()}</CardDealing>
-                  </Animated.View> 
-                </View>
-               
-
-              </View>
-      }
-
-     
-    
-    render() { 
-        
-        const { modalVisible } = this.state;
-        const {raiseVisible} = this.state;
-        return (  
-            <View style = {styles.container}>
-                <StatusBar hidden/>
-
-                    <Modal
-                      animationType="slide"
-                      transparent={true}
-                      visible={modalVisible}
-                      
-                    >
-                        <View style = {styles.centeredView}>
-                            <View style = {styles.modalView}>
-                              <Text style = {{padding: 5}}>Are you sure you want to leave</Text>
-                                <TouchableOpacity
-                                style={styles.buttonInExit}
-                                onPress={() => {
-                                  this.setModalVisible(!modalVisible)
-                                }}
-                                >
-                                <Text style={ styles.exitStyle } >NO</Text>
-                                </TouchableOpacity>
-                                <View style = {{padding: 5}}></View>
-                                <TouchableOpacity
-                                  style={styles.buttonInExit}
-                                  onPress={() => {
-                                  this.props.navigation.navigate('LandingPage')
-                                  ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-                                  this.setModalVisible(!modalVisible);
-                                  }}
-                                >
-                                    <Text style={ styles.exitStyle }>YES</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </Modal>
-                    <View>
-                    <TouchableOpacity
-                      style={[styles.button, styles.buttonOpen]}
-                      onPress={() => this.setModalVisible(true)}
-                    >
-                      <Text style ={styles.textStyle} >EXIT</Text>
-                    </TouchableOpacity>
-                    </View>
-               
-                <View>
-                  <View style={styles.webcam2}>
-                      <Text>Webcam 2</Text> 
-                  </View> 
-                </View>
-
-                <View style={styles.webcam1}>
-                    <Text>Webcam 1</Text> 
-                </View>
-                
-                
-                <View style={styles.tableView}>
-                  <Image  style = {styles.tableView}
-                  source = {require('../../../assets/pokertable.png')}
-                  />
-               </View>
-
-                <View>
-                  <View style={styles.webcam3}>
-                      <Text>Webcam 3</Text> 
-                  </View>
-                </View>
-                
-              
-                <View style={styles.potView}>
-                  <Image style = {{   
-                      width: 50, 
-                      height:50,
-                      resizeMode: 'contain',
-                      }}
-                      source={require('../../../assets/table.png')}
-                  />
-                   
-                  <Text style = {{ fontSize: 20 ,fontWeight: 'bold',color: 'white'}}>
-                      Pot: {this.state.gamePot}
-                  </Text>
-                </View>
-                
-
-                <View style={styles.webcam4}>
-                  <View>
-                      <Text>Webcam 4</Text> 
-                  </View>
-                  <Animated.View
-                    style={[
-                      {
-                        opacity: this.state.fadeAnimation
-                      }
-                    ]}
-                  >
-                    <Text>testing</Text>
-                  </Animated.View>
-                </View>
-                
-
-                <View style={styles.bettingButtonsView}>
-                <Modal
-                      animationType="slide"
-                      transparent={true}
-                      visible={raiseVisible}
-                      
-                    >
-                        <View style = {styles.centeredView}>
-                            <View style = {styles.modalView}>
-                              <Text style = {{padding: 0, fontWeight: 'bold'}}>RAISE</Text>
-                              <TextInput style = 
-                              {{fontSize: 20, padding: 10}} 
-                              placeholder="0"
-                              value={this.state.raiseAmount}
-                              onChangeText={(raiseAmount) => { 
-                                this.setState({raiseAmount});
-                              }}
-                              keyboardType = {'number-pad'}
-                              disableFullscreenUI = {true}
-                              >
-                              </TextInput>
-
-                                <TouchableOpacity
-                                style={styles.buttonInExit}
-                                onPress={() => {
-                                  //this.raiseAnimation()
-                                  this.setRaiseVisible(!raiseVisible);
-                                  this.raisePot();
-                                  this.fadeIn();
-                                }}
-                                >
-                                <Text style = {{fontWeight: 'bold'}}>APPLY</Text>
-                                </TouchableOpacity>
-                                <View style = {{padding: 5}}></View>
-                                <TouchableOpacity
-                                  style={styles.buttonInExit}
-                                  onPress={() => {
-                                    this.setRaiseVisible(!raiseVisible);
-                                  }}
-                                >
-                                    <Text style={ styles.exitStyle }>CANCEL</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </Modal>
-                  <TouchableOpacity style={[styles.bettingButtons, styles.raiseButt]}
-                  onPress={() => this.setRaiseVisible(true)}
-                  >
-                    <Text>Raise</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity style={[styles.bettingButtons, styles.callButt]}>
-                    <Text>Call</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity style={[styles.bettingButtons, styles.foldButt]} onPress = {() => this.foldCard()}>
-                    <Text>Fold</Text>
-                  </TouchableOpacity>
-
-
-                  <TouchableOpacity style={[styles.bettingButtons, {backgroundColor:"#D6A2E8"}]}>
-                    <Text>Check</Text>
-                  </TouchableOpacity>
-
-                </View>
-
-
-                <View style = {styles.dealer}>
-                  <Image style = {styles.dealer}
-                    
-                  source = {require('../../../assets/cards.png')}
-                  />
-                </View>
-
-                <View style={styles.chat}>
-                <View>
-                    <Text>Chat</Text> 
-                </View>
-                </View>
-                
-                <View style={styles.chipView}>
-                  <Image
-                    style = {{
-                    width: 40, 
-                    height:40,
-                    resizeMode: 'contain',
-                    }}
-                    source={require('../../../assets/chipAmount.png')}
-                  /> 
-                  <Text style = {{ fontSize: 20, fontWeight: 'bold' }}>
-                    100
-                  </Text> 
-                </View>
-                
-                {this.transitionBlinds()}
-
-               <CardDealing></CardDealing>
-
-               <View style = {styles.foldContainer}>
-                    <Animated.View style = {[styles.foldCard, this.state.valueFoldCard.getLayout()]}>
-                      <Image style = {styles.cardImage} source = {require("../../../assets/deckOfCards/PNG/♥J.png")}/>
-                    </Animated.View>
-               </View>
-
-                {this.giveOutCards()}
-              
-                
+          <View style = {styles.dealer}>
+            <Image style = {styles.dealer}
+            source = {require('../../../assets/cards.png')}
+            />
+          </View>
+          
+          <View style={styles.chat}>
+            <View>
+              <Text>Chat</Text> 
             </View>
+          </View>    
+          
+          <View style={styles.chipView}>
+            <Image
+              style = {{
+              width: 40, 
+              height:40,
+              resizeMode: 'contain',
+              }}
+              source={require('../../../assets/chipAmount.png')}
+            /> 
+            <Text style = {{ fontSize: 20, fontWeight: 'bold' }}>
+              100
+            </Text> 
+          </View>
+              
+          {this.transitionBlinds()}
 
-         );
+          <View style = {styles.foldContainer}>
+            <Animated.View style = {[styles.foldCard, this.state.valueFoldCard.getLayout()]}>
+              <Image style = {styles.cardImage} source = {require("../../../assets/deckOfCards/PNG/♥J.png")}/>
+            </Animated.View>
+          </View>
+
+        
+          <View>
+            {this.props.myCards.map((card,i)=> this.cardDeal(card.suit, card.value, i))}
+            
+            {this.props.game.board.map((card,i)=> this.flopTurnRiver(card.suit, card.value, i))}
+          </View>
+                {/* {this.flop(this.props.game.deck.shift(),2,3)}
+                              {this.turn(1)}
+                              {this.river(1)} */}
+        </View>
+      );
     }
 }
  
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#2ecc71',
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
+  exitButton2: {
+    alignSelf:'center',
+    flex: 1
+    //width: 'auto',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#2ecc71',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
     },
-    centeredView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 22
-      },
-    exitStyle: {
-        fontWeight: 'bold',
-        justifyContent: "center",
-        alignItems: "center",
-       
+  exitStyle: {
+    fontWeight: 'bold',
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonInExit: {
+    borderRadius: 2,
+    padding: 10,
+    elevation: 2,
+    backgroundColor: "#b2bec3",
+  },
+  button: {
+    borderRadius: 2,
+    padding: 10,
+    elevation: 2,
+    backgroundColor: "#b2bec3",
+    top: "3%",
+    left: "20%"
+  },
+  buttonOpen: {
+    backgroundColor: "#778899",
+  },
+  exitButton:{
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+  dealer: {
+    width: 125, 
+    height:125,
+    resizeMode: 'contain',
+    bottom: '0%',
+    left: '35%',
+    position: 'absolute'
+  },
+  textStyle:{
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
     },
-    buttonInExit: {
-        borderRadius: 2,
-        padding: 10,
-        elevation: 2,
-        backgroundColor: "#b2bec3",
-        
-        
-    },
-    button: {
-        borderRadius: 2,
-        padding: 10,
-        elevation: 2,
-        backgroundColor: "#b2bec3",
-        top: "3%",
-        left: "20%"
-    },
-    buttonOpen: {
-        backgroundColor: "#778899",
-    },
-    exitButton:{
-        color: '#FFFFFF',
-        fontWeight: 'bold',
-    },
-    dealer: {
-        width: 150, 
-        height:150,
-        resizeMode: 'contain',
-        bottom: '0%',
-        left: '35%',
-        position: 'absolute',
-        //Change zIndex to have cards behind hand
-        zIndex: 1
-    },
-    textStyle:{
-        color: '#FFFFFF',
-        fontWeight: 'bold',
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: "white",
-        borderRadius: 20,
-        padding: 35,
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-          width: 0,
-          height: 2
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5
-    },
-    
-    webcam1:{
-        position: 'absolute',
-        borderRadius: 2,
-        borderColor: 'black',
-        paddingVertical: 30,
-        paddingHorizontal: 10,
-        backgroundColor:"#778899",
-        top: "35%",
-        left: "1%",
-    },
-      webcam2:{
-        borderRadius: 2,
-        borderColor: "black",
-        paddingVertical: 30,
-        paddingHorizontal: 10,
-        backgroundColor: "#778899",
-        left:"150%",
-
-    },
-    webcam3:{
-        borderRadius: 2,
-        borderColor: "black",
-        paddingVertical: 30,
-        paddingHorizontal: 10,
-        backgroundColor: "#778899",
-        right: '200%',
-        bottom: '0%'
-      
-    },
-    webcam4:{
-        position:'absolute',
-        borderRadius: 2,
-        borderColor: 'black',
-        paddingVertical: 30,
-        paddingHorizontal: 10,
-        backgroundColor:"#778899",
-        bottom: "45%",
-        right: "0%",
-        alignContent: "center"
-    },
-    potView:{
-        position: 'absolute',
-        top: "0%",
-        right: "0%"
-    },
-    pot:{
-        borderRadius: 2,
-        borderColor: "black",
-        flexDirection: 'row',
-        paddingVertical: 10,
-        paddingHorizontal: 0,
-        right: '300%'
-    },
-     chipAmount: {
-       top: '500%',
-       left: '50%'
-     },
-     chipView:{
-       position: 'absolute',
-       right: "0%",
-       bottom: "0%"
-     },
-     tableView: {
-         width: 400,
-         height: 400,
-         resizeMode: 'contain',
-         bottom: '4%',
-         right: '4%',
-     },
-     chat:{
-         position:'absolute',
-         borderRadius: 2,
-         borderColor: 'black',
-         paddingVertical: 10,
-         paddingHorizontal: 10,
-         backgroundColor:"#778899",
-         bottom: "0%",
-         right: "20%"
-     },
-    bettingButtonsView:{
-         position: 'absolute',
-         bottom: "0%",
-         left: "0%",
-         flexDirection: 'row',
-    },
-    bettingButtons:{
-         borderRadius: 50,
-         padding: 10,
-         elevation: 2,
-         marginHorizontal: 5,
-    },
-    raiseButt:{
-         backgroundColor: "#add8e6"
-    },
-    callButt:{
-      backgroundColor: "#fed8b1"
-    },
-    foldButt:{
-      backgroundColor: "#ffcccb"
-    },
-    cardImage: {
-      width: 100,
-      height: 100,
-      resizeMode: 'contain'
-    },
-    foldCard: {
-      alignItems: 'center',
-      justifyContent: 'center'
-    },
-    foldContainer: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center'
-    }
-
-
-   
-  });
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  
+  webcam1:{
+    position: 'absolute',
+    borderRadius: 2,
+    borderColor: 'black',
+    paddingVertical: 30,
+    paddingHorizontal: 10,
+    backgroundColor:"#778899",
+    top: "35%",
+    left: "1%"
+  },
+  webcam2:{
+    borderRadius: 2,
+    borderColor: "black",
+    paddingVertical: 30,
+    paddingHorizontal: 10,
+    backgroundColor: "#778899",
+    left:"150%",
+  },
+  webcam3:{
+    borderRadius: 2,
+    borderColor: "black",
+    paddingVertical: 30,
+    paddingHorizontal: 10,
+    backgroundColor: "#778899",
+    right: '200%',
+    bottom: '0%'
+  },
+  webcam4:{
+    position:'absolute',
+    borderRadius: 2,
+    borderColor: 'black',
+    paddingVertical: 30,
+    paddingHorizontal: 10,
+    backgroundColor:"#778899",
+    bottom: "45%",
+    right: "0%",
+    alignContent: "center"
+  },
+  potView:{
+    position: 'absolute',
+    top: "0%",
+    right: "0%"
+  },
+  pot:{
+    borderRadius: 2,
+    borderColor: "black",
+    flexDirection: 'row',
+    paddingVertical: 10,
+    paddingHorizontal: 0,
+    right: '300%'
+  },
+  chipAmount: {
+    top: '500%',
+    left: '50%'
+  },
+  chipView:{
+    position: 'absolute',
+    right: "0%",
+    bottom: "0%"
+  },
+  tableView: {
+    width: 400,
+    height: 400,
+    resizeMode: 'contain',
+    bottom: '5%',
+    right: '4%',
+  },
+  chat:{
+    position:'absolute',
+    borderRadius: 2,
+    borderColor: 'black',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    backgroundColor:"#778899",
+    bottom: "0%",
+    right: "20%"
+  },
+  bettingButtonsView:{
+    position: 'absolute',
+    bottom: "0%",
+    left: "0%",
+    flexDirection: 'row',
+  },
+  bettingButtons:{
+    borderRadius: 50,
+    padding: 10,
+    elevation: 2,
+    marginHorizontal: 5,
+  },
+  raiseButt:{
+    backgroundColor: "#add8e6"
+  },
+  callButt:{
+    backgroundColor: "#fed8b1"
+  },
+  foldButt:{
+    backgroundColor: "#ffcccb"
+  },
+  cardImage: {
+    width: 100,
+    height: 100,
+    resizeMode: 'contain'
+  },
+  foldCard: {
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  foldContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
+});

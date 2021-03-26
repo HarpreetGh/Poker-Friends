@@ -9,20 +9,42 @@ import { Image,
         TouchableOpacity,
         ScrollView,
         Linking} from "react-native";
+import firebase from 'firebase'
 
 
 //TODO: Pass in balance value from account to text render
 export default class Balance extends Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      chips: 0
+    }
+  }
 
   render() {
+    var user = firebase.auth().currentUser;
+    if(user){
+      firebase.database().ref('/users/' + user.uid).once('value').then((snapshot) => {
+        this.setState({chips: snapshot.val().chips})
+      });
     return (
-      <View style={styles.cornerView}>
-        <TouchableOpacity style={styles.button}>
-        
-          <Text style={styles.textStyle}># Chips</Text>
-        </TouchableOpacity>
-      </View>
-    );
+        <View style={styles.cornerView}>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.textStyle}>{this.state.chips +" Chips"}</Text>
+          </TouchableOpacity>
+        </View>
+        )
+    }
+    else{
+      return (
+        <View style={styles.cornerView}>
+          <TouchableOpacity style={styles.button}>
+          
+            <Text style={styles.textStyle}>{this.state.chips + " Chips"}</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
   }
 }
 

@@ -1,29 +1,29 @@
 import 'react-native-gesture-handler';
 import React, { Component, useState, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, StatusBar } from 'react-native';
 import{NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack'
+
+
 import LandingPage from './Components/LandingPage'
 import Register from '../PokerFriends/Components/Register';
 import Login from './Components/Login'
 import ForgotPassword from './Components/Account-Settings/ForgotPassword'
 import GameSetting from './Components/Game/GameAnimation/GameSetting'
+import GameController from './Components/Game/GameController'
 import AccountSettings from './Components/AccountSettings';
 import ChangeUsername from './Components/Account-Settings/ChangeUsername';
 import ChangeEmail from './Components/Account-Settings/ChangeEmail';
 import DeleteAccount from './Components/Account-Settings/DeleteAccount';
-import * as firebase from 'firebase';
-import 'firebase/auth'
+import FriendsList from './Components/FriendsList'
+import CreateGame from './Components/CreateGame'
+import AccountStats from './Components/AccountStats'
+
+import Firebaseinit from './firebase' //Intializes Firebase
+import firebase from 'firebase';
 
 
-const firebaseConfig = {
-    apiKey: "AIzaSyBVr4IKgejWBb6uFG_joH5a5tT03j40NRM",
-    authDomain: "pokerfriends-843ef.firebaseapp.com",
-    projectId: "pokerfriends-843ef",
-    storageBucket: "pokerfriends-843ef.appspot.com",
-    messagingSenderId: "1077794174230",
-    appId: "1:1077794174230:web:f05b745f8fba6d8f798c37"
-  };
+
 
 const Stack = createStackNavigator();
 
@@ -34,10 +34,6 @@ export default class App extends Component {
         LoggedIn: true,
       }
 
-    if(firebase.apps.length === 0){
-      console.log('triggered')
-      firebase.initializeApp(firebaseConfig);
-    }
     firebase.auth().onAuthStateChanged((user) => {
       this.setState({LoggedIn: !!user})
     })
@@ -46,6 +42,7 @@ export default class App extends Component {
   render(){ 
     return (
       <NavigationContainer>
+        
         <Stack.Navigator  screenOptions={{headerShown: false}}>
           <Stack.Screen name = "LandingPage">
             {(props) => <LandingPage {...props} LoggedIn={this.state.LoggedIn}/>}
@@ -54,7 +51,10 @@ export default class App extends Component {
           <Stack.Screen name = "Login" component = {Login}/>
           <Stack.Screen name = "Register" component = {Register}/>
           
+          <Stack.Screen name = "FriendsList" component = {FriendsList}/>
           <Stack.Screen name = "GameSetting" component = {GameSetting}/>
+          <Stack.Screen name = "GameController" component = {GameController}/>
+          <Stack.Screen name = "CreateGame" component = {CreateGame}/>
           
           <Stack.Screen name = "AccountSettings">
             {(props) => <AccountSettings {...props} LoggedIn={this.state.LoggedIn}/>}
@@ -63,6 +63,7 @@ export default class App extends Component {
           <Stack.Screen name = "ChangeEmail" component = {ChangeEmail}/>
           <Stack.Screen name = "ForgotPassword" component = {ForgotPassword}/>
           <Stack.Screen name = "DeleteAccount" component = {DeleteAccount}/>
+          <Stack.Screen name = "AccountStats" component = {AccountStats}/>
         </Stack.Navigator>
       </NavigationContainer>
     );
