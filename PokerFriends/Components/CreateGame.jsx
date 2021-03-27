@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react'
-import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, Touchable } from 'react-native';
+import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, Touchable, Alert } from 'react-native';
 import Logo from './Logo';
 import firebase from 'firebase'
 import * as ScreenOrientation from 'expo-screen-orientation';
@@ -23,23 +23,40 @@ export default class CreateGame extends Component {
   */
 
   createGame(type){
-    console.log('create game triggered')
     var user = firebase.auth().currentUser;
     //var username = user.displayName.slice(0, user.displayName.indexOf('#'))
-    var username = user.displayName
+    const username = user.displayName
+    const buyIn = Number(this.state.buyIn)
     
+    if(this.props.userData.chips - buyIn < 0){
+      Alert.alert('Insufficent Balance','Your BuyIn is higher than you current Balance, please lower Buy-In to Proceed')
+      return false
+    }
+    else if(!this.props.userData.in_game === ''){
+      Alert.alert('Already in a Game', 'Please leave the game you currently are in!To create a Game')
+      return false
+    } 
+    this.props.userData.chips -= buyIn 
     var d = new Date
     var matchName = type + '_' + this.state.name +"-"+ d.getTime();
+    var updates = {};
+    updates['/users/'+ user.uid +'/in_game'] = matchName;
+    updates['/users/'+ user.uid +'/chips'] = this.props.userData.chips
+
+   
+    
 
     firebase.database().ref('games/' + type + '/' + matchName).set({
-      balance: [this.state.buyIn],
+      balance: [buyIn],
       board: [''],
-      buyIn: Number(this.state.buyIn),
+      buyIn: buyIn,
+      chipsWon: [0],
+      chipsLost: [0],
+      chipsIn: [0],
       deck: [''],
       move: [''],
       pause: true,
       turn: 0,
-      turnStart: true,
       player_cards: [{rank: 0, cards: ['']}],
       players: [username],
       pot: 0,
@@ -54,11 +71,8 @@ export default class CreateGame extends Component {
       }); 
     }
 
-    var updates = {};
-    updates['/users/'+ user.uid +'/in_game'] = matchName;
     firebase.database().ref().update(updates);
-
-    console.log('create game finished')
+    return true
   }
 
   render(){
@@ -94,20 +108,22 @@ export default class CreateGame extends Component {
 
             <TouchableOpacity style={styles.buttonContainer}
               onPress={() => {
-                this.createGame('public')
-                this.props.navigation.navigate('GameController')
-                ScreenOrientation.lockAsync
-                (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT)  
+                if(this.createGame('public')){
+                  this.props.navigation.navigate('GameController')
+                  ScreenOrientation.lockAsync
+                  (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT)  
+                }
               }}>
                 <Text style={styles.registerButtonText}>Create Public Game</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.buttonContainer}
               onPress={() => {
-                this.createGame('private')
-                this.props.navigation.navigate('GameController')
-                ScreenOrientation.lockAsync
-                (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT)  
+                if(this.createGame('private')){
+                  this.props.navigation.navigate('GameController')
+                  ScreenOrientation.lockAsync
+                  (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT)  
+                }
               }}>
                 <Text style={styles.registerButtonText}>Create Private Game</Text>
             </TouchableOpacity>
