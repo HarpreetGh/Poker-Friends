@@ -33,7 +33,6 @@ export default class GameSetting extends Component {
         { x: 0, y: 0 },
       ],
 
-      valueFoldCard: new Animated.ValueXY({ x: 25, y: 25 }),
       playerCardAnimations: [
         new Animated.ValueXY({ x: 0, y: 0 }),
         new Animated.ValueXY({ x: 0, y: 0 }),
@@ -74,6 +73,9 @@ export default class GameSetting extends Component {
       modalVisible: false,
       raiseVisible: false,
       fiveCardsFin: 4,
+
+      valueFoldCard: new Animated.ValueXY({ x: 25, y: 25 }),
+      fadeAnimation: new Animated.Value(0), 
 
       playerCardsGiven: 1,
       gamePot: 0,
@@ -149,9 +151,7 @@ export default class GameSetting extends Component {
       
     }
 
-    raisePot() {
-      this.setState({gamePot: this.state.gamePot + Number(this.state.raiseAmount)});
-    }
+    
   
     setModalVisible = (visible) => {
       this.setState({ modalVisible: visible });
@@ -399,6 +399,50 @@ export default class GameSetting extends Component {
     )
   }
 
+    UpdateInitializer(type, amount){
+      var game = {...this.props.game}
+      var keys = []
+      if(type === 'check'){
+        game.move[this.props.playerNum] = type
+        game.ready[this.props.playerNum] = true
+        keys = ['move', 'playerTurn', 'ready']
+      }
+      else if(type === 'call'){
+        game.move[this.props.playerNum] = type
+        game.chipsIn[this.props.playerNum] += amount //what if you don't have enough chips Fix for Partial Calls
+        game.pot += amount 
+        game.ready[this.props.playerNum] = true
+        keys = ['move', 'chipsIn', 'pot', 'playerTurn', 'ready']
+      }
+      else if (type === 'fold'){
+        game.move[this.props.playerNum] = type
+        game.ready[this.props.playerNum] = true
+        keys = ['move', 'playerTurn', 'ready']
+      }
+      else if (type === 'raise'){
+        game.move[this.props.playerNum] = type
+        game.chipsIn[this.props.playerNum] += amount
+        game.raisedVal += amount 
+        game.pot += amount 
+
+        game.ready.fill(false) 
+        game.ready[this.props.playerNum] = true
+        keys = ['move', 'chipsIn', 'raisedVal','pot', 'playerTurn', 'ready']
+      }
+
+      game.playerTurn++;
+      //see if it's the last player's turn and change it to the first player's turn
+      if(game.playerTurn == game.size){
+        game.playerTurn = 0;
+      }
+
+      this.props.updateGame(keys,//{...this.props.game}, 
+        game,
+        this.props.matchType,
+        this.props.matchType+'_'+this.props.matchName
+      )
+    }
+
     raiseView(){
       const {raiseVisible} = this.state;
       return (
@@ -426,7 +470,13 @@ export default class GameSetting extends Component {
                 onPress={() => {
                   //this.raiseAnimation()
                   this.setRaiseVisible(!raiseVisible);
-                  this.raisePot();
+                  //this.raisePot();
+                  if(this.state.raiseAmount > 0){
+                    this.UpdateInitializer('raise', Number(this.state.raiseAmount))
+                  }
+                  else{
+                    Alert.alert('Raise Value Invalid', 'Please Input Raise Value greater than 0')
+                  }
                   this.fadeIn();
                 }}
               >
@@ -449,27 +499,51 @@ export default class GameSetting extends Component {
     }
 
     actionsView(){
+      var diff, myTurn
+      if(this.props.game.move[this.props.playerNum] == 'fold'){
+        myTurn = false
+        diff = 0
+        this.UpdateInitializer('fold')
+      }
+      else{
+        diff = Math.max(...this.props.game.chipsIn) - this.props.game.chipsIn[this.props.playerNum]
+        myTurn = this.props.game.playerTurn == this.props.playerNum
+        console.log(this.props.game.playerTurn, this.props.playerNum)
+      }
+
       return (
         <View style={styles.bettingButtonsView}>
             
             {this.raiseView()}
 
-            <TouchableOpacity style={[styles.bettingButtons, styles.raiseButt]}
-            onPress={() => this.setRaiseVisible(true)}
+            <TouchableOpacity 
+              style={[styles.bettingButtons, (myTurn)? styles.raiseButt:styles.disabled]}
+              disabled={!myTurn} onPress={() => this.setRaiseVisible(true)}
             >
               <Text>Raise</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.bettingButtons, styles.callButt]}>
-              <Text>Call</Text>
-            </TouchableOpacity>
+            {diff == 0? (
+              <TouchableOpacity style={[styles.bettingButtons, (myTurn)?{backgroundColor:"#D6A2E8"}:styles.disabled]}
+                disabled={!myTurn} onPress={() => this.UpdateInitializer('check')}
+              >
+                <Text>Check</Text>
+              </TouchableOpacity>
+            ):(
+              <TouchableOpacity style={[styles.bettingButtons, (myTurn)? styles.callButt:styles.disabled]}
+                disabled={!myTurn} onPress={() => this.UpdateInitializer('call', diff)}
+              >
+                <Text>Call {diff}</Text>
+              </TouchableOpacity>
+            )}
 
-            <TouchableOpacity style={[styles.bettingButtons, styles.foldButt]} onPress = {() => this.foldCard()}>
+            <TouchableOpacity style={[styles.bettingButtons, (myTurn)? styles.foldButt:styles.disabled]} 
+              disabled={!myTurn} onPress = {() => {
+                this.foldCard() 
+                this.UpdateInitializer('fold')
+              }}
+            >
               <Text>Fold</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={[styles.bettingButtons, {backgroundColor:"#D6A2E8"}]}>
-              <Text>Check</Text>
             </TouchableOpacity>
 
           </View>
@@ -526,7 +600,7 @@ export default class GameSetting extends Component {
             />
               
             <Text style = {{ fontSize: 20 ,fontWeight: 'bold',color: 'white'}}>
-              Pot: {this.state.gamePot}
+              Pot: {this.props.game.pot}
             </Text>
           </View>
           
@@ -574,8 +648,7 @@ export default class GameSetting extends Component {
               
           {this.transitionBlinds()}
           
-          {this.props.game.turn > 1? (this.props.game.board.map((card,i)=> this.flopTurnRiver(card.suit, card.value, i))):(<Text></Text>)}
-
+          
           <View style = {styles.foldContainer}>
             <Animated.View style = {[styles.foldCard, this.state.valueFoldCard.getLayout()]}>
               <Image style = {styles.cardImage} source = {require("../../../assets/deckOfCards/PNG/♥J.png")}/>
@@ -586,7 +659,7 @@ export default class GameSetting extends Component {
           <View>
             {this.props.myCards.map((card,i)=> this.cardDeal(card.suit, card.value, i))}
             
-            {this.props.game.board.map((card,i)=> this.flopTurnRiver(card.suit, card.value, i))}
+            {this.props.game.turn > 1? (this.props.game.board.map((card,i)=> this.flopTurnRiver(card.suit, card.value, i))):(<Text></Text>)}
           </View>
                 {/* {this.flop(this.props.game.deck.shift(),2,3)}
                               {this.turn(1)}
@@ -598,45 +671,43 @@ export default class GameSetting extends Component {
  
 
 const styles = StyleSheet.create({
-    exitButton2: {
-      alignSelf:'center',
-      flex: 1
-      //width: 'auto',
-    },
-    container: {
-        flex: 1,
-        backgroundColor: '#2ecc71',
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 22
-      },
-    exitStyle: {
-        fontWeight: 'bold',
-        justifyContent: "center",
-        alignItems: "center",
-       
-    },
-    buttonInExit: {
-        borderRadius: 2,
-        padding: 10,
-        elevation: 2,
-        backgroundColor: "#b2bec3",
-        marginTop: 5
-        
-    },
-    button: {
-        borderRadius: 2,
-        padding: 10,
-        elevation: 2,
-        backgroundColor: "#b2bec3",
-        top: "3%",
-        left: "20%"
-    },
+  exitButton2: {
+    alignSelf:'center',
+    flex: 1
+    //width: 'auto',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#2ecc71',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  exitStyle: {
+    fontWeight: 'bold',
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonInExit: {
+    borderRadius: 2,
+    padding: 10,
+    elevation: 2,
+    backgroundColor: "#b2bec3",
+    marginTop: 5
+  },
+  button: {
+    borderRadius: 2,
+    padding: 10,
+    elevation: 2,
+    backgroundColor: "#b2bec3",
+    top: "3%",
+    left: "20%"
+  },
   exitStyle: {
     fontWeight: 'bold',
     justifyContent: "center",
@@ -790,6 +861,9 @@ const styles = StyleSheet.create({
   },
   foldButt:{
     backgroundColor: "#ffcccb"
+  },
+  disabled:{
+    backgroundColor: "#cccccc"
   },
   cardImage: {
     width: 100,
