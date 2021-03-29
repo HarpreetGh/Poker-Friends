@@ -31,92 +31,49 @@ export default class GameSetting extends Component {
       host: false,      
       ready: false,
     };
-
-    //this.gameData(this.state.matchType, this.state.fullMatchName)
   }
 
   componentDidMount(){
     this.getData();
-    //this.gameData(matchData[0], matchData[1]);
   }
-  /*componentWillUnmount(){
-
-  }*/
 
   async getData(){
-    var user = firebase.auth().currentUser;
-    console.log('getData')
-    //const a = await this.getUserData(user.uid)
-    //const b = await this.getGameData(this.state.matchType,this.state.fullMatchName)
+    const fullMatchName = this.props.userData.in_game
+    if(fullMatchName === ''){
+      Alert.alert('You have not Joined/Created Game. Going back to Home Page')
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+      this.props.navigation.navigate('LandingPage')
+    }
+    
+    var indexOfType = fullMatchName.indexOf('_')
+    const matchType = fullMatchName.substring(0, indexOfType)
+    const matchName = fullMatchName.substring(indexOfType+1)
 
-    const userData = await firebase.database().ref('/users/' + user.uid).once('value').then(async (snapshot) => {
-      this.setState({user: snapshot.val()})
-      
-      const fullMatchName = snapshot.val().in_game
-      var indexOfType = fullMatchName.indexOf('_')
-      const matchType = fullMatchName.substring(0, indexOfType)
-      return [fullMatchName, matchType, fullMatchName.substring(indexOfType+1), snapshot.val()]
-    });
-    this.setState({fullMatchName: userData[0]})
-    this.setState({matchType: userData[1]})
-    this.setState({matchName: userData[2]})
-    this.setState({user: userData[3]})
-
-    this.gameData(userData[1], userData[0])
+    this.setState({fullMatchName: fullMatchName, 
+      matchType: matchType, 
+      matchName: matchName
+    })
+    this.gameData(matchType, fullMatchName)
   }
   
-  fail(){
-    console.log('faill')
-  }
-
   async gameData(matchType, matchName){
-    console.log(matchType, matchName)
+    //console.log(matchType, matchName)
     firebase.database().ref('/games/'+ matchType + '/' + matchName).on('value', (snapshot) => {
       const data =  snapshot.val()
-      this.setState({game: data}) 
-      console.log('game update recieved')
-      
+      console.log('game updated', data)
       this.checkHost(data)
+      this.setState({game: data}, () => this.gameTurnAction()) 
+      
+      //this.checkHost(data)
     })
   }
-  /*
-  checkHost(game){
-    if(!this.state.host){
-      if(game.turn == 0){ 
-        //if it's the intial state of round check host
-        //so cards can be shuffled and other things
-        
-        var playerNum = game.players.indexOf(this.state.user.username)
-        if(playerNum == 0){
-          this.setState({host: true})
-
-          this.shuffleCards()
-          var cards = this.giveOutCards()
-          this.setupCards(cards[0],cards[1])
-        }
-        else{
-          this.setState({host: false})
-        }
-        this.setState({playerNum: playerNum})
-      }
-      else{
-        this.setState({myCards: game.player_cards[this.state.playerNum].myCards})
-      }
-    }
-    this.setState({ready: true})
-
-  }
-  */
 
  checkHost(game){
+    //var game = this.state.game
     if(!this.state.host){
-      if(game.turn == 0){ 
-        var playerNum = game.players.indexOf(this.state.user.username)
-        this.setState({host: playerNum == 0})
-        this.setState({playerNum: playerNum})
-      }
+      var playerNum = game.players.indexOf(this.props.userData.username)
+      this.setState({host: playerNum == 0, playerNum: playerNum})
     }
-    this.gameTurnAction()
   }
 
   /*
@@ -130,12 +87,13 @@ export default class GameSetting extends Component {
 
   gameTurnAction(){
     //check if all players are ready, by seeing if any player is not ready
-    const allPlayersReady = !this.state.game.ready.includes(false)
-    const turnStart = this.state.game.turnStart
+    //console.log(this.state.game)
+    var game = {...this.state.game}
+    const allPlayersReady = !game.ready.includes(false)
     //check if start of game turn.
 
     if(this.state.host){
-      var game = {...this.state.game}
+      console.log('game.turn = ',game.turn)
       var updates = {};
       const matchPath = '/games/'+ this.state.matchType + '/' + this.state.fullMatchName
 
@@ -148,57 +106,62 @@ export default class GameSetting extends Component {
         updates[matchPath + '/player_cards'] = game.player_cards;
         updates[matchPath + '/deck'] = game.deck;
         updates[matchPath + '/turn'] = game.turn;
+        
+        //prepare for game.turn == 1
+        this.setState({myCards: game.player_cards[this.state.playerNum].myCards})
       }
 
-      else if(game.turn == 1){
-        if(turnStart){
-          this.setState({myCards: game.player_cards[this.state.playerNum].myCards})
-          updates[matchPath + '/turnStart'] = false
-        }
-        else if(allPlayersReady){
+      else if(game.turn < 5){
+        if(allPlayersReady){
+           if(game.turn < 4){ //prep for turn 2
+            if(game.turn == 1){
+              game.board = game.deck.splice(0,3)
+            }
+            else{
+              game.board.push(...game.deck.splice(0,1))
+            }
+            //prep for turn 3 and 4
+            updates[matchPath + '/board'] = game.board
+            updates[matchPath + '/deck'] = game.deck
+          }
+
           game.turn++
           updates[matchPath + '/turn'] = game.turn
           updates[matchPath + '/ready'] = game.ready.fill(false)
           updates[matchPath + '/turnStart'] = true
         }
       }
-
-      else if(1 < game.turn && game.turn < 5){ //game.turn 2,3,4
-        if(turnStart){
-          if(game.turn == 2){
-            console.log("1", game.deck)
-            game.board = game.deck.splice(0,3)
-            console.log('2', game.board, game.deck)
-          }
-          else{ //game.turn 3 and 4
-            game.board.push(...game.deck.splice(0,1))
-          }
-          updates[matchPath + '/board'] = game.board
-          updates[matchPath + '/deck'] = game.deck
-          updates[matchPath + '/turnStart'] = false
-        }
-        else if(allPlayersReady){
-          game.turn++
-          updates[matchPath + '/turn'] = game.turn
-          updates[matchPath + '/ready'] = game.ready.fill(false)
-          updates[matchPath + '/turnStart'] = true
-        }
-      }
-
-      else{
+      else if(game.turn == 5){
+        console.log('turn 5 trig')
         //Figure out who won and give them pot
-        const roundWinner = this.findRoundWinner()
+        const roundWinner = 0//this.findRoundWinner(game)
+        
         game.balance[roundWinner] += game.pot
+        game.chipsWon[roundWinner] += game.pot
         game.round++
+
+        for(var i = 0; i < game.size; i++){
+          if(i != roundWinner){
+            game.chipsLost[i] += game.chipsIn[i]
+          }
+        }
         //game.turn = 0
         //game.pot = 0
-       
+        
+
         updates[matchPath + '/turn'] = 0
         updates[matchPath + '/ready'] = game.ready.fill(false)
         updates[matchPath + '/balance'] = game.balance
+        updates[matchPath + '/board'] = ''
         updates[matchPath + '/round'] = game.round
+        updates[matchPath + '/chipsWon'] = game.chipsWon
+        updates[matchPath + '/chipsLost'] = game.chipsLost
+        updates[matchPath + '/chipsIn'] = game.chipsIn.fill(0)
         updates[matchPath + '/pot'] = 0
         updates[matchPath + '/turnStart'] = true
+      }
+      else{
+        console.log("Something Wrong with GameTurnAction in GameController")
       }
 
       if(Object.keys(updates).length > 0){
@@ -207,8 +170,9 @@ export default class GameSetting extends Component {
     }
     
     else{ //all players but host
-      if(this.state.game.turn == 1 && turnStart){
-        this.setState({myCards: this.state.game.player_cards[this.state.playerNum].myCards})
+      console.log('not host turn action triggered')
+      if(game.turn == 1 && turnStart){
+        this.setState({myCards: game.player_cards[this.state.playerNum].myCards})
       }
     }
     this.setState({ready: true})
@@ -239,7 +203,7 @@ export default class GameSetting extends Component {
   }
 
   CompareCards(indexs, cards){
-
+    return 0
   }
 
   giveOutCards() {
@@ -286,14 +250,19 @@ export default class GameSetting extends Component {
     }
   }
     
-  leaveGame(){ //When player wants leave game in progress
-    var editGame = this.state.game
-    const playernum = this.state.playerNum
-    
+  leaveGame(editGame, playernum, matchType, fullMatchName, userData){ //When player wants leave game in progress
+    //var editGame = this.props.game
+    //const playernum = this.state.playerNum
+    //editGame, playernum, matchType, fullMatchName
+
     const quitBalance = editGame.balance[playernum]
-    const chipsRank = quitBalance - editGame.buyIn
+    const chipsWon = editGame.chipsWon[playernum]
+    const chipsLost = editGame.chipsLost[playernum] + editGame.chipsIn[playernum]
 
     editGame.balance.splice(playernum,1)
+    editGame.chipsWon.splice(playernum,1)
+    editGame.chipsLost.splice(playernum,1)
+    editGame.chipsIn.splice(playernum,1)
     editGame.move.splice(playernum,1)
     editGame.player_cards.splice(playernum,1)
     editGame.players.splice(playernum,1)
@@ -301,15 +270,23 @@ export default class GameSetting extends Component {
     editGame.size -= 1
 
     var updates = {}; 
-    var matchLocation = '/games/'+ this.state.matchType + '/' + this.state.fullMatchName
+    //var matchLocation = '/games/'+ this.state.matchType + '/' + this.state.fullMatchName
+    var matchLocation = '/games/'+ matchType + '/' + fullMatchName
+
+    var user = firebase.auth().currentUser;
+
+    updates['/users/'+ user.uid +'/in_game'] = '';
+    updates['/users/'+ user.uid +'/chips'] = userData.chips + quitBalance;
+    updates['/users/'+ user.uid +'/games'] = userData.games + 1;
+    updates['/users/'+ user.uid +'/chips_won'] = chipsWon;
+    updates['/users/'+ user.uid +'/chips_lost'] = chipsLost;
 
     if(editGame.size == 0){ //delete game
       //by setting the data of these location to NULL, the branch is deleted.
       //https://firebase.google.com/docs/database/web/read-and-write#delete_data
-
       updates[matchLocation] = null
-      if(this.state.matchType == 'public'){
-        updates['/games/list/' + this.state.fullMatchName] = null
+      if(matchType == 'public'){
+        updates['/games/list/' + fullMatchName] = null
       }
     }
     else{ //update game
@@ -320,20 +297,7 @@ export default class GameSetting extends Component {
       updates[matchLocation + '/ready']         = editGame.ready
       updates[matchLocation + '/size']          = editGame.size
     }
-    
-    var user = firebase.auth().currentUser;
-    updates['/users/'+ user.uid +'/in_game'] = '';
-    updates['/users/'+ user.uid +'/chips'] = this.state.user.chips + quitBalance;
-    updates['/users/'+ user.uid +'/games'] = this.state.user.games + 1;
-
-    ///change this later to be round based, instead of game based
-    if(chipsRank > 0){
-      updates['/users/'+ user.uid +'/chips_won'] = this.state.user.chips + chipsRank;
-    }
-    else if(chipsRank < 0){
-      updates['/users/'+ user.uid +'/chips_lost'] = this.state.user.chips + chipsRank;
-    }
-
+    firebase.database().ref('/games/'+ matchType + '/' + fullMatchName).off()
     firebase.database().ref().update(updates);
   }
 
@@ -343,7 +307,8 @@ export default class GameSetting extends Component {
     const playernum = this.state.playerNum
     
     const endBalance = endGame.balance[playernum]
-    const chipsRank = endBalance - endGame.buyIn
+    const chipsWon = editGame.chipsWon[playernum]
+    const chipsLost = editGame.chipsLost[playernum] + editGame.chipsIn[playernum]
 
     var updates = {}; 
     var matchLocation = '/games/'+ this.state.matchType + '/' + this.state.fullMatchName
@@ -355,19 +320,13 @@ export default class GameSetting extends Component {
     
     var user = firebase.auth().currentUser;
     updates['/users/'+ user.uid +'/in_game'] = '';
-    updates['/users/'+ user.uid +'/chips'] = this.state.user.chips + endBalance;
-    updates['/users/'+ user.uid +'/games'] = this.state.user.games + 1;
+    updates['/users/'+ user.uid +'/chips'] = this.props.userData.chips + endBalance;
+    updates['/users/'+ user.uid +'/games'] = this.props.userData.games + 1;
+    updates['/users/'+ user.uid +'/chips_won'] = chipsWon;
+    updates['/users/'+ user.uid +'/chips_lost'] = chipsLost;
 
     if(endGame.balance[playernum] > 0){
-      updates['/users/'+ user.uid +'/wins'] = this.state.user.wins + 1;
-    }
-    
-    ///change this later to be round based, instead of game based
-    if(chipsRank > 0){
-      updates['/users/'+ user.uid +'/chips_won'] = this.state.user.chips + chipsRank;
-    }
-    else if(chipsRank < 0){
-      updates['/users/'+ user.uid +'/chips_lost'] = this.state.user.chips + chipsRank;
+      updates['/users/'+ user.uid +'/wins'] = this.props.userData.wins + 1;
     }
 
     firebase.database().ref().update(updates);
@@ -380,6 +339,10 @@ export default class GameSetting extends Component {
           myCards={this.state.myCards}
           matchName={this.state.matchName}
           matchType={this.state.matchType}
+          playerNum={this.state.playerNum}
+          navigation = {this.props.navigation}
+          leaveGame = {this.leaveGame}
+          userData = {this.props.userData}
         />
       )
     }

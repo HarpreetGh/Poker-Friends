@@ -355,7 +355,7 @@ export default class GameSetting extends Component {
         <View style = {styles.centeredView}>
           <View style = {styles.modalView}>
             
-            <Text style = {{padding: 5}}>Are you sure you want to leave</Text>
+            <Text style = {{padding: 5}}>Are you sure you want to leave?</Text>
             
             <TouchableOpacity
               style={styles.buttonInExit}
@@ -363,7 +363,7 @@ export default class GameSetting extends Component {
                 this.setModalVisible(!modalVisible)
               }}
               >
-                <Text style={ styles.exitStyle } >NO</Text>
+                <Text style={ styles.exitStyle }>NO</Text>
             </TouchableOpacity>
             
             <TouchableOpacity
@@ -374,13 +374,30 @@ export default class GameSetting extends Component {
                 this.setModalVisible(!modalVisible)
               }}
             >
-              <Text style={ styles.exitStyle }>YES</Text>
+              <Text style={ styles.exitStyle }>Go to Main Menu</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.buttonInExit}
+              onPress={() => {
+                this.props.navigation.navigate('LandingPage')
+                ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+                this.setModalVisible(!modalVisible)
+                this.props.leaveGame(this.props.game,
+                  this.props.playerNum,
+                  this.props.matchType,
+                  this.props.matchType+'_'+this.props.matchName,
+                  this.props.userData
+                  )
+              }}
+            >
+              <Text style={ styles.exitStyle }>Quit Game</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
-      )
-    }
+    )
+  }
 
     raiseView(){
       const {raiseVisible} = this.state;
@@ -460,7 +477,7 @@ export default class GameSetting extends Component {
     }
     
     render() { 
-      console.log(this.props.game.deck)
+      //console.log(this.props.game.deck)
       
       return (  
         <View style = {styles.container}>
@@ -556,6 +573,8 @@ export default class GameSetting extends Component {
           </View>
               
           {this.transitionBlinds()}
+          
+          {this.props.game.turn > 1? (this.props.game.board.map((card,i)=> this.flopTurnRiver(card.suit, card.value, i))):(<Text></Text>)}
 
           <View style = {styles.foldContainer}>
             <Animated.View style = {[styles.foldCard, this.state.valueFoldCard.getLayout()]}>
@@ -579,22 +598,44 @@ export default class GameSetting extends Component {
  
 
 const styles = StyleSheet.create({
-  exitButton2: {
-    alignSelf:'center',
-    flex: 1
-    //width: 'auto',
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#2ecc71',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22
+    exitButton2: {
+      alignSelf:'center',
+      flex: 1
+      //width: 'auto',
+    },
+    container: {
+        flex: 1,
+        backgroundColor: '#2ecc71',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+      },
+    exitStyle: {
+        fontWeight: 'bold',
+        justifyContent: "center",
+        alignItems: "center",
+       
+    },
+    buttonInExit: {
+        borderRadius: 2,
+        padding: 10,
+        elevation: 2,
+        backgroundColor: "#b2bec3",
+        marginTop: 5
+        
+    },
+    button: {
+        borderRadius: 2,
+        padding: 10,
+        elevation: 2,
+        backgroundColor: "#b2bec3",
+        top: "3%",
+        left: "20%"
     },
   exitStyle: {
     fontWeight: 'bold',

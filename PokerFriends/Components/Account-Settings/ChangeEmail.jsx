@@ -16,16 +16,20 @@ export default class ChangeEmail extends Component {
 
   Update(){
     var user = firebase.auth().currentUser;
+    var updates = {};
 
     user.updateEmail(this.state.email)
     .then(() =>{
       Alert.alert("Email changed","From: " + this.state.oldEmail + " to: " + this.state.email)
+      updates['/users/'+ user.uid +'/email'] = this.state.email;
+      firebase.database().ref().update(updates);
       this.props.navigation.navigate('AccountSettings')
     })
     .catch(function(error) {
       console.log(error)
     });
   }
+  
     render(){
         return (
             <KeyboardAvoidingView 

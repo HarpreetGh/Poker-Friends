@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, KeyboardAvoidingView, Pressable, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, KeyboardAvoidingView, 
+  Pressable, TouchableOpacity,} from 'react-native';
 import HelpButton from './HelpButton'
 import Logo from './Logo'
 import Login from './Login'
@@ -22,38 +23,52 @@ const LogOut = () => {
 }
 
 export default class LandingPage extends Component {
-    
-  SignedIn = () =>{
-    return(
-      <View>
-        <TouchableOpacity 
-          style={styles.button}
-          onPress = {() => {
-            this.props.navigation.navigate('GameController'); ///// 'GameSetting'
-            ScreenOrientation.lockAsync
-            (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
-          }}
-        >
-          <Text style={styles.textStyle}>Play Game</Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.button}
-          onPress = {() => {
-            this.props.navigation.navigate('CreateGame'); 
-          }}
-        >
-          <Text style={styles.textStyle}>Create Game</Text>
-        </TouchableOpacity>
+  SignedIn = () => {
+      return(
+        <View>
+          {this.props.userData.in_game == ''? (
+            <TouchableOpacity 
+              style={styles.button}
+              onPress = {() => {
+                this.props.navigation.navigate('CreateGame');
+              }}
+            >
+              <Text style={styles.textStyle}>
+                Join Game (TBA)
+              </Text>
+            </TouchableOpacity>
+          ):(
+            <TouchableOpacity 
+              style={styles.button}
+              onPress = {() => {
+                this.props.navigation.navigate('GameController'); ///// 'GameSetting'
+                ScreenOrientation.lockAsync
+                (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+              }}
+            >
+              <Text style={styles.textStyle}>
+                Continue Game
+              </Text>
+            </TouchableOpacity>
+          )}
 
-        <TouchableOpacity style={styles.button} 
-          onPress = {() => LogOut()}>
-              <Text style={styles.textStyle}>Log Out</Text>
-        </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.button}
+            onPress = {() => {
+              this.props.navigation.navigate('CreateGame'); 
+            }}
+          >
+            <Text style={styles.textStyle}>Create Game</Text>
+          </TouchableOpacity>
 
-        
-      </View>
-    )
+          <TouchableOpacity style={styles.button} 
+            onPress = {() => LogOut()}>
+                <Text style={styles.textStyle}>Log Out</Text>
+          </TouchableOpacity>
+          
+        </View>
+      )
   }
 
   SignedOut = () => {
@@ -95,28 +110,28 @@ export default class LandingPage extends Component {
     )
   }
     render(){    
-        return (
-          <View style={styles.container}>
+      return (
+        <View style={styles.container}>
 
-            <View style={styles.flexContainer}>
-              {this.props.LoggedIn? (this.AccountSettings()):(<Text></Text>)}
+          <View style={styles.flexContainer}>
+            {this.props.LoggedIn? (this.AccountSettings()):(<Text></Text>)}
 
-              {/*<Balance/>*/}
-            </View>
-            
-            <Logo/>
-
-            {this.props.LoggedIn? (this.SignedIn()):(this.SignedOut())}
-
-            {this.props.LoggedIn? (this.AccountStatistics()):(<Text>PLEASE LOG IN TO SEE STATS</Text>)}
-
-            <View style={styles.flexContainer}>
-              <HelpButton/>
-              <FriendsButton navigation = {this.props.navigation}/>
-            </View>
-
+            <Balance chips={this.props.userData.chips}/>
           </View>
-        );
+          
+          <Logo/>
+
+          {this.props.LoggedIn? (this.SignedIn()):(this.SignedOut())}
+
+          {this.props.LoggedIn? (this.AccountStatistics()):(<Text></Text>)}
+
+          <View style={styles.flexContainer}>
+            <HelpButton/>
+            <FriendsButton navigation = {this.props.navigation}/>
+          </View>
+
+        </View>
+      );
     }
 }
 const styles = StyleSheet.create({
