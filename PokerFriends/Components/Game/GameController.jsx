@@ -57,10 +57,9 @@ export default class GameSetting extends Component {
   }
   
   async gameData(matchType, matchName){
-    //console.log(matchType, matchName)
     firebase.database().ref('/games/'+ matchType + '/' + matchName).on('value', (snapshot) => {
       const data =  snapshot.val()
-      console.log('game updated', data)
+      console.log('game updated')
       this.checkHost(data)
       this.setState({game: data}, () => this.gameTurnAction()) 
       
@@ -87,7 +86,6 @@ export default class GameSetting extends Component {
 
   gameTurnAction(){
     //check if all players are ready, by seeing if any player is not ready
-    //console.log(this.state.game)
     var game = {...this.state.game}
     const allPlayersReady = !game.ready.includes(false)
     //check if start of game turn.
@@ -129,10 +127,10 @@ export default class GameSetting extends Component {
           updates[matchPath + '/turn'] = game.turn
           updates[matchPath + '/ready'] = game.ready.fill(false)
           updates[matchPath + '/turnStart'] = true
+          updates[matchPath + '/raisedVal'] = 0;
         }
       }
       else if(game.turn == 5){
-        console.log('turn 5 trig')
         //Figure out who won and give them pot
         const roundWinner = 0//this.findRoundWinner(game)
         
@@ -149,16 +147,20 @@ export default class GameSetting extends Component {
         //game.pot = 0
         
 
-        updates[matchPath + '/turn'] = 0
-        updates[matchPath + '/ready'] = game.ready.fill(false)
+        
+        updates[matchPath + '/move'] = game.move.fill('check')
+        updates[matchPath + '/playerTurn'] = 0
         updates[matchPath + '/balance'] = game.balance
-        updates[matchPath + '/board'] = ''
         updates[matchPath + '/round'] = game.round
         updates[matchPath + '/chipsWon'] = game.chipsWon
         updates[matchPath + '/chipsLost'] = game.chipsLost
         updates[matchPath + '/chipsIn'] = game.chipsIn.fill(0)
         updates[matchPath + '/pot'] = 0
-        updates[matchPath + '/turnStart'] = true
+        updates[matchPath + '/raisedVal'] = 0;
+        //updates[matchPath + '/turnStart'] = true
+        updates[matchPath + '/ready'] = game.ready.fill(false)
+        updates[matchPath + '/turn'] = 0
+        updates[matchPath + '/board'] = ''
       }
       else{
         console.log("Something Wrong with GameTurnAction in GameController")
@@ -170,7 +172,6 @@ export default class GameSetting extends Component {
     }
     
     else{ //all players but host
-      console.log('not host turn action triggered')
       if(game.turn == 1 && turnStart){
         this.setState({myCards: game.player_cards[this.state.playerNum].myCards})
       }
@@ -180,7 +181,7 @@ export default class GameSetting extends Component {
 
   findRoundWinner(game){
     var hands = game.player_cards.sort(function(a, b){return a.rank - b.rank}); //sorts from small to high
-    var highestRank = hands[0].rank
+    var highestRank = hands[0].rank //CHECK IF THEY FOLDED FIX ME
 
     var indexOfHighestRanks = []
     for(var i = 0; i < game.size; i++){
@@ -233,22 +234,41 @@ export default class GameSetting extends Component {
     return [playerRanks, deck]
   }
 
-  updateGame(newGameData){
-    var currGame = this.state.game
-
+  updateGame(keys, newGameData, matchType, fullMatchName){
     var updates = {};
-    var matchLocation = '/games/'+ this.state.matchType + '/' + this.state.fullMatchName + '/'
-    const keys = object.keys(currGame)
-
+    var matchLocation = '/games/'+ matchType + '/' + fullMatchName + '/'
+    
     for(var i = 0; i < keys.length; i++){
-      if(currGame[keys[i]] != newGameData[keys[i]]){
-        updates[matchLocation + keys[i]] = newGameData[keys[i]];
-      }
+      updates[matchLocation + keys[i]] = newGameData[keys[i]];
     }
+
+    console.log('updateGame: ', updates)
+
     if(Object.keys(updates).length > 0){
       firebase.database().ref().update(updates);
     }
   }
+
+  /* Experimental code
+  updateGame2(oldGameData, newGameData, matchType, fullMatchName){ 
+    var updates = {};
+    var matchLocation = '/games/'+ matchType + '/' + fullMatchName + '/'
+    const keys = Object.keys(oldGameData)
+    
+    for(var i = 0; i < keys.length; i++){
+      if(typeof(oldGameData[keys[i]]) == "object" &&
+        oldGameData[keys[i]].every((value) => value != newGameData[keys[i]])){
+        updates[matchLocation + keys[i]] = newGameData[keys[i]];
+      }
+    }
+
+    console.log('updateGame: ', updates)
+
+    if(Object.keys(updates).length > 0){
+      firebase.database().ref().update(updates);
+    }
+  }
+  */
     
   leaveGame(editGame, playernum, matchType, fullMatchName, userData){ //When player wants leave game in progress
     //var editGame = this.props.game
@@ -342,6 +362,7 @@ export default class GameSetting extends Component {
           playerNum={this.state.playerNum}
           navigation = {this.props.navigation}
           leaveGame = {this.leaveGame}
+          updateGame = {this.updateGame}
           userData = {this.props.userData}
         />
       )
