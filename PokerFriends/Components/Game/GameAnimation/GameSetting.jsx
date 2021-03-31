@@ -225,8 +225,8 @@ export default class GameSetting extends Component {
         </View>
       }
       else if(this.state.fiveCardsFin < 5){
-        index = this.state.fiveCardsFin - 1
-        
+        var index = this.state.fiveCardsFin - 1
+        var bb;
         if(index == 0){
           bb = (
             <Animated.View
