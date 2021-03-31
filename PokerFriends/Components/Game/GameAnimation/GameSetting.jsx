@@ -3,6 +3,7 @@ import { Text, StyleSheet, View, TouchableOpacity,
          StatusBar, Image, Modal, TextInput,
          BackHandler, Alert, Animated, Dimensions
          } from 'react-native';
+import Slider from '@react-native-community/slider';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 import Deck from '../../decks'
@@ -79,7 +80,7 @@ export default class GameSetting extends Component {
 
       playerCardsGiven: 1,
       gamePot: 0,
-      raiseAmount: 0,
+      raiseAmount: 10,
 
       // USE THIS STUFF
       // this.props.matchName,
@@ -411,8 +412,9 @@ export default class GameSetting extends Component {
         game.move[this.props.playerNum] = type
         game.chipsIn[this.props.playerNum] += amount //what if you don't have enough chips Fix for Partial Calls
         game.pot += amount 
+        game.balance[this.props.playerNum] -= amount
         game.ready[this.props.playerNum] = true
-        keys = ['move', 'chipsIn', 'pot', 'playerTurn', 'ready']
+        keys = ['move', 'chipsIn', 'balance', 'pot', 'playerTurn', 'ready']
       }
       else if (type === 'fold'){
         game.move[this.props.playerNum] = type
@@ -424,10 +426,13 @@ export default class GameSetting extends Component {
         game.chipsIn[this.props.playerNum] += amount
         game.raisedVal += amount 
         game.pot += amount 
+        game.balance[this.props.playerNum] -= amount
 
         game.ready.fill(false) 
         game.ready[this.props.playerNum] = true
-        keys = ['move', 'chipsIn', 'raisedVal','pot', 'playerTurn', 'ready']
+        keys = ['move', 'chipsIn', 'raisedVal', 'balance', 'pot', 'playerTurn', 'ready']
+
+        this.setState({raiseAmount: 10})
       }
 
       game.playerTurn++;
@@ -443,7 +448,7 @@ export default class GameSetting extends Component {
       )
     }
 
-    raiseView(){
+    raiseView(callAmount, maxChips){
       const {raiseVisible} = this.state;
       return (
       <Modal
@@ -453,17 +458,26 @@ export default class GameSetting extends Component {
       >
         <View style = {styles.centeredView}>
             <View style = {styles.modalView}>
-              <Text style = {{padding: 0, fontWeight: 'bold'}}>RAISE</Text>
-              <TextInput style = 
-                {{fontSize: 20, padding: 10}} 
-                placeholder="0"
-                value={this.state.raiseAmount}
-                onChangeText={(raiseAmount) => { 
+              {callAmount == 0? (
+                <Text style = {{padding: 0, fontWeight: 'bold'}}>Raise {this.state.raiseAmount} Chips</Text>
+              ):(
+                <Text style = {{padding: 0, fontWeight: 'bold'}}>Call: {callAmount} + New Re-Raise {this.state.raiseAmount} = 
+                  {callAmount+this.state.raiseAmount} Chips</Text>
+              )}
+              
+              <Slider 
+                style={{width: 200, height: 40}}
+                minimumValue={10+callAmount}
+                maximumValue={maxChips}
+                step={10}
+                onValueChange={(raiseAmount) => { 
                   this.setState({raiseAmount});
                 }}
-                keyboardType = {'number-pad'}
-                disableFullscreenUI = {true}
+                value={this.state.raiseAmount}
+                minimumTrackTintColor="#2ecc71"
+                maximumTrackTintColor="#000000"
               />
+              {/* //https://github.com/callstack/react-native-slider */}
 
               <TouchableOpacity
                 style={styles.buttonInExit}
@@ -472,7 +486,7 @@ export default class GameSetting extends Component {
                   this.setRaiseVisible(!raiseVisible);
                   //this.raisePot();
                   if(this.state.raiseAmount > 0){
-                    this.UpdateInitializer('raise', Number(this.state.raiseAmount))
+                    this.UpdateInitializer('raise', Number(this.state.raiseAmount)+callAmount)
                   }
                   else{
                     Alert.alert('Raise Value Invalid', 'Please Input Raise Value greater than 0')
@@ -499,41 +513,57 @@ export default class GameSetting extends Component {
     }
 
     actionsView(){
-      var diff, myTurn
+      var myTurn, callAmount
+      var callString = 'Call '
       if(this.props.game.move[this.props.playerNum] == 'fold'){
         myTurn = false
-        diff = 0
+        callAmount = 0
         this.UpdateInitializer('fold')
       }
       else{
-        diff = Math.max(...this.props.game.chipsIn) - this.props.game.chipsIn[this.props.playerNum]
-        myTurn = this.props.game.playerTurn == this.props.playerNum
-        console.log(this.props.game.playerTurn, this.props.playerNum)
+        var balance = this.props.game.balance[this.props.playerNum]
+
+        if(balance == 0){ //if you run out of funds
+          callAmount = 0
+          this.UpdateInitializer('check')
+        }
+        else{
+          callAmount = Math.max(...this.props.game.chipsIn) - this.props.game.chipsIn[this.props.playerNum]
+
+          if(callAmount > balance){ //partial still not implemented at pay out
+            callAmount = balance    //might also depricate later
+            callString += '(partial) '
+          }
+          callString += callAmount
+
+          myTurn = this.props.game.playerTurn == this.props.playerNum
+        }
+        //console.log(this.props.game.playerTurn, this.props.playerNum)
       }
 
       return (
         <View style={styles.bettingButtonsView}>
             
-            {this.raiseView()}
+            {this.raiseView(callAmount, balance)}
 
             <TouchableOpacity 
               style={[styles.bettingButtons, (myTurn)? styles.raiseButt:styles.disabled]}
               disabled={!myTurn} onPress={() => this.setRaiseVisible(true)}
             >
-              <Text>Raise</Text>
+              {this.props.game.raisedVal == 0? (<Text>Raise</Text>):(<Text>Re-Raise</Text>)}
             </TouchableOpacity>
 
-            {diff == 0? (
+            {callAmount == 0? (
               <TouchableOpacity style={[styles.bettingButtons, (myTurn)?{backgroundColor:"#D6A2E8"}:styles.disabled]}
                 disabled={!myTurn} onPress={() => this.UpdateInitializer('check')}
               >
                 <Text>Check</Text>
               </TouchableOpacity>
-            ):(
+            ):( 
               <TouchableOpacity style={[styles.bettingButtons, (myTurn)? styles.callButt:styles.disabled]}
-                disabled={!myTurn} onPress={() => this.UpdateInitializer('call', diff)}
+                disabled={!myTurn} onPress={() => this.UpdateInitializer('call', callAmount)}
               >
-                <Text>Call {diff}</Text>
+                <Text>{callString}</Text>
               </TouchableOpacity>
             )}
 
@@ -642,7 +672,7 @@ export default class GameSetting extends Component {
               source={require('../../../assets/chipAmount.png')}
             /> 
             <Text style = {{ fontSize: 20, fontWeight: 'bold' }}>
-              100
+              {this.props.game.balance[this.props.playerNum]}
             </Text> 
           </View>
               
@@ -659,7 +689,7 @@ export default class GameSetting extends Component {
           <View>
             {this.props.myCards.map((card,i)=> this.cardDeal(card.suit, card.value, i))}
             
-            {this.props.game.turn > 1? (this.props.game.board.map((card,i)=> this.flopTurnRiver(card.suit, card.value, i))):(<Text></Text>)}
+            {this.props.game.turn > 1? (this.props.game.board.map((card,i)=> this.flopTurnRiver(card.suit, card.value, i+this.props.playerNum*2))):(<Text></Text>)}
           </View>
                 {/* {this.flop(this.props.game.deck.shift(),2,3)}
                               {this.turn(1)}

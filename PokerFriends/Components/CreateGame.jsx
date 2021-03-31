@@ -1,5 +1,6 @@
 import React, { Component, useState } from 'react'
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, Touchable, Alert } from 'react-native';
+import Slider from '@react-native-community/slider';
 import Logo from './Logo';
 import firebase from 'firebase'
 import * as ScreenOrientation from 'expo-screen-orientation';
@@ -9,7 +10,7 @@ export default class CreateGame extends Component {
     super(props)
     this.state = {
       name: '',
-      buyIn: ''
+      buyIn: 50
     }
   }
   /*
@@ -33,18 +34,19 @@ export default class CreateGame extends Component {
       return false
     }
     else if(!this.props.userData.in_game === ''){
-      Alert.alert('Already in a Game', 'Please leave the game you currently are in!To create a Game')
+      Alert.alert('Already in a Game', 'Please leave the game you currently are in, to create a Game')
       return false
-    } 
+    }
+    else if(this.state.name === ''){
+      Alert.alert('Match must have a Name', 'Please enter a valid name for the Match')
+      return false
+    }  
     this.props.userData.chips -= buyIn 
     var d = new Date
     var matchName = type + '_' + this.state.name +"-"+ d.getTime();
     var updates = {};
     updates['/users/'+ user.uid +'/in_game'] = matchName;
     updates['/users/'+ user.uid +'/chips'] = this.props.userData.chips
-
-   
-    
 
     firebase.database().ref('games/' + type + '/' + matchName).set({
       balance: [buyIn],
@@ -96,7 +98,23 @@ export default class CreateGame extends Component {
                 value={this.state.name}
             />
 
-            <TextInput
+            <Text style={styles.textStyle}> Buy-In {this.state.buyIn} </Text>
+            
+            <Slider 
+                style={{width: 350, height: 30, marginBottom: 20}}
+                minimumValue={50}
+                maximumValue={500}
+                step={50}
+                onValueChange={(buyIn) => { 
+                  this.setState({buyIn});
+                }}
+                value={this.state.buyIn}
+                minimumTrackTintColor="#FFFFFF"
+                maximumTrackTintColor="#000000"
+              />
+              {/* //https://github.com/callstack/react-native-slider */}
+
+            {/* <TextInput
                 placeholder="Buy In"
                 placeholderTextColor="rgba(255, 255, 255, 0.75)"
                 returnKeyType="next"
@@ -106,7 +124,7 @@ export default class CreateGame extends Component {
                 style={styles.input}
                 onChangeText={text => this.setState({buyIn: text})}
                 value={this.state.buyIn}
-            />
+            /> */}
 
             <TouchableOpacity style={styles.buttonContainer}
               onPress={() => {
