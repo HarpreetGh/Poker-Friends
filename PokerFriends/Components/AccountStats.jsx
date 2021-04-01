@@ -26,14 +26,16 @@ export default class AccountStats extends Component {
             return ( 
             <View style = {styles.container}>
                 <Logo/>
-                <Text style = {styles.title}> {this.state.user.username}'s Stats</Text>
-                <View style = {styles.textContainer}><Text style = {styles.Stats}>Wins: {this.state.user.wins}</Text></View>
-                <View style = {styles.textContainer}><Text style = {styles.Stats}>Losses: {this.state.user.losses}</Text></View>
-                <View style = {styles.textContainer}><Text style = {styles.Stats}>Win/Loss Ratio: {this.state.user.winRatio}%</Text></View>
-                <View style = {styles.textContainer}><Text style = {styles.Stats}>Games Played: {this.state.user.games}</Text></View>
-                <View style = {styles.textContainer}><Text style = {styles.Stats}>Current Chips:  {this.state.user.chips} </Text></View>
-                <View style = {styles.textContainer}><Text style = {styles.Stats}>Life Time Earnings: {this.state.user.chips_won} </Text></View>
-                <View style = {styles.textContainer}><Text style = {styles.Stats}>Life Time Losses: {this.state.user.chips_lost} </Text></View>
+                <View style = {styles.bubble}>
+                    <Text style = {styles.title}> {this.state.user.username}'s Stats</Text>
+                    <View style = {styles.textContainer}><Text style = {styles.Stats}>Wins: {this.state.user.wins}</Text></View>
+                    <View style = {styles.textContainer}><Text style = {styles.Stats}>Losses: {this.state.user.losses}</Text></View>
+                    <View style = {styles.textContainer}><Text style = {styles.Stats}>Win/Loss Ratio: {this.state.user.winRatio}%</Text></View>
+                    <View style = {styles.textContainer}><Text style = {styles.Stats}>Games Played: {this.state.user.games}</Text></View>
+                    <View style = {styles.textContainer}><Text style = {styles.Stats}>Current Chips:  {this.state.user.chips} </Text></View>
+                    <View style = {styles.textContainer}><Text style = {styles.Stats}>Life Time Earnings: {this.state.user.chips_won} </Text></View>
+                    <View style = {styles.textContainer}><Text style = {styles.Stats}>Life Time Losses: {this.state.user.chips_lost} </Text></View>
+                </View>
             </View> 
             );
         }
@@ -67,9 +69,20 @@ const styles = StyleSheet.create({
         backgroundColor: "#7befb2",
         color: 'black',
         fontWeight: 'bold',
-        textAlign: 'center'
+        textAlign: 'center',
+        padding: 10
     },  
     textContainer: {
-        width: '65%'
+        width: '100%'
+    },
+    bubble: {
+        backgroundColor: '#27ae60',
+        paddingVertical: 20,
+        paddingHorizontal: 20,
+        borderRadius: 50,
+        width: '80%',
+        marginBottom: 30,
+        textAlign: 'center',
+        justifyContent: 'center'
     }
 });
