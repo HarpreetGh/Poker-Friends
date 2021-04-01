@@ -92,7 +92,7 @@ export default class HelpButton extends Component {
           style={[styles.button, styles.buttonOpen]}
           onPress={() => this.setModalVisible(true)}
         >
-          <Text style={styles.textStyle}>RULES</Text>
+          <Text style={styles.textStyle}>Rules</Text>
         </TouchableOpacity>
       </View>
     );

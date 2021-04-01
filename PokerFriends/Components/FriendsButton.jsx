@@ -17,7 +17,7 @@ export default class FriendsButton extends Component {
       <View style={styles.cornerView}>
         <TouchableOpacity style={styles.button} 
           onPress = {() => this.props.navigation.navigate('FriendsList')}>
-          <Text style={styles.textStyle}>FRIENDS</Text>
+          <Text style={styles.textStyle}>Friends</Text>
         </TouchableOpacity>
       </View>
     );
