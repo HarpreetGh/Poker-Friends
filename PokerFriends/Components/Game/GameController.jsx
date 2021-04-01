@@ -131,8 +131,9 @@ export default class GameSetting extends Component {
         }
       }
       else if(game.turn == 5){
-        //Figure out who won and give them pot
-        const roundWinner = 0//this.findRoundWinner(game)
+        //Figure out who won and give them the pot of the round
+        const roundWinner = this.findRoundWinner(game) //0 
+        
         
         game.balance[roundWinner] += game.pot
         game.chipsWon[roundWinner] += game.pot
@@ -180,8 +181,16 @@ export default class GameSetting extends Component {
   }
 
   findRoundWinner(game){
+    //  hands is an array of players with game.players_cards[i].rank sorted by highest rank to lowest (1, 2, 3, 4, 5, 6, 7, 8, 9, 10 hand rankings in order)
     var hands = game.player_cards.sort(function(a, b){return a.rank - b.rank}); //sorts from small to high
-    var highestRank = hands[0].rank //CHECK IF THEY FOLDED FIX ME
+    
+    var handsNotFolded = [] // An array of hand rankings of players that have not folded
+    for(var i = 0; i < game.size; i++){ // Loop through all players
+      if(game.move[i] != "fold"){ // If the player at position "i" has not folded they can move into the hNF array
+          handsNotFolded.push(hands[i])
+      }
+    }
+    var highestRank = handsNotFolded[0].rank
 
     var indexOfHighestRanks = []
     for(var i = 0; i < game.size; i++){
@@ -203,7 +212,7 @@ export default class GameSetting extends Component {
     return roundWinner
   }
 
-  CompareCards(indexs, cards){
+  CompareCards(indexes, cards){ //TODO
     return 0
   }
 
