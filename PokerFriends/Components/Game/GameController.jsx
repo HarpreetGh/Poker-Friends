@@ -181,9 +181,68 @@ export default class GameSetting extends Component {
   }
 
   findRoundWinner(game){
+    // Assign ranks for players before sorting ranks in hand[] array therefore updating
+    // game.player_cards[i].rank should be updated
+
+    // Loop through number of players with game.size
+    // For each player check their hand/cards 
+    // with game.player_cards[i].myCards[i or 1 or 2] and the game board with
+    // game.board[i].suit and game.board[i].value
+    // Update game.player_cards.rank
+
+    //TODO: Check for fold here maybe? Maybe not 
+    for (var i = 0; i < game.size; i++){
+      console.log("Assign ranks loop reached")
+      var position = i
+      if (this.isRoyalFlush(game, position)){
+        game.player_cards[i].rank = 1
+        console.log("Royal Flush")
+      }
+      if (this.isStraightFlush(game, position)){
+        game.player_cards[i].rank = 2
+        console.log("Straight Flush")
+      }
+      if (this.isFourOfKind(game, position)){
+        game.player_cards[i].rank = 3
+        console.log("4 Kind")
+      }
+      if (this.isFullHouse(game, position)){
+        game.player_cards[i].rank = 4
+        console.log("Full House")
+      }
+      if (this.isFlush(game, position)){
+        game.player_cards[i].rank = 5
+        console.log("Flush")
+      }
+      if (this.isStraight(game, position)){
+        game.player_cards[i].rank = 6
+        console.log("Straight")
+      }
+      if (this.isThreeOfKind(game, position)){
+        game.player_cards[i].rank = 7
+        console.log("3 Kind")
+      }
+      if (this.isTwoPair(game, position)){
+        game.player_cards[i].rank = 8
+        console.log("Two Pair")
+      }
+      if (this.isOnePair(game, position)){
+        game.player_cards[i].rank = 9
+        console.log("One Pair", game.player_cards[i].rank)
+      }
+      if (this.isHighCard(game, position)){
+        game.player_cards[i].rank = 10
+        console.log("High Card", game.player_cards[i].rank)
+      }
+    }
+
+    console.log("This is rank at 0: ", game.player_cards[0].rank)
+
     //  hands is an array of players with game.players_cards[i].rank sorted by highest rank to lowest (1, 2, 3, 4, 5, 6, 7, 8, 9, 10 hand rankings in order)
     var hands = game.player_cards.sort(function(a, b){return a.rank - b.rank}); //sorts from small to high
-    
+    console.log("Hands array sorted!")
+
+
     var handsNotFolded = [] // An array of hand rankings of players that have not folded
     for(var i = 0; i < game.size; i++){ // Loop through all players
       if(game.move[i] != "fold"){ // If the player at position "i" has not folded they can move into the hNF array
@@ -209,12 +268,124 @@ export default class GameSetting extends Component {
       //game.player_cards is [{rank: 2, myCards: [Card, Card]}, {rank: 2, myCards: [Card, Card]}]
       //Card = {suit: 'heart', value: '3', image: 'somefilepath'}
     }
+    console.log("Rounder winner is: ", roundWinner)
     return roundWinner
   }
 
-  CompareCards(indexes, cards){ //TODO
+  CompareCards(index, cards){ //TODO
     return 0
   }
+
+  // Rank 1
+  isRoyalFlush(game, position){
+    var tempasd = false
+    //for(var i = 0; i < game.size; i++){
+        //if (game.player_cards[i].myCards[0].suit == game.player_Cards[i].myCards[1].suit){
+          return false
+        //}
+    //}
+  }
+
+  // Rank 2
+  isStraightFlush(game, position){
+    return false
+  }
+
+  // Rank 3
+  isFourOfKind(game, position){
+    return false
+  }
+
+  //Rank 4
+  isFullHouse(game, position){
+    console.log("isFullHouse() called")
+    return false
+  }  
+  
+  // Rank 5
+  isFlush(game, position){
+    //for(var i = 0; i < game.size; i++){
+    //  if (game.player_cards[i].myCards[0].suit == game.player_cards[i].myCards[1].suit){
+        return false
+    //  }
+    //}
+  }  
+  
+  // Rank 6
+  isStraight(game, position){
+    return false
+  }
+
+  // Rank 7
+  isThreeOfKind(game, position){
+    return false
+  }
+
+  // Rank 8 - Two different pairings or sets of the same card in one hand
+  isTwoPair(game, position){
+    console.log("isTwoPair() called")
+    var completeCards = [] // Array holding both player and board cards
+    completeCards.push(game.player_cards[position]) // Player cards
+    completeCards.push(game.board) // Board cards
+    var pairExists = false // Bool for checking if one pair exists
+    for(var i = 0; i < completeCards.size; i++){
+      for(var j = i + 1; i < completeCards.size; j++){
+        if (completeCards[i].value == completeCards[j].value){
+          pairExists = true;
+        }
+      }
+    }
+
+
+    return false
+  }
+
+  // Rank 9 - One pairing of the same card
+  isOnePair(game, position){
+    console.log("isOnePair() called")
+    var completeCards = [] // Array holding both player and board cards
+    completeCards.push(game.player_cards[position].myCards) // Player cards
+    completeCards.push(game.board) // Board cards
+    var hand = completeCards.flat() // Flatten the array to iterate through
+    console.log("completeCards is populated, contents: ", hand)
+    for(var i = 0; i < hand.length; i++){
+      console.log("outerloop: ", i)
+      for(var j = i + 1; j < hand.length; j++){
+        console.log("innerloop: ", j)
+        if (hand[i].value == hand[j].value){ // One pair if two cards same value
+          console.log("Return 9")
+          return true
+        }
+      }
+    }
+    console.log("False returned")
+    return false
+  }
+
+  // Rank 10 - High card
+  isHighCard(game, position){
+    console.log("isHighCard() called")
+    var completeCards = []
+    completeCards.push(game.player_cards[position].myCards) 
+    completeCards.push(game.board) 
+    var hand = completeCards.flat()
+    console.log("completeCards is populated, contents: ", hand)
+    var match = 0 // If match is > 1 then a match has been found at least once meaning no high card but higher rank
+    for(var i = 0; i < hand.length; i++){
+      console.log("HC outerloop: ", i)
+      for(var j = i + 1; j < hand.length; j++){
+        console.log("HC innerloop: ", j)
+        if (hand[i].value == hand[j].value){
+          match++
+          console.log("match: ", match)
+        } 
+      }
+    }
+    if(match > 0){ return false }
+    else { return true}
+  }
+
+  
 
   giveOutCards() {
     gameDeck.shuffle()
