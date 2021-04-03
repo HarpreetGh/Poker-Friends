@@ -197,42 +197,52 @@ export default class GameSetting extends Component {
       if (this.isRoyalFlush(game, position)){
         game.player_cards[i].rank = 1
         console.log("Royal Flush")
+        break
       }
       if (this.isStraightFlush(game, position)){
         game.player_cards[i].rank = 2
         console.log("Straight Flush")
+        break
       }
       if (this.isFourOfKind(game, position)){
         game.player_cards[i].rank = 3
         console.log("4 Kind")
+        break
       }
       if (this.isFullHouse(game, position)){
         game.player_cards[i].rank = 4
-        console.log("Full House")
+        console.log("Full House", game.player_cards[i].rank)
+        break
       }
       if (this.isFlush(game, position)){
         game.player_cards[i].rank = 5
         console.log("Flush")
+        break
       }
       if (this.isStraight(game, position)){
         game.player_cards[i].rank = 6
         console.log("Straight")
+        break
       }
       if (this.isThreeOfKind(game, position)){
         game.player_cards[i].rank = 7
         console.log("3 Kind")
+        break
       }
       if (this.isTwoPair(game, position)){
         game.player_cards[i].rank = 8
-        console.log("Two Pair")
+        console.log("Two Pair", game.player_cards[i].rank)
+        break
       }
       if (this.isOnePair(game, position)){
         game.player_cards[i].rank = 9
         console.log("One Pair", game.player_cards[i].rank)
+        break
       }
       if (this.isHighCard(game, position)){
         game.player_cards[i].rank = 10
         console.log("High Card", game.player_cards[i].rank)
+        break
       }
     }
 
@@ -278,66 +288,105 @@ export default class GameSetting extends Component {
 
   // Rank 1
   isRoyalFlush(game, position){
-    var tempasd = false
-    //for(var i = 0; i < game.size; i++){
-        //if (game.player_cards[i].myCards[0].suit == game.player_Cards[i].myCards[1].suit){
-          return false
-        //}
-    //}
+    return false
   }
 
-  // Rank 2
+  // Rank 2 - Five cards in a row all suit
   isStraightFlush(game, position){
     return false
   }
 
-  // Rank 3
+  // Rank 3 - Same value in each suit
   isFourOfKind(game, position){
     return false
   }
 
-  //Rank 4
+  //Rank 4 - A pair and three of kind 
   isFullHouse(game, position){
     console.log("isFullHouse() called")
     return false
+    //if(this.isThreeOfKind(game, position) && this.isOnePair(game, position)){ return true }
   }  
   
-  // Rank 5
+  // Rank 5 - Five cards all same suit but not in numerical order
   isFlush(game, position){
-    //for(var i = 0; i < game.size; i++){
-    //  if (game.player_cards[i].myCards[0].suit == game.player_cards[i].myCards[1].suit){
-        return false
-    //  }
-    //}
+    console.log("isFlush() called")
+    var completeCards = []
+    completeCards.push(game.player_cards[position].myCards)
+    completeCards.push(game.board)
+    var hand = completeCards.flat()
+    console.log("isFlush hands is populated, contents: ", hand)
+    
+    // Sort the hands array by the suits
+    for (var i = 0; i < hand.length; i++){
+      var min = hand[i].suits;
+      for (var j = i + 1; j < hand.length; j++){
+        if (hand[j].suits < min){
+          min = hand[j].suits
+        }
+      }
+      // Swap
+      var temp = hand[i]
+      hand[i] = hand[min]
+      hand[min] = temp
+    }
+    console.log("HANDS ISFLUSH() ARRAY IS: ", hand)
+
+    return (hands[0].suits == hands[4].suits) // Return true because hand has a flush since it is sorted by suit
   }  
   
-  // Rank 6
+  // Rank 6 - Five cards in numerical order, but not of same suit
   isStraight(game, position){
     return false
   }
 
-  // Rank 7
+  // Rank 7 - Three of one card and two-non paired cards
   isThreeOfKind(game, position){
-    return false
-  }
+    console.log("isThreeOfKind() called")
+    var completeCards = []
+    completeCards.push(game.player_cards[position].myCards)
+    completeCards.push(game.board)
+    var hand = completeCards.flat()
+    console.log("isThreeOfKind hands is populated, contents: ", hand)
 
-  // Rank 8 - Two different pairings or sets of the same card in one hand
-  isTwoPair(game, position){
-    console.log("isTwoPair() called")
-    var completeCards = [] // Array holding both player and board cards
-    completeCards.push(game.player_cards[position]) // Player cards
-    completeCards.push(game.board) // Board cards
-    var pairExists = false // Bool for checking if one pair exists
-    for(var i = 0; i < completeCards.size; i++){
-      for(var j = i + 1; i < completeCards.size; j++){
-        if (completeCards[i].value == completeCards[j].value){
-          pairExists = true;
+    // Loop through hand array to see if 3 cards have the same value (3 of a kind) then return true if so
+    var counter = 1
+    for(var i = 0; i < hand.length - 2 && counter != 3; i++){
+      console.log("Outer loop: ", "i is ", i, "counter is ", counter)
+      counter = 1
+      for(var j = i + 1; j < hand.length; j++){
+        console.log("Inner loop: ", "i is ", i, "j is ", j, "counter is ", counter)
+        if (hand[i].value == hand[j].value){
+          counter++
+          console.log("Inner if reached ", counter)
         }
       }
     }
 
+    if (counter == 3){ return true }
+  }
 
-    return false
+  // Rank 8 - Two different pairings or sets of the same card in one hand
+  isTwoPair(game, position){
+    console.log("isHighCard() called")
+    var completeCards = []
+    completeCards.push(game.player_cards[position].myCards) 
+    completeCards.push(game.board) 
+    var hand = completeCards.flat()
+    console.log("isTwoPair hands is populated, contents: ", hand)
+    var match = 0 // If match is > 1 then a match has been found at least once meaning no high card but higher rank
+    for(var i = 0; i < hand.length; i++){
+      for(var j = i + 1; j < hand.length; j++){
+        if (hand[i].value == hand[j].value){
+          match++
+          console.log("Match: ", match)
+        } 
+      }
+      if (match >= 2) { 
+        console.log("True returned for isTwoPair()")
+        return true
+      }
+    }
   }
 
   // Rank 9 - One pairing of the same card
@@ -347,42 +396,38 @@ export default class GameSetting extends Component {
     completeCards.push(game.player_cards[position].myCards) // Player cards
     completeCards.push(game.board) // Board cards
     var hand = completeCards.flat() // Flatten the array to iterate through
-    console.log("completeCards is populated, contents: ", hand)
+    console.log("isOnePair hands is populated, contents: ", hand)
     for(var i = 0; i < hand.length; i++){
-      console.log("outerloop: ", i)
       for(var j = i + 1; j < hand.length; j++){
-        console.log("innerloop: ", j)
         if (hand[i].value == hand[j].value){ // One pair if two cards same value
           console.log("Return 9")
           return true
         }
       }
     }
-    console.log("False returned")
+    console.log("False returned for isOnePair()")
     return false
   }
 
-  // Rank 10 - High card
+  // Rank 10 - High card - no matching cards
   isHighCard(game, position){
     console.log("isHighCard() called")
     var completeCards = []
     completeCards.push(game.player_cards[position].myCards) 
     completeCards.push(game.board) 
     var hand = completeCards.flat()
-    console.log("completeCards is populated, contents: ", hand)
+    console.log("isHighCard hands is populated, contents: ", hand)
     var match = 0 // If match is > 1 then a match has been found at least once meaning no high card but higher rank
     for(var i = 0; i < hand.length; i++){
-      console.log("HC outerloop: ", i)
       for(var j = i + 1; j < hand.length; j++){
-        console.log("HC innerloop: ", j)
         if (hand[i].value == hand[j].value){
           match++
-          console.log("match: ", match)
+          console.log("Match: ", match)
         } 
       }
     }
     if(match > 0){ return false }
-    else { return true}
+    else { return true }
   }
 
   
