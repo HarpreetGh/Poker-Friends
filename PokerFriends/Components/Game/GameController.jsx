@@ -404,7 +404,8 @@ export default class GameSetting extends Component {
     var hand = completeCards.flat()
     var intHand = []
     
-    // Convert the array to numerical values to sort based on card value
+
+    // Convert the array to numerical/int values to sort
     for (var i = 0; i < hand.length; i++){
       intHand[i] = parseInt(hand[i].value)
       if(hand[i].value == 'J'){ 
@@ -420,10 +421,9 @@ export default class GameSetting extends Component {
         intHand[i] = 14
       }
     }
-    
-    console.log(intHand)
-    
-    // Sort the hands array by the values (selection sort)
+
+
+    // Sort the array by the values (selection sort)
     for (var i = 0; i < intHand.length; i++){
       var max = i
       for (var j = i + 1; j < intHand.length; j++){
@@ -438,23 +438,94 @@ export default class GameSetting extends Component {
         intHand[max] = temp
       }
     }
-    console.log("isStraight hands is populated and sorted by value, contents: ", intHand)
+    console.log("isStraight intHands is populated and sorted by value, contents: ", intHand)
     
+    
+    // Make an array removing duplicates (makes checking for straight easier)
+    var uniqueHand = [...new Set(intHand)]
+    console.log("uniqueHand is: ", uniqueHand)
+    var counter = 0
     // Check for decreasing values (straight)
-    var decValue = intHand[0] - 1
-    var dupe
-    console.log("before loop decValue is: ", decValue)
-    for (var i = 1; i < intHand.length; i++){
-      console.log(intHand[i], decValue)
-      if (intHand[i] == intHand[i-1]) { dupe = intHand[i-1]}
-      if (intHand[i] - intHand[i-1] > 1 || dupe > dupe-1){
-        if (intHand[i] != decValue){
-          console.log("Not a straight - returning false")
-          return false 
+    if (uniqueHand.length >= 5){ // A straight can only be made with 5 cards so the unique hand needs at least 5 cards
+      console.log("uniqueHand[] has 5+ cards - checking for straight")
+      for (var i = 1; i < uniqueHand.length; i++){ // Loop through unique hand
+        if (uniqueHand[i] - uniqueHand[i-1] == -1) { counter++ } // Count how many times a sequence (e.g 14 13 or 9 8) is found
+          if (counter >= 4) { 
+            console.log("Counter is 4+ returning true")
+            return true
+          }
+          console.log("counter is: ", counter)
+      }
+    }
+    console.log("Straight never found - returning false")
+    return false
+
+
+    if (uniqueHand.length == 5){
+      console.log("uniqueHand[] has 5 cards - checking for straight")
+      for (var i = 1; i < uniqueHand.length; i++){
+          if (uniqueHand[i] - uniqueHand[i-1] != -1){          
+            console.log("[x, x, x, x, x] Not a straight from size 5 cards - returning false")
+            return false 
+          }
+      }
+    }
+
+    if (uniqueHand.length == 6){
+      console.log("uniqueHand[] has 6 cards - checking for straight")
+      if(uniqueHand[0] - uniqueHand[1] != 1){ 
+        console.log("firts case reached!!")
+        for (var i = 2; i < uniqueHand.length; i++){ 
+          if (uniqueHand[i] - uniqueHand[i-1] != -1){
+            console.log("[_, x, x, x, x, x] Not a straight from size 6 cards and first element DOES NOT count- returning false")
+            return false
+          }
+        }
+      }        
+      var count = 0
+      for (var i = 1; i < uniqueHand.length; i++){
+        console.log("uniqueHand[i] is", uniqueHand[i])
+
+        console.log("counter is: ", count)
+        if (uniqueHand[i] - uniqueHand[i-1] == -1) { count++ } 
+        if (count >= 4) { 
+          console.log("477 success returning true")
+          return true 
+        }  
+        if (uniqueHand[i] - uniqueHand[i-1] != -1){ 
+            console.log("[x, x, x, x, x, _] Not a straight from size 6 cards and first element DOES count - returning false")
+            return false 
         }
       }
-      decValue-- // Decrement to become next card's value
     }
+
+    if (uniqueHand.length == 7){
+      console.log("uniqueHand[] has 7 cards - checking for straight")
+      if(uniqueHand[0] - uniqueHand[1] != 1){ 
+        for (var i = 2; i < uniqueHand.length; i++){ 
+          if (uniqueHand[i] - uniqueHand[i-1] != -1){
+            console.log("[_, x, x, x, x, x, _/x] Not a straight from size 7 cards and first element DOES NOT count- returning false")
+            return false
+          }
+        }
+      }
+      if(uniqueHand[1] - uniqueHand[2] != 1){ 
+        for (var i = 3; i < uniqueHand.length; i++){ 
+          if (uniqueHand[i] - uniqueHand[i-1] != -1){
+            console.log("Not a straight from size 7 cards and first two element DOES NOT count- returning false")
+            return false
+          }
+        }
+      }
+      for (var i = 1; i < uniqueHand.length; i++){
+        console.log("uniqueHand[i] is", uniqueHand[i])
+          if (uniqueHand[i] - uniqueHand[i-1] != -1){          
+            console.log("Not a straight from size 7 cards and first DOES count - returning false")
+            return false 
+          }
+      }
+    }
+    console.log("Straight found - returning true")
     return true
   }
 
