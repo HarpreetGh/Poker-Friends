@@ -184,29 +184,23 @@ export default class GameSetting extends Component {
     // Assign ranks for players before sorting ranks in hand[] array therefore updating
     // game.player_cards[i].rank should be updated
 
-    // Loop through number of players with game.size
-    // For each player check their hand/cards 
-    // with game.player_cards[i].myCards[i or 1 or 2] and the game board with
-    // game.board[i].suit and game.board[i].value
-    // Update game.player_cards.rank
-
     //TODO: Check for fold here maybe? Maybe not 
     for (var i = 0; i < game.size; i++){
-      console.log("Assign ranks loop reached")
+      console.log("Assign Ranks loop reached")
       var position = i
       if (this.isRoyalFlush(game, position)){
         game.player_cards[i].rank = 1
-        console.log("Royal Flush")
+        console.log("Royal Flush", game.player_cards[i].rank)
         break
       }
       if (this.isStraightFlush(game, position)){
         game.player_cards[i].rank = 2
-        console.log("Straight Flush")
+        console.log("Straight Flush", game.player_cards[i].rank)
         break
       }
       if (this.isFourOfKind(game, position)){
         game.player_cards[i].rank = 3
-        console.log("4 Kind")
+        console.log("4 Kind", game.player_cards[i].rank)
         break
       }
       if (this.isFullHouse(game, position)){
@@ -216,17 +210,17 @@ export default class GameSetting extends Component {
       }
       if (this.isFlush(game, position)){
         game.player_cards[i].rank = 5
-        console.log("Flush")
+        console.log("Flush", game.player_cards[i].rank)
         break
       }
       if (this.isStraight(game, position)){
         game.player_cards[i].rank = 6
-        console.log("Straight")
+        console.log("Straight", game.player_cards[i].rank)
         break
       }
       if (this.isThreeOfKind(game, position)){
         game.player_cards[i].rank = 7
-        console.log("3 Kind")
+        console.log("3 Kind", game.player_cards[i].rank)
         break
       }
       if (this.isTwoPair(game, position)){
@@ -329,7 +323,11 @@ export default class GameSetting extends Component {
 
   // Rank 2 - Five cards in a row all suit
   isStraightFlush(game, position){
-    if (this.isStraight(game, position) && this.isFlush(game, position)){ return true }
+    console.log("isStraightFlush() called")
+    if (this.isStraight(game, position) && this.isFlush(game, position)){ 
+      console.log("True returned isStraightFlush()")
+      return true 
+    }
     return false
   }
 
@@ -345,13 +343,13 @@ export default class GameSetting extends Component {
     // Loop through hand array to see if 4 cards have the same value (4 of a kind) then return true if so
     var counter = 1
     for(var i = 0; i < hand.length - 2 && counter != 4; i++){
-      console.log("Outer loop: ", "i is ", i, "counter is ", counter)
+      //console.log("Outer loop: ", "i is ", i, "counter is ", counter)
       counter = 1
       for(var j = i + 1; j < hand.length; j++){
-        console.log("Inner loop: ", "i is ", i, "j is ", j, "counter is ", counter)
+        //console.log("Inner loop: ", "i is ", i, "j is ", j, "counter is ", counter)
         if (hand[i].value == hand[j].value){
           counter++
-          console.log("Inner if reached ", counter)
+          //console.log("Inner if reached ", counter)
         }
       }
     }
@@ -391,63 +389,73 @@ export default class GameSetting extends Component {
       hand[i] = hand[min]
       hand[min] = temp
     }
-    if (hand[0].suit == hand[4].suit){ return true } // Return true because hand has a flush since it is sorted by suit
+    if (hand[0].suit == hand[4].suit){ 
+      console.log("True returned for isFlush()")  
+      return true 
+    } // Return true because hand has a flush since it is sorted by suit
   }  
   
   // Rank 6 - Five cards in numerical order, but not of same suit
   isStraight(game, position){
-    return false
     console.log("isStraight() called")
     var completeCards = []
     completeCards.push(game.player_cards[position].myCards)
     completeCards.push(game.board)
     var hand = completeCards.flat()
+    var intHand = []
     
-    
-    //TODO/FIXME: 10 IS SELECTED AS THE MOST MINMUM VALUE AFTER SORTING AND IS PUT AT BOTTOM OF ARRAY
-    // Sort the hands array by the values (selection sort)
+    // Convert the array to numerical values to sort based on card value
     for (var i = 0; i < hand.length; i++){
+      intHand[i] = parseInt(hand[i].value)
+      if(hand[i].value == 'J'){ 
+        intHand[i] = 11
+      }
+      if(hand[i].value == 'Q'){ 
+        intHand[i] = 12
+      }
+      if(hand[i].value == 'K'){ 
+        intHand[i] = 13
+      }
+      if(hand[i].value == 'A'){ 
+        intHand[i] = 14
+      }
+    }
+    
+    console.log(intHand)
+    
+    // Sort the hands array by the values (selection sort)
+    for (var i = 0; i < intHand.length; i++){
       var max = i
-      for (var j = i + 1; j < hand.length; j++){
-        if (hand[j].value > hand[max].value){
+      for (var j = i + 1; j < intHand.length; j++){
+        if (intHand[j] > intHand[max]){
           max = j
         }
       }
       // Swap
       if (max != i){
-        var temp = hand[i]
-        hand[i] = hand[max]
-        hand[max] = temp
+        var temp = intHand[i]
+        intHand[i] = intHand[max]
+        intHand[max] = temp
       }
     }
-    console.log("isStraight hands is populated and sorted by value, contents: ", hand)
+    console.log("isStraight hands is populated and sorted by value, contents: ", intHand)
     
-    //TODO/FIXME: Although the hand is already sorted descending, need to check if it decreasing values
-    // Check for straight
-    var decValue = hand[0].value + 1
-    for (var i = 1; i < hand.length; i++){
-      if (hand[i].value != decValue){
-        return false 
+    // Check for decreasing values (straight)
+    var decValue = intHand[0] - 1
+    var dupe
+    console.log("before loop decValue is: ", decValue)
+    for (var i = 1; i < intHand.length; i++){
+      console.log(intHand[i], decValue)
+      if (intHand[i] == intHand[i-1]) { dupe = intHand[i-1]}
+      if (intHand[i] - intHand[i-1] > 1 || dupe > dupe-1){
+        if (intHand[i] != decValue){
+          console.log("Not a straight - returning false")
+          return false 
+        }
       }
-      decValue++ // Increment to become next card
+      decValue-- // Decrement to become next card's value
     }
     return true
-    /*
-    var counterStraight = 0
-    for (var i = 0; i < hand.length; i++){
-      for (var j = i + 1; j < hand.length + 1; j++)
-      if (hand[i].value > hand[j].value && hand[i].value > hand[j+1].value){
-        counterStraight++
-        console.log("inner loop: ", counterStraight)
-      }
-    }
-    */
-    console.log("outside the loop: ", counterStraight)
-    
-    if(counterStraight >= 5) {
-      console.log("counterStraight is equal or more than 5 returning true")
-      return true
-    }
   }
 
   // Rank 7 - Three of one card and two-non paired cards
@@ -462,13 +470,13 @@ export default class GameSetting extends Component {
     // Loop through hand array to see if 3 cards have the same value (3 of a kind) then return true if so
     var counter = 1
     for(var i = 0; i < hand.length - 2 && counter != 3; i++){
-      console.log("Outer loop: ", "i is ", i, "counter is ", counter)
+      //console.log("Outer loop: ", "i is ", i, "counter is ", counter)
       counter = 1
       for(var j = i + 1; j < hand.length; j++){
-        console.log("Inner loop: ", "i is ", i, "j is ", j, "counter is ", counter)
+        //console.log("Inner loop: ", "i is ", i, "j is ", j, "counter is ", counter)
         if (hand[i].value == hand[j].value){
           counter++
-          console.log("Inner if reached ", counter)
+          //console.log("Inner if reached ", counter)
         }
       }
     }
@@ -481,7 +489,7 @@ export default class GameSetting extends Component {
 
   // Rank 8 - Two different pairings or sets of the same card in one hand
   isTwoPair(game, position){
-    console.log("isHighCard() called")
+    console.log("isTwoPair() called")
     var completeCards = []
     completeCards.push(game.player_cards[position].myCards) 
     completeCards.push(game.board) 
