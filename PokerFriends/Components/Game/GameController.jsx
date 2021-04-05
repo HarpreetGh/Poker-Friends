@@ -363,7 +363,58 @@ export default class GameSetting extends Component {
   //Rank 4 - A pair and three of kind 
   isFullHouse(game, position){
     console.log("isFullHouse() called")
-    return false
+    var completeCards = []
+    completeCards.push(game.player_cards[position].myCards)
+    completeCards.push(game.board)
+    var hand = completeCards.flat()
+    var intHand = []
+    
+
+    // Convert the array to numerical/int values to sort
+    for (var i = 0; i < hand.length; i++){
+      intHand[i] = parseInt(hand[i].value)
+      if(hand[i].value == 'J'){ 
+        intHand[i] = 11
+      }
+      if(hand[i].value == 'Q'){ 
+        intHand[i] = 12
+      }
+      if(hand[i].value == 'K'){ 
+        intHand[i] = 13
+      }
+      if(hand[i].value == 'A'){ 
+        intHand[i] = 14
+      }
+    }
+
+
+    // Sort the array by the values (selection sort)
+    for (var i = 0; i < intHand.length; i++){
+      var max = i
+      for (var j = i + 1; j < intHand.length; j++){
+        if (intHand[j] > intHand[max]){
+          max = j
+        }
+      }
+      // Swap
+      if (max != i){
+        var temp = intHand[i]
+        intHand[i] = intHand[max]
+        intHand[max] = temp
+      }
+    }
+    console.log("isFullHouse intHands is populated and sorted by value, contents: ", intHand)
+
+
+    // DONE - Sort array by values [K, 8, 8, 8, 6, 2, 2]
+    // Use threeOfKind code to check if counter/isThree is 3 and move onto checking for pair if so
+    // If 3, loop again and move matched elements into another array in order to check for a pair
+    // If isThree != 3 not met, then just return false as FullHouse condition failed 
+    // If isThree == 3 && isTwo == 2 { return true }
+
+
+
+    //return false
     //if(this.isThreeOfKind(game, position) && this.isOnePair(game, position)){ return true }
   }  
   
