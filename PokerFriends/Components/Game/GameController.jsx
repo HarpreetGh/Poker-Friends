@@ -418,6 +418,7 @@ export default class GameSetting extends Component {
     //if(this.isThreeOfKind(game, position) && this.isOnePair(game, position)){ return true }
   }  
   
+  ///TODO : FIX ME
   // Rank 5 - Five cards all same suit but not in numerical order
   isFlush(game, position){
     console.log("isFlush() called")
@@ -500,15 +501,15 @@ export default class GameSetting extends Component {
     if (uniqueHand.length >= 5){ // A straight can only be made with 5 cards so the unique hand needs at least 5 cards
       console.log("uniqueHand[] has 5+ cards - checking for straight")
       for (var i = 1; i < uniqueHand.length; i++){ // Loop through unique hand
-        if (counter > 1 && counter < 4 && (uniqueHand[i-1] - uniqueHand[i-2] != -1)){ // Check for promising sequence
-          console.log("Promising sequence failed, ", uniqueHand[i-1], "-", uniqueHand[i-2], "returning false")
+        if (counter >= 1 && counter < 4 && (uniqueHand[i] - uniqueHand[i-1] != -1)){ // Check for promising sequence
+          console.log("Promising sequence failed, ", uniqueHand[i], "-", uniqueHand[i-1], "returning false")
           return false 
         } 
         if (uniqueHand[i] - uniqueHand[i-1] == -1) { counter++ } // Count how many times a sequence (e.g 14 13 or 9 8) is found
-          if (counter >= 4) { 
-            console.log("Counter is 4+ returning true")
-            return true
-          }
+        if (counter >= 4) { 
+          console.log("Counter is 4+ returning true")
+          return true
+        }
           console.log("counter is: ", counter)
       }
     }
