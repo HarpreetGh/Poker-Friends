@@ -437,7 +437,7 @@ export default class GameSetting extends Component {
 
       game.playerTurn++;
       //see if it's the last player's turn and change it to the first player's turn
-      if(game.playerTurn == game.size){
+      if(game.playerTurn == game.size-game.newPlayer){
         game.playerTurn = 0;
       }
 
@@ -687,9 +687,9 @@ export default class GameSetting extends Component {
 
         
           <View>
-            {this.props.myCards.map((card,i)=> this.cardDeal(card.suit, card.value, i))}
+            {this.props.myCards.map((card,i)=> this.cardDeal(card.suit, card.value, i+this.props.playerNum*2))}
             
-            {this.props.game.turn > 1? (this.props.game.board.map((card,i)=> this.flopTurnRiver(card.suit, card.value, i+this.props.playerNum*2))):(<Text></Text>)}
+            {this.props.game.turn > 1? (this.props.game.board.map((card,i)=> this.flopTurnRiver(card.suit, card.value, i))):(<Text></Text>)}
           </View>
                 {/* {this.flop(this.props.game.deck.shift(),2,3)}
                               {this.turn(1)}

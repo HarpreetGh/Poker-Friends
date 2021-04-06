@@ -31,11 +31,11 @@ export default class LandingPage extends Component {
             <TouchableOpacity 
               style={styles.button}
               onPress = {() => {
-                this.props.navigation.navigate('CreateGame');
+                this.props.navigation.navigate('JoinGame');
               }}
             >
               <Text style={styles.textStyle}>
-                Join Game (TBA)
+                Join Game
               </Text>
             </TouchableOpacity>
           ):(

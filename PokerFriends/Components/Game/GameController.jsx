@@ -30,6 +30,7 @@ export default class GameSetting extends Component {
       fullMatchName:'',
       host: false,      
       ready: false,
+      newPlayer: true
     };
   }
 
@@ -71,8 +72,19 @@ export default class GameSetting extends Component {
     //var game = this.state.game
     if(!this.state.host){
       var playerNum = game.players.indexOf(this.props.userData.username)
-      this.setState({host: playerNum == 0, playerNum: playerNum})
-    }
+      var newPlayer = false;
+
+      if(this.state.newPlayer){ //newPlayer is True by default
+        if(playerNum >= game.size - game.newPlayer){
+          newPlayer = true;
+        }
+        else{
+          newPlayer = false;
+        }
+      }
+      this.setState({host: playerNum == 0, playerNum: playerNum, newPlayer: newPlayer})
+
+      }
   }
 
   /*
@@ -96,17 +108,43 @@ export default class GameSetting extends Component {
       const matchPath = '/games/'+ this.state.matchType + '/' + this.state.fullMatchName
 
       if(game.turn == 0){
-        var cards = this.giveOutCards()
-        game.player_cards = cards[0];
-        game.deck = cards[1];
-        game.turn++
+        if(game.newPlayer > 0){ //if a new player joined 
+          // game.balance.push()
+          // game.players.push()
+          // game.newPlayer +=1
+          // game.size += 1
 
-        updates[matchPath + '/player_cards'] = game.player_cards;
-        updates[matchPath + '/deck'] = game.deck;
-        updates[matchPath + '/turn'] = game.turn;
-        
-        //prepare for game.turn == 1
-        this.setState({myCards: game.player_cards[this.state.playerNum].myCards})
+          for(var i = 0; i < game.newPlayer; i++){
+            game.chipsIn.push(0)
+            game.chipsLost.push(0)
+            game.chipsWon.push(0)
+            game.move.push('check')
+            game.ready.push(false)
+          }
+
+          updates[matchPath + '/move'] = 
+          updates[matchPath + '/chipsWon'] = game.chipsWon
+          updates[matchPath + '/chipsLost'] = game.chipsLost
+          updates[matchPath + '/chipsIn'] = game.chipsIn
+          updates[matchPath + '/ready'] = game.ready
+          updates[matchPath + '/newPlayer'] = 0
+        }
+        /*else if(game.size == 1){
+          //don't move wait?
+        }*/
+        else{
+          var cards = this.giveOutCards()
+          game.player_cards = cards[0];
+          game.deck = cards[1];
+          game.turn++
+
+          updates[matchPath + '/player_cards'] = game.player_cards;
+          updates[matchPath + '/deck'] = game.deck;
+          updates[matchPath + '/turn'] = game.turn;
+          
+          //prepare for game.turn == 1
+          this.setState({myCards: game.player_cards[this.state.playerNum].myCards})
+        }
       }
 
       else if(game.turn < 5){
@@ -132,11 +170,15 @@ export default class GameSetting extends Component {
       }
       else if(game.turn == 5){
         //Figure out who won and give them pot
+        game.size-=game.newPlayer
+        
         const roundWinner = 0//this.findRoundWinner(game)
         
         game.balance[roundWinner] += game.pot
         game.chipsWon[roundWinner] += game.pot
         game.round++
+
+        
 
         for(var i = 0; i < game.size; i++){
           if(i != roundWinner){
@@ -172,7 +214,10 @@ export default class GameSetting extends Component {
     }
     
     else{ //all players but host
-      if(game.turn == 1 && turnStart){
+      if(this.state.newPlayer){
+        this.setState({myCards: [{suit:'wait', value:'wait'}]})
+      }
+      else if(game.turn == 1 && game.turnStart){
         this.setState({myCards: game.player_cards[this.state.playerNum].myCards})
       }
     }

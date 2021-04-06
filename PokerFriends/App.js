@@ -17,6 +17,7 @@ import ChangeEmail from './Components/Account-Settings/ChangeEmail';
 import DeleteAccount from './Components/Account-Settings/DeleteAccount';
 import FriendsList from './Components/FriendsList'
 import CreateGame from './Components/CreateGame'
+import JoinGame from './Components/JoinGame'
 import AccountStats from './Components/AccountStats'
 
 import Firebaseinit from './firebase' //Intializes Firebase
@@ -83,6 +84,10 @@ export default class App extends Component {
 
             <Stack.Screen name = "CreateGame">
               {(props) => <CreateGame {...props} userData={this.state.userData}/>}
+            </Stack.Screen>
+
+            <Stack.Screen name = "JoinGame">
+              {(props) => <JoinGame {...props} userData={this.state.userData}/>}
             </Stack.Screen>
 
             <Stack.Screen name = "AccountStats">
