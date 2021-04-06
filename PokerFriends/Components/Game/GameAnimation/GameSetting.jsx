@@ -6,6 +6,7 @@ import { Text, StyleSheet, View, TouchableOpacity,
 import Slider from '@react-native-community/slider';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
+import Chat from '../../Chat'
 import Deck from '../../decks'
 import CardDealing from './cardDealing'
 
@@ -657,9 +658,7 @@ export default class GameSetting extends Component {
           </View>
           
           <View style={styles.chat}>
-            <View>
-              <Text>Chat</Text> 
-            </View>
+              <Chat></Chat>
           </View>    
           
           <View style={styles.chipView}>
@@ -863,13 +862,8 @@ const styles = StyleSheet.create({
   },
   chat:{
     position:'absolute',
-    borderRadius: 2,
-    borderColor: 'black',
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    backgroundColor:"#778899",
     bottom: "0%",
-    right: "20%"
+    right: "13%"
   },
   bettingButtonsView:{
     position: 'absolute',
