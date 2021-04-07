@@ -658,7 +658,7 @@ export default class GameSetting extends Component {
           </View>
           
           <View style={styles.chat}>
-              <Chat></Chat>
+              {/* <Chat></Chat>  */}
           </View>    
           
           <View style={styles.chipView}>

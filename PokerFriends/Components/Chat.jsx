@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-
-
-import { Image, 
+//@refresh reset
+import React, { useState, useEffect, useCallback } from 'react';
+import { GiftedChat } from 'react-native-gifted-chat'
+import {
     Alert, 
     Modal, 
     StyleSheet, 
@@ -9,67 +9,111 @@ import { Image,
     Pressable, 
     View, 
     TouchableOpacity,
-    ScrollView,
-    Linking} from "react-native";
+    LogBox,
+    } from "react-native";
 
-export default class Chat extends Component {
-state = {
-modalVisible: false
-};
+import * as firebase from 'firebase'
+import 'firebase/firestore'
 
-setModalVisible = (visible) => {
-this.setState({ modalVisible: visible });
+
+//No more error about v
+LogBox.ignoreLogs(['Setting a timer for a long period of time'])
+LogBox.ignoreLogs(['VirtualizedLists should never be nested'])
+
+const db = firebase.firestore()
+const chatRef = db.collection('chat')
+
+
+export default function Chat (){
+ const [modalVisible, setModalVisible] = useState(false)
+
+ var user = firebase.auth().currentUser;
+ var userName = user.displayName.slice(0, user.displayName.indexOf('#'))
+ var userid = user.uid
+ 
+ const [userInChat] = useState({userName, userid})
+ const [messages, setMessages] = useState([])
+   
+    // this.state = {
+    //   modalVisible: false,
+    //   user: {userName},
+    //   messages: []
+    // }
+
+  useEffect (()=> {
+    const unsubscribe = chatRef.onSnapshot(querySnapshot =>{
+      const messagesFirestore = querySnapshot.docChanges()
+      .filter(({type}) => type === 'added')
+      .map(({doc}) => {
+        const message = doc.data()
+        return {...message, createdAt: message.createdAt.toDate()}
+      }).sort((a,b) => b.createdAt.getTime() - a.createdAt.getTime())
+      appendMessages(messagesFirestore)
+    })
+  
+    return () => unsubscribe()
+  },[])
+
+const appendMessages = useCallback(
+  (messages) => {
+    setMessages((previousMessages) => GiftedChat.append(previousMessages,messages))
+  },
+  [messages]
+)
+
+ async function handleSend(messages){
+  const writes = messages.map(m => chatRef.add(m))
+  await Promise.all(writes)
 }
 
-render() {
-const { modalVisible } = this.state;
+
 return (
-  <View style={styles.cornerView}>
+  <View >
     <Modal
       animationType="slide"
-      transparent={true}
+      transparent={false}
       visible={modalVisible}
       onRequestClose={() => {
         Alert.alert("Modal has been closed.");
-        this.setModalVisible(!modalVisible);
+        setModalVisible(!modalVisible);
       }}
     >
-        <ScrollView >
-      <View style = {styles.buttonTextView}>
-        <View style={styles.modalView}>
-          <Text style = {{fontWeight:'bold', marginTop:-35, fontSize: 30, marginBottom: 25}} >
+        
+
+        
+          <Text style = {{fontWeight:'bold', marginTop:-10, fontSize: 30, marginBottom: 25, textAlign:'center' }} >
             Chat room
-          </Text>
+          </Text> 
+        
+            <GiftedChat
+              messages = {messages}
+              user = {userInChat}
+              onSend = {handleSend}
+              placeholder = {'Type'}
+
+            />
          
           <Pressable
             style={[styles.button, styles.buttonClose]}
-            onPress={() => this.setModalVisible(!modalVisible)}
-          >
+            onPress={() => setModalVisible(!modalVisible)}>
             <Text style={styles.textStyle}>EXIT</Text>
           </Pressable>
-        </View>
-      </View>
-      </ScrollView>
+      
+      
     </Modal>
     <TouchableOpacity
       style={[styles.button, styles.buttonOpen]}
-      onPress={() => this.setModalVisible(true)}
+      onPress={() => setModalVisible(!modalVisible)}
     >
-      <Text style={styles.textStyle}>Chat</Text>
+      <Text style={styles.textStyle}>CHAT</Text>
     </TouchableOpacity>
   </View>
 );
 }
-}
+
 
 const styles = StyleSheet.create({
 
-cornerView: {
-justifyContent: "flex-end",
-alignSelf: 'flex-end',
-right: 80,
-bottom: 10
-},
 buttonTextView: {
 flex: 1,
 justifyContent: "center",
@@ -103,11 +147,7 @@ buttonClose: {
 backgroundColor: "#2196F3",
 marginTop:20
 },
-textStyle: {
-color: "white",
-fontWeight: "bold",
-textAlign: "center"
-},
+
 modalText: {
 marginBottom: 35,
 marginLeft: -50,

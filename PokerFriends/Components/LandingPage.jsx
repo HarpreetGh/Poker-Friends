@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, 
   Pressable, TouchableOpacity,} from 'react-native';
+import * as ScreenOrientation from 'expo-screen-orientation';
+
 import HelpButton from './HelpButton'
 import Logo from './Logo'
 import Login from './Login'
@@ -10,7 +12,9 @@ import ForgotPassword from './Account-Settings/ForgotPassword'
 import FriendsButton from './FriendsButton'
 import SettingsButton from './AccountSettings'
 import Balance from './Balance'
-import * as ScreenOrientation from 'expo-screen-orientation';
+import Chat from './Chat';
+
+
 
 const LogOut = () => {
   firebase.auth().signOut()
@@ -61,6 +65,12 @@ export default class LandingPage extends Component {
           >
             <Text style={styles.textStyle}>Create Game</Text>
           </TouchableOpacity>
+
+          <View>
+            <Chat>
+
+            </Chat>  
+          </View>
 
           <TouchableOpacity style={styles.button} 
             onPress = {() => LogOut()}>
