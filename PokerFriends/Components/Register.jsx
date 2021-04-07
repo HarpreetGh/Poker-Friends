@@ -42,9 +42,9 @@ export default class Register extends Component {
 
   InitializeUserInDB(user){
     firebase.database().ref('users/' + user.uid ).set({
+      chips: 1000,
       username: this.state.username,
       email: this.state.email,
-      chips: 1000,
       friends: '',
       games: 0,
       wins: 0,

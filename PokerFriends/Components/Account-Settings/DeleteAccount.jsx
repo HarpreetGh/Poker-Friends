@@ -12,8 +12,12 @@ export default class DeleteAccount extends Component {
     }
   }
 
-  Delete(){
+  async Delete(){
     var user = firebase.auth().currentUser;
+    var updates = {}
+
+    updates['/users/'+ user.uid] = null;
+    await firebase.database().ref().update(updates);
 
     user.delete()
       .then(() =>{
