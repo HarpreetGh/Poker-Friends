@@ -53,7 +53,9 @@ export default class App extends Component {
     if(user != null){
       firebase.database().ref('/users/' + user.uid).on('value', (snapshot) => {
         const data =  snapshot.val()
-        this.setState({userData: data, LoggedIn: true, ready: true})
+        if(snapshot.val() != null){
+          this.setState({userData: data, LoggedIn: true, ready: true})
+        }
       })
     }
     else{
