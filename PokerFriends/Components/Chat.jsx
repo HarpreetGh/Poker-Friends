@@ -31,7 +31,7 @@ export default function Chat (){
  var userName = user.displayName.slice(0, user.displayName.indexOf('#'))
  var userid = user.uid
  
- const [userInChat] = useState({userName, userid})
+ const [userInChat] = useState({ _id:userid, name:userName})
  const [messages, setMessages] = useState([])
    
     // this.state = {
@@ -87,6 +87,7 @@ return (
         
             <GiftedChat
               messages = {messages}
+              renderUsernameOnMessage = {true}
               user = {userInChat}
               onSend = {handleSend}
               placeholder = {'Type'}
