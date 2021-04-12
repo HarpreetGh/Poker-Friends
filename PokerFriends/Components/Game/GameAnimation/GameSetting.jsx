@@ -1,7 +1,8 @@
 import React, { Component} from 'react';
 import { Text, StyleSheet, View, TouchableOpacity,
          StatusBar, Image, Modal, TextInput,
-         BackHandler, Alert, Animated, Dimensions
+         BackHandler, Alert, Animated, Dimensions,
+         ActivityIndicator
          } from 'react-native';
 import Slider from '@react-native-community/slider';
 import * as ScreenOrientation from 'expo-screen-orientation';
@@ -400,6 +401,33 @@ export default class GameSetting extends Component {
     )
   }
 
+    waitingView(){
+      var isVisible = true
+      return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isVisible}
+      >
+        <View style = {styles.centeredView}>
+          <View style = {styles.modalView}>
+            <Text style = {{padding: 0, fontWeight: 'bold'}}>Waiting for more Players</Text>
+
+             <ActivityIndicator size='large' color="#0062ff"/>
+            
+            <View style = {{padding: 5}}></View>
+            <TouchableOpacity
+              style={styles.buttonInExit}
+              onPress={() => this.setModalVisible(true)}
+            >
+              <Text>EXIT</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      )
+    }
+
     UpdateInitializer(type, amount){
       var game = {...this.props.game}
       var keys = []
@@ -589,14 +617,21 @@ export default class GameSetting extends Component {
 
           {this.quitView()}
 
-          <View>
-            <TouchableOpacity
-              style={[styles.button, styles.buttonOpen]}
-              onPress={() => this.setModalVisible(true)}
-            >
-              <Text style ={styles.textStyle}>EXIT</Text>
-            </TouchableOpacity>
-          </View>
+          {this.props.game.size == 1? (
+            this.waitingView()
+          ):(
+            <View>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonOpen]}
+                onPress={() => this.setModalVisible(true)}
+              >
+                <Text style ={styles.textStyle}>EXIT</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          
+
+          
 
           <View style={styles.webcam1}>
               <Text>Webcam 1</Text>
