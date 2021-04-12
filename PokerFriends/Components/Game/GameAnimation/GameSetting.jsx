@@ -693,7 +693,7 @@ export default class GameSetting extends Component {
           </View>
           
           <View style={styles.chat}>
-              {/* <Chat></Chat>  */}
+              <Chat matchName={this.props.matchName} matchType={this.props.matchType}/>
           </View>    
           
           <View style={styles.chipView}>

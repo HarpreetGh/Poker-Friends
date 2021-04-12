@@ -404,61 +404,18 @@ export default class GameSetting extends Component {
   
 
   render() { 
-    /*if(this.state.ready && this.state.game.size == 1){
-      
-      return(
-        <View style={
-          {//position: 'absolute',
-            flex: 1,
-            //alignItems: 'center',
-            //justifyContent:'center',
-          }
-        }>
-          <GameView game={this.state.game} 
-            myCards={this.state.myCards}
-            matchName={this.state.matchName}
-            matchType={this.state.matchType}
-            playerNum={this.state.playerNum}
-            navigation = {this.props.navigation}
-            leaveGame = {this.leaveGame}
-            updateGame = {this.updateGame}
-            userData = {this.props.userData}
-          />
-          <View
-          style={
-            {position: 'absolute',
-              flex: 1,
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-              alignItems: 'center',
-              justifyContent:'center',
-            }
-          }>
-          <ActivityIndicator size='large' color="#0062ff"/>
-          <Text style={{
-            color: '#FFFFFF',
-          }}
-          >
-            Waiting for another player.
-          </Text>
-          </View>
-        </View>
-      )
-    }*/
     if(this.state.ready){
       return(
-          <GameView game={this.state.game} 
-            myCards={this.state.myCards}
-            matchName={this.state.matchName}
-            matchType={this.state.matchType}
-            playerNum={this.state.playerNum}
-            navigation = {this.props.navigation}
-            leaveGame = {this.leaveGame}
-            updateGame = {this.updateGame}
-            userData = {this.props.userData}
-          />
+        <GameView game={this.state.game} 
+          myCards={this.state.myCards}
+          matchName={this.state.matchName}
+          matchType={this.state.matchType}
+          playerNum={this.state.playerNum}
+          navigation = {this.props.navigation}
+          leaveGame = {this.leaveGame}
+          updateGame = {this.updateGame}
+          userData = {this.props.userData}
+        />
       )
     }
     else{

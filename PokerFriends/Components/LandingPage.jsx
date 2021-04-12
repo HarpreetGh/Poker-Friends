@@ -12,7 +12,6 @@ import ForgotPassword from './Account-Settings/ForgotPassword'
 import FriendsButton from './FriendsButton'
 import SettingsButton from './AccountSettings'
 import Balance from './Balance'
-import Chat from './Chat';
 
 
 
@@ -65,12 +64,6 @@ export default class LandingPage extends Component {
           >
             <Text style={styles.textStyle}>Create Game</Text>
           </TouchableOpacity>
-
-          <View>
-            <Chat>
-
-            </Chat>  
-          </View>
 
           <TouchableOpacity style={styles.button} 
             onPress = {() => LogOut()}>

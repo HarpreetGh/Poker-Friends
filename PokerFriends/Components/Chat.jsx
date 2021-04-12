@@ -17,28 +17,22 @@ import 'firebase/firestore'
 
 
 //No more error about v
-LogBox.ignoreLogs(['Setting a timer for a long period of time'])
-LogBox.ignoreLogs(['VirtualizedLists should never be nested'])
-
+//LogBox.ignoreLogs(['Setting a timer for a long period of time'])
+//LogBox.ignoreLogs(['VirtualizedLists should never be nested'])
 const db = firebase.firestore()
-const chatRef = db.collection('chat')
+//const chatRef = db.collection('chat')// + this.props.matchName
 
-
-export default function Chat (){
+export default function Chat(matchInfo){
  const [modalVisible, setModalVisible] = useState(false)
 
+ console.log(matchInfo)
+ const chatRef = db.collection('gameChats/'+ matchInfo.matchType+ '/'+ matchInfo.matchName)// + this.props.matchName
  var user = firebase.auth().currentUser;
  var userName = user.displayName.slice(0, user.displayName.indexOf('#'))
  var userid = user.uid
  
  const [userInChat] = useState({ _id:userid, name:userName})
  const [messages, setMessages] = useState([])
-   
-    // this.state = {
-    //   modalVisible: false,
-    //   user: {userName},
-    //   messages: []
-    // }
 
   useEffect (()=> {
     const unsubscribe = chatRef.onSnapshot(querySnapshot =>{
@@ -78,9 +72,6 @@ return (
         setModalVisible(!modalVisible);
       }}
     >
-        
-
-        
           <Text style = {{fontWeight:'bold', marginTop:-10, fontSize: 30, marginBottom: 25, textAlign:'center' }} >
             Chat room
           </Text> 
