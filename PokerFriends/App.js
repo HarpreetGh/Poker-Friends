@@ -3,7 +3,8 @@ import React, { Component, useState, useEffect } from 'react';
 import { StyleSheet, Text, View, StatusBar, ActivityIndicator} from 'react-native';
 import{NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack'
-
+import Firebaseinit from './firebase' //Intializes Firebase
+import firebase from 'firebase';
 
 import LandingPage from './Components/LandingPage'
 import Register from '../PokerFriends/Components/Register';
@@ -20,8 +21,7 @@ import CreateGame from './Components/CreateGame'
 import JoinGame from './Components/JoinGame'
 import AccountStats from './Components/AccountStats'
 
-import Firebaseinit from './firebase' //Intializes Firebase
-import firebase from 'firebase';
+
 
 
 

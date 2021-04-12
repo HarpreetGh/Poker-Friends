@@ -1,4 +1,7 @@
+
+//@refresh reset
 import * as firebase from 'firebase';
+import 'firebase/firebase-auth'
 
 const firebaseConfig = {
     apiKey: "AIzaSyBVr4IKgejWBb6uFG_joH5a5tT03j40NRM",
@@ -13,3 +16,10 @@ if(firebase.apps.length === 0){
   firebase.initializeApp(firebaseConfig);
   console.log('firebase.js triggered')
 }
+
+
+
+
+
+
+
