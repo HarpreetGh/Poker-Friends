@@ -437,7 +437,7 @@ export default class GameSetting extends Component {
 
       game.playerTurn++;
       //see if it's the last player's turn and change it to the first player's turn
-      if(game.playerTurn == game.size-game.newPlayer){
+      if(game.playerTurn >= game.size-game.newPlayer){
         game.playerTurn = 0;
       }
 
@@ -513,32 +513,32 @@ export default class GameSetting extends Component {
     }
 
     actionsView(){
-      var myTurn, callAmount
+      var myTurn = this.props.game.playerTurn == this.props.playerNum
       var callString = 'Call '
-      if(this.props.game.move[this.props.playerNum] == 'fold'){
-        myTurn = false
-        callAmount = 0
-        this.UpdateInitializer('fold')
-      }
-      else{
-        var balance = this.props.game.balance[this.props.playerNum]
-
-        if(balance == 0){ //if you run out of funds
+      var callAmount
+      if(myTurn){
+        if(this.props.game.move[this.props.playerNum] == 'fold'){ //if you fold
+          myTurn = false
           callAmount = 0
-          this.UpdateInitializer('check')
+          this.UpdateInitializer('fold')
         }
-        else{
-          callAmount = Math.max(...this.props.game.chipsIn) - this.props.game.chipsIn[this.props.playerNum]
+        else {
+          var balance = this.props.game.balance[this.props.playerNum]
 
-          if(callAmount > balance){ //partial still not implemented at pay out
-            callAmount = balance    //might also depricate later
-            callString += '(partial) '
+          if(balance == 0) { //if you run out of funds
+            callAmount = 0
+            this.UpdateInitializer('check')
           }
-          callString += callAmount
+          else {
+            callAmount = Math.max(...this.props.game.chipsIn) - this.props.game.chipsIn[this.props.playerNum]
 
-          myTurn = this.props.game.playerTurn == this.props.playerNum
+            if(callAmount > balance){ //partial still not implemented at pay out
+              callAmount = balance    //might also depricate later
+              callString += '(partial) '
+            }
+            callString += callAmount
+          }
         }
-        //console.log(this.props.game.playerTurn, this.props.playerNum)
       }
 
       return (
@@ -689,7 +689,7 @@ export default class GameSetting extends Component {
           <View>
             {this.props.myCards.map((card,i)=> this.cardDeal(card.suit, card.value, i+this.props.playerNum*2))}
             
-            {this.props.game.turn > 1? (this.props.game.board.map((card,i)=> this.flopTurnRiver(card.suit, card.value, i))):(<Text></Text>)}
+            {1 < this.props.game.turn && this.props.game.turn < 5  ? (this.props.game.board.map((card,i)=> this.flopTurnRiver(card.suit, card.value, i))):(<Text></Text>)}
           </View>
                 {/* {this.flop(this.props.game.deck.shift(),2,3)}
                               {this.turn(1)}

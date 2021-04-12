@@ -99,7 +99,6 @@ export default class GameSetting extends Component {
   gameTurnAction(){
     //check if all players are ready, by seeing if any player is not ready
     var game = {...this.state.game}
-    const allPlayersReady = !game.ready.includes(false)
     //check if start of game turn.
 
     if(this.state.host){
@@ -108,12 +107,7 @@ export default class GameSetting extends Component {
       const matchPath = '/games/'+ this.state.matchType + '/' + this.state.fullMatchName
 
       if(game.turn == 0){
-        if(game.newPlayer > 0){ //if a new player joined 
-          // game.balance.push()
-          // game.players.push()
-          // game.newPlayer +=1
-          // game.size += 1
-
+        if(game.newPlayer > 0){ 
           for(var i = 0; i < game.newPlayer; i++){
             game.chipsIn.push(0)
             game.chipsLost.push(0)
@@ -122,16 +116,16 @@ export default class GameSetting extends Component {
             game.ready.push(false)
           }
 
-          updates[matchPath + '/move'] = 
+          updates[matchPath + '/move'] = game.move
           updates[matchPath + '/chipsWon'] = game.chipsWon
           updates[matchPath + '/chipsLost'] = game.chipsLost
           updates[matchPath + '/chipsIn'] = game.chipsIn
           updates[matchPath + '/ready'] = game.ready
           updates[matchPath + '/newPlayer'] = 0
         }
-        /*else if(game.size == 1){
+        else if(game.size == 1){
           //don't move wait?
-        }*/
+        }
         else{
           var cards = this.giveOutCards()
           game.player_cards = cards[0];
@@ -148,21 +142,31 @@ export default class GameSetting extends Component {
       }
 
       else if(game.turn < 5){
-        if(allPlayersReady){
-           if(game.turn < 4){ //prep for turn 2
-            if(game.turn == 1){
-              game.board = game.deck.splice(0,3)
-            }
-            else{
-              game.board.push(...game.deck.splice(0,1))
-            }
-            //prep for turn 3 and 4
-            updates[matchPath + '/board'] = game.board
-            updates[matchPath + '/deck'] = game.deck
-          }
+        const allPlayersFolded = game.move.filter(move => move != 'fold').length == 1;
+        //^This line also works when the game.size is 1, thus ending the current round, and wait for new players.
+        const allPlayersReady = !game.ready.includes(false)
 
-          game.turn++
-          updates[matchPath + '/turn'] = game.turn
+        if(allPlayersReady || allPlayersFolded){
+          
+          if(allPlayersFolded){
+            updates[matchPath + '/turn'] = 5
+          }
+          else {
+            if(game.turn < 4){ 
+              if(game.turn == 1){ //prep for turn 2
+                game.board = game.deck.splice(0,3)
+              }
+              else{ //prep for turn 3 and 4
+                game.board.push(...game.deck.splice(0,1))
+              }
+              
+              updates[matchPath + '/board'] = game.board
+              updates[matchPath + '/deck'] = game.deck
+            }
+            game.turn++
+            updates[matchPath + '/turn'] = game.turn
+          }
+          
           updates[matchPath + '/ready'] = game.ready.fill(false)
           updates[matchPath + '/turnStart'] = true
           updates[matchPath + '/raisedVal'] = 0;
@@ -398,18 +402,60 @@ export default class GameSetting extends Component {
   }
 
   render() { 
-    if(this.state.ready){
+    // if(this.state.ready && this.state.game.size == 1){
+    //   return(
+    //     <View style={
+    //       {//position: 'absolute',
+    //         flex: 1,
+    //         //alignItems: 'center',
+    //         //justifyContent:'center',
+    //       }
+    //     }>
+    //       <GameView game={this.state.game} 
+    //         myCards={this.state.myCards}
+    //         matchName={this.state.matchName}
+    //         matchType={this.state.matchType}
+    //         playerNum={this.state.playerNum}
+    //         navigation = {this.props.navigation}
+    //         leaveGame = {this.leaveGame}
+    //         updateGame = {this.updateGame}
+    //         userData = {this.props.userData}
+    //       />
+    //       <View
+    //       style={
+    //         {position: 'absolute',
+    //           flex: 1,
+    //           left: 0,
+    //           right: 0,
+    //           top: 0,
+    //           bottom: 0,
+    //           alignItems: 'center',
+    //           justifyContent:'center',
+    //         }
+    //       }>
+    //       <ActivityIndicator size='large' color="#0062ff"/>
+    //       <Text style={{
+    //         color: '#FFFFFF',
+    //       }}
+    //       >
+    //         Waiting for another player.
+    //       </Text>
+    //       </View>
+    //     </View>
+    //   )
+    // }
+    /*else*/if(this.state.ready){
       return(
-        <GameView game={this.state.game} 
-          myCards={this.state.myCards}
-          matchName={this.state.matchName}
-          matchType={this.state.matchType}
-          playerNum={this.state.playerNum}
-          navigation = {this.props.navigation}
-          leaveGame = {this.leaveGame}
-          updateGame = {this.updateGame}
-          userData = {this.props.userData}
-        />
+          <GameView game={this.state.game} 
+            myCards={this.state.myCards}
+            matchName={this.state.matchName}
+            matchType={this.state.matchType}
+            playerNum={this.state.playerNum}
+            navigation = {this.props.navigation}
+            leaveGame = {this.leaveGame}
+            updateGame = {this.updateGame}
+            userData = {this.props.userData}
+          />
       )
     }
     else{
