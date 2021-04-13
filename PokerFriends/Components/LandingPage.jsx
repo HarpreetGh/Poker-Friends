@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, 
   Pressable, TouchableOpacity,} from 'react-native';
+import * as ScreenOrientation from 'expo-screen-orientation';
+
 import HelpButton from './HelpButton'
 import Logo from './Logo'
 import Login from './Login'
@@ -10,7 +12,8 @@ import ForgotPassword from './Account-Settings/ForgotPassword'
 import FriendsButton from './FriendsButton'
 import SettingsButton from './AccountSettings'
 import Balance from './Balance'
-import * as ScreenOrientation from 'expo-screen-orientation';
+
+
 
 const LogOut = () => {
   firebase.auth().signOut()
@@ -31,11 +34,11 @@ export default class LandingPage extends Component {
             <TouchableOpacity 
               style={styles.button}
               onPress = {() => {
-                this.props.navigation.navigate('CreateGame');
+                this.props.navigation.navigate('JoinGame');
               }}
             >
               <Text style={styles.textStyle}>
-                Join Game (TBA)
+                Join Game
               </Text>
             </TouchableOpacity>
           ):(

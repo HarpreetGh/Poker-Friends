@@ -3,7 +3,8 @@ import React, { Component, useState, useEffect } from 'react';
 import { StyleSheet, Text, View, StatusBar, ActivityIndicator} from 'react-native';
 import{NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack'
-
+import Firebaseinit from './firebase' //Intializes Firebase
+import firebase from 'firebase';
 
 import LandingPage from './Components/LandingPage'
 import Register from '../PokerFriends/Components/Register';
@@ -17,10 +18,10 @@ import ChangeEmail from './Components/Account-Settings/ChangeEmail';
 import DeleteAccount from './Components/Account-Settings/DeleteAccount';
 import FriendsList from './Components/FriendsList'
 import CreateGame from './Components/CreateGame'
+import JoinGame from './Components/JoinGame'
 import AccountStats from './Components/AccountStats'
 
-import Firebaseinit from './firebase' //Intializes Firebase
-import firebase from 'firebase';
+
 
 
 
@@ -85,6 +86,10 @@ export default class App extends Component {
 
             <Stack.Screen name = "CreateGame">
               {(props) => <CreateGame {...props} userData={this.state.userData}/>}
+            </Stack.Screen>
+
+            <Stack.Screen name = "JoinGame">
+              {(props) => <JoinGame {...props} userData={this.state.userData}/>}
             </Stack.Screen>
 
             <Stack.Screen name = "AccountStats">

@@ -1,11 +1,13 @@
 import React, { Component} from 'react';
 import { Text, StyleSheet, View, TouchableOpacity,
          StatusBar, Image, Modal, TextInput,
-         BackHandler, Alert, Animated, Dimensions
+         BackHandler, Alert, Animated, Dimensions,
+         ActivityIndicator
          } from 'react-native';
 import Slider from '@react-native-community/slider';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
+import Chat from '../../Chat'
 import Deck from '../../decks'
 import CardDealing from './cardDealing'
 
@@ -53,11 +55,11 @@ export default class GameSetting extends Component {
         new Animated.ValueXY({ x: 0, y: 0 }),
       ],
       tableCardsMove: [
-        { x: -145, y: -150 },
-        { x: -95, y: -150 },
-        { x: -45, y: -150 },
-        { x: 5, y: -150 },
-        { x: 55, y: -150 },
+        { x: -549, y: -150 },
+        { x: -478, y: -150 },
+        { x: -409, y: -150 },
+        { x: -341, y: -150 },
+        { x: -267, y: -150 },
       ],
 
       playerNewValues: [
@@ -307,8 +309,8 @@ export default class GameSetting extends Component {
                 borderRadius: 2,
                 alignItems: 'center',
                 justifyContent:'center',
-                paddingVertical: 15,
-                paddingHorizontal: 15,
+                paddingVertical: 20,
+                paddingHorizontal: 20,
                 backgroundColor:"white",}}
             >
               <Text>{suit}</Text>
@@ -400,6 +402,33 @@ export default class GameSetting extends Component {
     )
   }
 
+    waitingView(){
+      var isVisible = true
+      return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isVisible}
+      >
+        <View style = {styles.centeredView}>
+          <View style = {styles.modalView}>
+            <Text style = {{padding: 0, fontWeight: 'bold'}}>Waiting for more Players</Text>
+
+             <ActivityIndicator size='large' color="#0062ff"/>
+            
+            <View style = {{padding: 5}}></View>
+            <TouchableOpacity
+              style={styles.buttonInExit}
+              onPress={() => this.setModalVisible(true)}
+            >
+              <Text>EXIT</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      )
+    }
+
     UpdateInitializer(type, amount){
       var game = {...this.props.game}
       var keys = []
@@ -437,7 +466,7 @@ export default class GameSetting extends Component {
 
       game.playerTurn++;
       //see if it's the last player's turn and change it to the first player's turn
-      if(game.playerTurn == game.size){
+      if(game.playerTurn >= game.size-game.newPlayer){
         game.playerTurn = 0;
       }
 
@@ -513,32 +542,32 @@ export default class GameSetting extends Component {
     }
 
     actionsView(){
-      var myTurn, callAmount
+      var myTurn = this.props.game.playerTurn == this.props.playerNum
       var callString = 'Call '
-      if(this.props.game.move[this.props.playerNum] == 'fold'){
-        myTurn = false
-        callAmount = 0
-        this.UpdateInitializer('fold')
-      }
-      else{
-        var balance = this.props.game.balance[this.props.playerNum]
-
-        if(balance == 0){ //if you run out of funds
+      var callAmount
+      if(myTurn){
+        if(this.props.game.move[this.props.playerNum] == 'fold'){ //if you fold
+          myTurn = false
           callAmount = 0
-          this.UpdateInitializer('check')
+          this.UpdateInitializer('fold')
         }
-        else{
-          callAmount = Math.max(...this.props.game.chipsIn) - this.props.game.chipsIn[this.props.playerNum]
+        else {
+          var balance = this.props.game.balance[this.props.playerNum]
 
-          if(callAmount > balance){ //partial still not implemented at pay out
-            callAmount = balance    //might also depricate later
-            callString += '(partial) '
+          if(balance == 0) { //if you run out of funds
+            callAmount = 0
+            this.UpdateInitializer('check')
           }
-          callString += callAmount
+          else {
+            callAmount = Math.max(...this.props.game.chipsIn) - this.props.game.chipsIn[this.props.playerNum]
 
-          myTurn = this.props.game.playerTurn == this.props.playerNum
+            if(callAmount > balance){ //partial still not implemented at pay out
+              callAmount = balance    //might also depricate later
+              callString += '(partial) '
+            }
+            callString += callAmount
+          }
         }
-        //console.log(this.props.game.playerTurn, this.props.playerNum)
       }
 
       return (
@@ -589,24 +618,53 @@ export default class GameSetting extends Component {
 
           {this.quitView()}
 
-          <View>
-            <TouchableOpacity
-              style={[styles.button, styles.buttonOpen]}
-              onPress={() => this.setModalVisible(true)}
-            >
-              <Text style ={styles.textStyle}>EXIT</Text>
-            </TouchableOpacity>
-          </View>
+          {this.props.game.size == 1? (
+            this.waitingView()
+          ):(
+            <View>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonOpen]}
+                onPress={() => this.setModalVisible(true)}
+              >
+                <Text style ={styles.textStyle}>EXIT</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          
 
-          <View style={styles.webcam1}>
+          
+
+
+          <View style={styles.player1View}>
+            <View style={styles.webcam}>
               <Text>Webcam 1</Text>
-              {/* {<Text>{this.props.game.players[0]}</Text>} */}
-          </View>
+              {/*<Text>{this.props.game.players[0]}</Text>*/}
+            </View>
 
-          <View>
-            <View style={styles.webcam2}>
+            <Animated.View
+              style={[
+                styles.pBet,
+                {opacity: this.state.fadeAnimation}
+              ]}
+            >
+              <Text>testing</Text>
+            </Animated.View>
+          </View>
+          
+
+          <View style={styles.player2View}>
+            <View style={styles.webcam}>
                 <Text>Webcam 2</Text>
             </View>
+            
+            <Animated.View
+              style={[
+                styles.pBet,
+                {opacity: this.state.fadeAnimation}
+              ]}
+            >
+              <Text>testing</Text>
+            </Animated.View>
           </View>
           
 
@@ -614,10 +672,19 @@ export default class GameSetting extends Component {
             source = {require('../../../assets/pokertable.png')}
           />
 
-          <View>
-            <View style={styles.webcam3}>
+          <View style={styles.player3View}>
+            <View style={styles.webcam}>
                 <Text>Webcam 3</Text> 
             </View>
+
+            <Animated.View
+              style={[
+                styles.pBet,
+                {opacity: this.state.fadeAnimation}
+              ]}
+            >
+              <Text>testing</Text>
+            </Animated.View>
           </View> 
 
           <View style={styles.potView}>
@@ -634,13 +701,14 @@ export default class GameSetting extends Component {
             </Text>
           </View>
           
-          <View style={styles.webcam4}>
-            <View>
+          <View style={styles.player4View}>
+            <View style={styles.webcam}>
               <Text>Webcam 4</Text> 
             </View>
 
             <Animated.View
               style={[
+                styles.pBet,
                 {opacity: this.state.fadeAnimation}
               ]}
             >
@@ -657,9 +725,7 @@ export default class GameSetting extends Component {
           </View>
           
           <View style={styles.chat}>
-            <View>
-              <Text>Chat</Text> 
-            </View>
+              <Chat matchName={this.props.matchName} matchType={this.props.matchType}/>
           </View>    
           
           <View style={styles.chipView}>
@@ -671,7 +737,7 @@ export default class GameSetting extends Component {
               }}
               source={require('../../../assets/chipAmount.png')}
             /> 
-            <Text style = {{ fontSize: 20, fontWeight: 'bold' }}>
+            <Text style = {{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>
               {this.props.game.balance[this.props.playerNum]}
             </Text> 
           </View>
@@ -687,9 +753,9 @@ export default class GameSetting extends Component {
 
         
           <View>
-            {this.props.myCards.map((card,i)=> this.cardDeal(card.suit, card.value, i))}
-            
-            {this.props.game.turn > 1? (this.props.game.board.map((card,i)=> this.flopTurnRiver(card.suit, card.value, i+this.props.playerNum*2))):(<Text></Text>)}
+
+            {this.props.myCards.map((card,i)=> this.cardDeal(card.suit, card.value, i+this.props.playerNum*2))}
+            {1 < this.props.game.turn && this.props.game.turn < 5  ? (this.props.game.board.map((card,i)=> this.flopTurnRiver(card.suit, card.value, i))):(<Text></Text>)}
           </View>
                 {/* {this.flop(this.props.game.deck.shift(),2,3)}
                               {this.turn(1)}
@@ -793,49 +859,48 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5
   },
-  
-  webcam1:{
+  webcam:{
+    backgroundColor:"#778899",
+    paddingVertical: 30,
+    paddingHorizontal: 10,
+  },
+  pBet: {
+    bottom: "0%",
+    left: "25%",
+  },
+  player1View: {
     position: 'absolute',
     borderRadius: 2,
     borderColor: 'black',
-    paddingVertical: 30,
-    paddingHorizontal: 10,
-    backgroundColor:"#778899",
     top: "35%",
-    left: "1%"
+    left: "5%",
+    alignContent: "center",
+    paddingBottom: 15
   },
-  webcam2:{
+  player2View: {
+    borderRadius: 2,
+    borderColor: 'black',
+    top: "0%",
+    left:"30%",
+  },
+  player3View: {
     borderRadius: 2,
     borderColor: "black",
-    paddingVertical: 30,
-    paddingHorizontal: 10,
-    backgroundColor: "#778899",
-    left:"150%",
-  },
-  webcam3:{
-    borderRadius: 2,
-    borderColor: "black",
-    paddingVertical: 30,
-    paddingHorizontal: 10,
-    backgroundColor: "#778899",
-    right: '200%',
+    right: '25%',
     bottom: '0%'
   },
-  webcam4:{
+  player4View: {
     position:'absolute',
     borderRadius: 2,
     borderColor: 'black',
-    paddingVertical: 30,
-    paddingHorizontal: 10,
-    backgroundColor:"#778899",
-    bottom: "45%",
-    right: "0%",
+    top: "35%",
+    right: "5%",
     alignContent: "center"
   },
   potView:{
     position: 'absolute',
-    top: "0%",
-    right: "0%"
+    top: "5%",
+    right: "5%"
   },
   pot:{
     borderRadius: 2,
@@ -855,21 +920,17 @@ const styles = StyleSheet.create({
     bottom: "0%"
   },
   tableView: {
-    width: 400,
+    width: 466,
     height: 400,
     resizeMode: 'contain',
-    bottom: '5%',
-    right: '4%',
+    bottom: '0%',
+    right: '0%',
+    marginLeft: 5
   },
   chat:{
     position:'absolute',
-    borderRadius: 2,
-    borderColor: 'black',
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    backgroundColor:"#778899",
     bottom: "0%",
-    right: "20%"
+    right: "13%"
   },
   bettingButtonsView:{
     position: 'absolute',
