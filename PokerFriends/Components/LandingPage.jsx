@@ -51,7 +51,7 @@ export default class LandingPage extends Component {
               }}
             >
               <Text style={styles.textStyle}>
-                Continue Game
+                Continue Game {/*({this.props.userData.in_game.slice(this.props.userData.in_game.indexOf('_')+1, this.props.userData.in_game.indexOf('-'))}) */}
               </Text>
             </TouchableOpacity>
           )}

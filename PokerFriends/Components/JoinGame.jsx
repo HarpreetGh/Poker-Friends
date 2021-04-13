@@ -24,8 +24,7 @@ export default class JoinGame extends Component {
 
   async joinGame(type){
     var user = firebase.auth().currentUser;
-    //var username = user.displayName.slice(0, user.displayName.indexOf('#'))
-    const username = user.displayName
+    const username = user.displayName.slice(0, user.displayName.indexOf('#'))
 
     if(!this.props.userData.in_game === ''){
       Alert.alert('Already in a Game', 'Please leave the game you currently are in, to create a Game')

@@ -71,7 +71,7 @@ export default class GameSetting extends Component {
  checkHost(game){
     //var game = this.state.game
     if(!this.state.host){
-      var playerNum = game.players.indexOf(this.props.userData.username)
+      var playerNum = game.players.indexOf(this.props.userData.username.slice(0, this.props.userData.username.indexOf('#')))
       var newPlayer = false;
 
       if(this.state.newPlayer){ //newPlayer is True by default
@@ -96,7 +96,7 @@ export default class GameSetting extends Component {
   turn = 5 //show cards, last turn and winner takes pot. RESET turn to 0
   */
 
-  gameTurnAction(){
+  async gameTurnAction(){
     //check if all players are ready, by seeing if any player is not ready
     var game = {...this.state.game}
     //check if start of game turn.
@@ -127,7 +127,7 @@ export default class GameSetting extends Component {
           //don't move wait?
         }
         else{
-          var cards = this.giveOutCards()
+          var cards = await this.giveOutCards()
           game.player_cards = cards[0];
           game.deck = cards[1];
           game.turn++
@@ -256,7 +256,7 @@ export default class GameSetting extends Component {
     return 0
   }
 
-  giveOutCards() {
+  async giveOutCards() {
     gameDeck.shuffle()
 
     var playerDecks = []
@@ -280,6 +280,7 @@ export default class GameSetting extends Component {
       deck.push(gameDeck.cards.shift())
     }
     //this.setState({deck: deck})
+    //console.log(playerRanks, deck, 'GameDeck, /n',gameDeck)
     return [playerRanks, deck]
   }
 

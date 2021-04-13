@@ -24,8 +24,6 @@ const db = firebase.firestore()
 
 export default function Chat(matchInfo){
  const [modalVisible, setModalVisible] = useState(false)
-
- console.log(matchInfo)
  const chatRef = db.collection('gameChats/'+ matchInfo.matchType+ '/'+ matchInfo.matchName)// + this.props.matchName
  var user = firebase.auth().currentUser;
  var userName = user.displayName.slice(0, user.displayName.indexOf('#'))
@@ -33,12 +31,14 @@ export default function Chat(matchInfo){
  
  const [userInChat] = useState({ _id:userid, name:userName})
  const [messages, setMessages] = useState([])
+  const [newMessages, setNewMessages] = useState(0)
 
   useEffect (()=> {
     const unsubscribe = chatRef.onSnapshot(querySnapshot =>{
       const messagesFirestore = querySnapshot.docChanges()
       .filter(({type}) => type === 'added')
       .map(({doc}) => {
+
         const message = doc.data()
         return {...message, createdAt: message.createdAt.toDate()}
       }).sort((a,b) => b.createdAt.getTime() - a.createdAt.getTime())
@@ -56,6 +56,7 @@ const appendMessages = useCallback(
 )
 
  async function handleSend(messages){
+   setNewMessages(newMessages+2)
   const writes = messages.map(m => chatRef.add(m))
   await Promise.all(writes)
 }

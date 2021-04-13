@@ -25,8 +25,8 @@ export default class CreateGame extends Component {
 
   createGame(type){
     var user = firebase.auth().currentUser;
-    //var username = user.displayName.slice(0, user.displayName.indexOf('#'))
-    const username = user.displayName
+    const username = user.displayName.slice(0, user.displayName.indexOf('#'))
+    //const username = user.displayName
     const buyIn = Number(this.state.buyIn)
     
     if(this.props.userData.chips - buyIn < 0){

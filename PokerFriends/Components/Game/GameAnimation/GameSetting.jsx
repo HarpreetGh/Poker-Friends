@@ -55,11 +55,11 @@ export default class GameSetting extends Component {
         new Animated.ValueXY({ x: 0, y: 0 }),
       ],
       tableCardsMove: [
-        { x: -549, y: -150 },
-        { x: -478, y: -150 },
-        { x: -409, y: -150 },
-        { x: -341, y: -150 },
-        { x: -267, y: -150 },
+        { x: -117, y: -150 },
+        { x: -46, y: -150 },
+        { x: 23, y: -150 },
+        { x: 91, y: -150 },
+        { x: 165, y: -150 },
       ],
 
       playerNewValues: [
@@ -75,7 +75,7 @@ export default class GameSetting extends Component {
 
       modalVisible: false,
       raiseVisible: false,
-      fiveCardsFin: 4,
+      fiveCardsFin: 0,
 
       valueFoldCard: new Animated.ValueXY({ x: 25, y: 25 }),
       fadeAnimation: new Animated.Value(0), 
@@ -142,7 +142,8 @@ export default class GameSetting extends Component {
     fadeIn() {
       Animated.timing(this.state.fadeAnimation, {
         toValue: 1,
-        duration: 4000
+        duration: 4000,
+        useNativeDriver: false,
       }).start(() => this.fadeOut());
     }
 
@@ -150,11 +151,9 @@ export default class GameSetting extends Component {
       Animated.timing(this.state.fadeAnimation, {
         toValue: 0,
         duration: 3000,
+        useNativeDriver: false,
       }).start();
-      
     }
-
-    
   
     setModalVisible = (visible) => {
       this.setState({ modalVisible: visible });
@@ -192,7 +191,8 @@ export default class GameSetting extends Component {
     transitionBlinds(){
       //This first if statement should only be done in the
       //beginning of each game(New Lobby)
-      if(this.state.fiveCardsFin == 0){
+      var fiveCardsFin = this.props.game.playerTurn
+      if(fiveCardsFin == 0){
         return <View>
           <Animated.View>
             <View 
@@ -226,8 +226,8 @@ export default class GameSetting extends Component {
           </Animated.View>
         </View>
       }
-      else if(this.state.fiveCardsFin < 5){
-        var index = this.state.fiveCardsFin - 1
+      else if(fiveCardsFin < 5){
+        var index = fiveCardsFin - 1
         var bb;
         if(index == 0){
           bb = (
@@ -349,58 +349,58 @@ export default class GameSetting extends Component {
 
     quitView(){
       const { modalVisible } = this.state;
-      return(
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible} 
-      >
-        <View style = {styles.centeredView}>
-          <View style = {styles.modalView}>
-            
-            <Text style = {{padding: 5}}>Are you sure you want to leave?</Text>
-            
-            <TouchableOpacity
-              style={styles.buttonInExit}
-              onPress={() => {
-                this.setModalVisible(!modalVisible)
-              }}
+      return (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible} 
+        >
+          <View style = {styles.centeredView}>
+            <View style = {styles.modalView}>
+              
+              <Text style = {{padding: 5}}>Are you sure you want to leave?</Text>
+              
+              <TouchableOpacity
+                style={styles.buttonInExit}
+                onPress={() => {
+                  this.setModalVisible(!modalVisible)
+                }}
+                >
+                  <Text style={ styles.exitStyle }>NO</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={styles.buttonInExit}
+                onPress={() => {
+                  this.props.navigation.navigate('LandingPage')
+                  ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+                  this.setModalVisible(!modalVisible)
+                }}
               >
-                <Text style={ styles.exitStyle }>NO</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={styles.buttonInExit}
-              onPress={() => {
-                this.props.navigation.navigate('LandingPage')
-                ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-                this.setModalVisible(!modalVisible)
-              }}
-            >
-              <Text style={ styles.exitStyle }>Go to Main Menu</Text>
-            </TouchableOpacity>
+                <Text style={ styles.exitStyle }>Go to Main Menu</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.buttonInExit}
-              onPress={() => {
-                this.props.navigation.navigate('LandingPage')
-                ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-                this.setModalVisible(!modalVisible)
-                this.props.leaveGame(this.props.game,
-                  this.props.playerNum,
-                  this.props.matchType,
-                  this.props.matchType+'_'+this.props.matchName,
-                  this.props.userData
-                  )
-              }}
-            >
-              <Text style={ styles.exitStyle }>Quit Game</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.buttonInExit}
+                onPress={() => {
+                  this.props.navigation.navigate('LandingPage')
+                  ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+                  this.setModalVisible(!modalVisible)
+                  this.props.leaveGame(this.props.game,
+                    this.props.playerNum,
+                    this.props.matchType,
+                    this.props.matchType+'_'+this.props.matchName,
+                    this.props.userData
+                    )
+                }}
+              >
+                <Text style={ styles.exitStyle }>Quit Game</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </Modal>
-    )
-  }
+        </Modal>
+      )
+    }
 
     waitingView(){
       var isVisible = true
@@ -462,6 +462,14 @@ export default class GameSetting extends Component {
         keys = ['move', 'chipsIn', 'raisedVal', 'balance', 'pot', 'playerTurn', 'ready']
 
         this.setState({raiseAmount: 10})
+      }
+      else if (type === 'buy in'){
+        game.move[this.props.playerNum] = type
+        game.chipsIn[this.props.playerNum] += amount //what if you don't have enough chips Fix for Partial Calls
+        game.pot += amount 
+        game.balance[this.props.playerNum] -= amount
+        game.ready[this.props.playerNum] = true
+        keys = ['move', 'chipsIn', 'balance', 'pot', 'playerTurn', 'ready']
       }
 
       game.playerTurn++;
@@ -551,28 +559,27 @@ export default class GameSetting extends Component {
           callAmount = 0
           this.UpdateInitializer('fold')
         }
-        else {
-          var balance = this.props.game.balance[this.props.playerNum]
-
-          if(balance == 0) { //if you run out of funds
-            callAmount = 0
-            this.UpdateInitializer('check')
-          }
-          else {
-            callAmount = Math.max(...this.props.game.chipsIn) - this.props.game.chipsIn[this.props.playerNum]
-
-            if(callAmount > balance){ //partial still not implemented at pay out
-              callAmount = balance    //might also depricate later
-              callString += '(partial) '
-            }
-            callString += callAmount
-          }
-        }
       }
 
-      return (
-        <View style={styles.bettingButtonsView}>
-            
+      if(this.props.game.turn > 1){
+        var balance = this.props.game.balance[this.props.playerNum]
+
+        if(balance == 0) { //if you run out of funds
+          callAmount = 0
+          this.UpdateInitializer('check')
+        }
+        else {
+          callAmount = Math.max(...this.props.game.chipsIn) - this.props.game.chipsIn[this.props.playerNum]
+
+          if(callAmount > balance){ //partial still not implemented at pay out
+            callAmount = balance    //might also depricate later
+            callString += '(partial) '
+          }
+          callString += callAmount
+        }
+
+        return (
+          <View style={styles.bettingButtonsView}>
             {this.raiseView(callAmount, balance)}
 
             <TouchableOpacity 
@@ -604,9 +611,30 @@ export default class GameSetting extends Component {
             >
               <Text>Fold</Text>
             </TouchableOpacity>
-
           </View>
-      )
+        )
+      }
+      else{
+        const buyInAmount = this.props.game.buyIn * 0.1
+        return(
+          <View style={styles.bettingButtonsView}>
+            <TouchableOpacity style={[styles.bettingButtons, (myTurn)?{backgroundColor:"#ffeb91"}:styles.disabled]}
+              disabled={!myTurn} onPress={() => this.UpdateInitializer('buy in', buyInAmount)}
+            >
+              <Text>Buy In {buyInAmount}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.bettingButtons, (myTurn)? styles.foldButt:styles.disabled]} 
+              disabled={!myTurn} onPress = {() => {
+                this.foldCard() 
+                this.UpdateInitializer('fold')
+              }}
+            >
+              <Text>Fold</Text>
+            </TouchableOpacity>
+          </View>
+        )
+      }
     }
     
     render() { 
@@ -630,17 +658,11 @@ export default class GameSetting extends Component {
               </TouchableOpacity>
             </View>
           )}
-          
-
-          
-
 
           <View style={styles.player1View}>
             <View style={styles.webcam}>
-              <Text>Webcam 1</Text>
-              {/*<Text>{this.props.game.players[0]}</Text>*/}
+              <Text style={styles.textStyle}>{this.props.game.players[0]}</Text>
             </View>
-
             <Animated.View
               style={[
                 styles.pBet,
@@ -651,10 +673,15 @@ export default class GameSetting extends Component {
             </Animated.View>
           </View>
           
-
+        
           <View style={styles.player2View}>
             <View style={styles.webcam}>
-                <Text>Webcam 2</Text>
+              {this.props.game.size > 1?( 
+                <Text style={styles.textStyle}>{this.props.game.players[1]}</Text> 
+                ):(
+                <Text style={styles.textStyle}>Empty</Text>
+                )
+              }
             </View>
             
             <Animated.View
@@ -666,26 +693,33 @@ export default class GameSetting extends Component {
               <Text>testing</Text>
             </Animated.View>
           </View>
+           
+          
           
 
           <Image  style = {styles.tableView}
             source = {require('../../../assets/pokertable.png')}
           />
+         
+            <View style={styles.player3View}>
+              <View style={styles.webcam}>
+                {this.props.game.size > 2?( 
+                  <Text style={styles.textStyle}>{this.props.game.players[2]}</Text> 
+                  ):(
+                  <Text style={styles.textStyle}>Empty</Text>
+                  )
+                }
+              </View>
 
-          <View style={styles.player3View}>
-            <View style={styles.webcam}>
-                <Text>Webcam 3</Text> 
-            </View>
-
-            <Animated.View
-              style={[
-                styles.pBet,
-                {opacity: this.state.fadeAnimation}
-              ]}
-            >
-              <Text>testing</Text>
-            </Animated.View>
-          </View> 
+              <Animated.View
+                style={[
+                  styles.pBet,
+                  {opacity: this.state.fadeAnimation}
+                ]}
+              >
+                <Text>testing</Text>
+              </Animated.View>
+            </View> 
 
           <View style={styles.potView}>
             <Image style = {{   
@@ -703,7 +737,12 @@ export default class GameSetting extends Component {
           
           <View style={styles.player4View}>
             <View style={styles.webcam}>
-              <Text>Webcam 4</Text> 
+              {this.props.game.size > 3?( 
+                <Text style={styles.textStyle}>{this.props.game.players[3]}</Text> 
+                ):( 
+                <Text style={styles.textStyle}>Empty</Text>
+                )
+              }
             </View>
 
             <Animated.View
@@ -742,14 +781,17 @@ export default class GameSetting extends Component {
             </Text> 
           </View>
               
-          {this.transitionBlinds()}
+          {/* {this.props.game.turn == 1? (this.transitionBlinds()
+          ):(
+            <Text></Text>
+          )} */}
           
           
-          <View style = {styles.foldContainer}>
+          {/* <View style = {styles.foldContainer}>
             <Animated.View style = {[styles.foldCard, this.state.valueFoldCard.getLayout()]}>
               <Image style = {styles.cardImage} source = {require("../../../assets/deckOfCards/PNG/♥J.png")}/>
             </Animated.View>
-          </View>
+          </View> */}
 
         
           <View>
@@ -925,6 +967,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     bottom: '0%',
     right: '0%',
+    left: '20%',
     marginLeft: 5
   },
   chat:{
