@@ -360,6 +360,8 @@ export default class GameSetting extends Component {
       }
     }
     else{ //update game
+      updates['/games/list/' + fullMatchName + '/size'] = editGame.size
+
       updates[matchLocation + '/balance']       = editGame.balance
       updates[matchLocation + '/move']          = editGame.move
       updates[matchLocation + '/player_cards']  = editGame.player_cards

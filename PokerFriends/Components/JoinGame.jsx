@@ -37,7 +37,10 @@ export default class JoinGame extends Component {
 
     const matchName = this.state.name;
     const matchPath =  '/games/' + type + '/' + matchName;
+    const matchListPath = '/games/list/' + matchName;
 
+    
+    
     firebase.database().ref(matchPath).once('value', (snapshot) => {
       console.log('game data recieved')
       var data = snapshot.val()
@@ -49,6 +52,7 @@ export default class JoinGame extends Component {
       this.props.userData.chips -= data.buyIn
       
       var updates = {};
+      
       updates['/users/'+ user.uid +'/in_game'] = matchName
       updates['/users/'+ user.uid +'/chips'] = this.props.userData.chips
 
@@ -56,6 +60,10 @@ export default class JoinGame extends Component {
       updates[matchPath + '/players'] = data.players
       updates[matchPath + '/newPlayer'] = data.newPlayer
       updates[matchPath + '/size'] = data.size
+
+      if(type == 'public'){
+        updates['/games/list/' + matchName + '/size'] = data.size
+      }
 
       firebase.database().ref().update(updates);
     })
