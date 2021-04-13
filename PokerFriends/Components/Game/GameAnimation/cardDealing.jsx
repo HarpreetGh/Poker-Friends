@@ -63,11 +63,11 @@ export default class CardDealing extends Component {
         return (
             <View style = {styles.container}>
                 <View>
-                    <Animated.View style ={[styles.flipCard, frontAnimatedStyle]}>
+                    <Animated.View style ={[styles.flipCard, backAnimatedStyle]}>
                         <Image style = {styles.cardImage} source = {require('../../../assets/cardBack.png')}/>
                     </Animated.View>
-
-                    <Animated.View style = {[styles.flipCard ,backAnimatedStyle,  styles.flipCardBack]}>
+                    
+                    <Animated.View style = {[styles.flipCard , frontAnimatedStyle,  styles.flipCardBack]}>
                         <View style = {{position: 'absolute',
                             flex: 1,
                             borderRadius: 2,
@@ -85,7 +85,7 @@ export default class CardDealing extends Component {
                 </View>
 
             {/* We call this at the end of the round, because it flips all cards. */}
-           {this.flipCard()}
+           {/* {this.flipCard()} */}
             
             </View>
             

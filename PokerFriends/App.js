@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { Component, useState, useEffect } from 'react';
-import { StyleSheet, Text, View, StatusBar, ActivityIndicator} from 'react-native';
+import { StyleSheet, Text, View, StatusBar, ActivityIndicator, LogBox} from 'react-native';
 import{NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack'
 import Firebaseinit from './firebase' //Intializes Firebase
@@ -24,7 +24,7 @@ import AccountStats from './Components/AccountStats'
 
 
 
-
+LogBox.ignoreLogs(['Setting a timer for a long period of time'])
 
 const Stack = createStackNavigator();
 
