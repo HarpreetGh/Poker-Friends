@@ -55,11 +55,11 @@ export default class GameSetting extends Component {
         new Animated.ValueXY({ x: 0, y: 0 }),
       ],
       tableCardsMove: [
-        { x: -145, y: -150 },
-        { x: -95, y: -150 },
-        { x: -45, y: -150 },
-        { x: 5, y: -150 },
-        { x: 55, y: -150 },
+        { x: -549, y: -150 },
+        { x: -478, y: -150 },
+        { x: -409, y: -150 },
+        { x: -341, y: -150 },
+        { x: -267, y: -150 },
       ],
 
       playerNewValues: [
@@ -309,8 +309,8 @@ export default class GameSetting extends Component {
                 borderRadius: 2,
                 alignItems: 'center',
                 justifyContent:'center',
-                paddingVertical: 15,
-                paddingHorizontal: 15,
+                paddingVertical: 20,
+                paddingHorizontal: 20,
                 backgroundColor:"white",}}
             >
               <Text>{suit}</Text>
@@ -634,15 +634,37 @@ export default class GameSetting extends Component {
 
           
 
-          <View style={styles.webcam1}>
-              <Text>Webcam 1</Text>
-              {/* {<Text>{this.props.game.players[0]}</Text>} */}
-          </View>
 
-          <View>
-            <View style={styles.webcam2}>
+          <View style={styles.player1View}>
+            <View style={styles.webcam}>
+              <Text>Webcam 1</Text>
+              {/*<Text>{this.props.game.players[0]}</Text>*/}
+            </View>
+
+            <Animated.View
+              style={[
+                styles.pBet,
+                {opacity: this.state.fadeAnimation}
+              ]}
+            >
+              <Text>testing</Text>
+            </Animated.View>
+          </View>
+          
+
+          <View style={styles.player2View}>
+            <View style={styles.webcam}>
                 <Text>Webcam 2</Text>
             </View>
+            
+            <Animated.View
+              style={[
+                styles.pBet,
+                {opacity: this.state.fadeAnimation}
+              ]}
+            >
+              <Text>testing</Text>
+            </Animated.View>
           </View>
           
 
@@ -650,10 +672,19 @@ export default class GameSetting extends Component {
             source = {require('../../../assets/pokertable.png')}
           />
 
-          <View>
-            <View style={styles.webcam3}>
+          <View style={styles.player3View}>
+            <View style={styles.webcam}>
                 <Text>Webcam 3</Text> 
             </View>
+
+            <Animated.View
+              style={[
+                styles.pBet,
+                {opacity: this.state.fadeAnimation}
+              ]}
+            >
+              <Text>testing</Text>
+            </Animated.View>
           </View> 
 
           <View style={styles.potView}>
@@ -670,13 +701,14 @@ export default class GameSetting extends Component {
             </Text>
           </View>
           
-          <View style={styles.webcam4}>
-            <View>
+          <View style={styles.player4View}>
+            <View style={styles.webcam}>
               <Text>Webcam 4</Text> 
             </View>
 
             <Animated.View
               style={[
+                styles.pBet,
                 {opacity: this.state.fadeAnimation}
               ]}
             >
@@ -705,7 +737,7 @@ export default class GameSetting extends Component {
               }}
               source={require('../../../assets/chipAmount.png')}
             /> 
-            <Text style = {{ fontSize: 20, fontWeight: 'bold' }}>
+            <Text style = {{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>
               {this.props.game.balance[this.props.playerNum]}
             </Text> 
           </View>
@@ -721,8 +753,8 @@ export default class GameSetting extends Component {
 
         
           <View>
+
             {this.props.myCards.map((card,i)=> this.cardDeal(card.suit, card.value, i+this.props.playerNum*2))}
-            
             {1 < this.props.game.turn && this.props.game.turn < 5  ? (this.props.game.board.map((card,i)=> this.flopTurnRiver(card.suit, card.value, i))):(<Text></Text>)}
           </View>
                 {/* {this.flop(this.props.game.deck.shift(),2,3)}
@@ -827,49 +859,48 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5
   },
-  
-  webcam1:{
+  webcam:{
+    backgroundColor:"#778899",
+    paddingVertical: 30,
+    paddingHorizontal: 10,
+  },
+  pBet: {
+    bottom: "0%",
+    left: "25%",
+  },
+  player1View: {
     position: 'absolute',
     borderRadius: 2,
     borderColor: 'black',
-    paddingVertical: 30,
-    paddingHorizontal: 10,
-    backgroundColor:"#778899",
     top: "35%",
-    left: "1%"
+    left: "5%",
+    alignContent: "center",
+    paddingBottom: 15
   },
-  webcam2:{
+  player2View: {
+    borderRadius: 2,
+    borderColor: 'black',
+    top: "0%",
+    left:"30%",
+  },
+  player3View: {
     borderRadius: 2,
     borderColor: "black",
-    paddingVertical: 30,
-    paddingHorizontal: 10,
-    backgroundColor: "#778899",
-    left:"150%",
-  },
-  webcam3:{
-    borderRadius: 2,
-    borderColor: "black",
-    paddingVertical: 30,
-    paddingHorizontal: 10,
-    backgroundColor: "#778899",
-    right: '200%',
+    right: '25%',
     bottom: '0%'
   },
-  webcam4:{
+  player4View: {
     position:'absolute',
     borderRadius: 2,
     borderColor: 'black',
-    paddingVertical: 30,
-    paddingHorizontal: 10,
-    backgroundColor:"#778899",
-    bottom: "45%",
-    right: "0%",
+    top: "35%",
+    right: "5%",
     alignContent: "center"
   },
   potView:{
     position: 'absolute',
-    top: "0%",
-    right: "0%"
+    top: "5%",
+    right: "5%"
   },
   pot:{
     borderRadius: 2,
@@ -889,11 +920,12 @@ const styles = StyleSheet.create({
     bottom: "0%"
   },
   tableView: {
-    width: 400,
+    width: 466,
     height: 400,
     resizeMode: 'contain',
-    bottom: '5%',
-    right: '4%',
+    bottom: '0%',
+    right: '0%',
+    marginLeft: 5
   },
   chat:{
     position:'absolute',
