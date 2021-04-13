@@ -57,6 +57,7 @@ export default class CreateGame extends Component {
       chipsIn: [0],
       deck: [''],
       move: [''],
+      newPlayer: 0,
       pause: true,
       turn: 0,
       player_cards: [{rank: 0, cards: ['']}],
@@ -71,7 +72,8 @@ export default class CreateGame extends Component {
     
     if(type === 'public'){
       firebase.database().ref('games/list/' + matchName).set({
-        size:1
+        size:1,
+        buyIn: buyIn
       }); 
     }
 

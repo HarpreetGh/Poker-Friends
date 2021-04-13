@@ -85,7 +85,7 @@ export default class CardDealing extends Component {
                 </View>
 
             {/* We call this at the end of the round, because it flips all cards. */}
-           {this.flipCard()}   
+           {this.flipCard()}
             
             </View>
             
