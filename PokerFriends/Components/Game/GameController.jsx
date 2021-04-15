@@ -184,7 +184,6 @@ export default class GameSetting extends Component {
     // Assign ranks for players before sorting ranks in hand[] array therefore updating
     // game.player_cards[i].rank should be updated
 
-    //TODO: Check for fold here maybe? Maybe not 
     for (var i = 0; i < game.size; i++){
       console.log("Assign Ranks loop reached")
       var position = i
@@ -265,9 +264,11 @@ export default class GameSetting extends Component {
     var roundWinner;
     if(indexOfHighestRanks.length == 1){
       roundWinner = indexOfHighestRanks[0]
+      console.log("Only one player has the highest rank: ", indexOfHighestRanks)
     }
     else{
-      roundWinner = CompareCards(indexOfHighestRanks, game.player_cards)
+      roundWinner = compareCards(indexOfHighestRanks, game)
+      console.log("Calling Compare")
       //index would be [0,3] or [1,2,3] or whatever amount of players have same # of cards
       //game.player_cards is [{rank: 2, myCards: [Card, Card]}, {rank: 2, myCards: [Card, Card]}]
       //Card = {suit: 'heart', value: '3', image: 'somefilepath'}
@@ -276,14 +277,20 @@ export default class GameSetting extends Component {
     return roundWinner
   }
 
-  CompareCards(index, cards){ //TODO
-    /*
-    Because this is only called when there are more than 1 people with the same rank
-    depending on their rank, you can do shortcut comparisons such as straight flush
-    compare just the first and/or last value of their hand with the other person's hand
-    Special Case: Royal Flush (I doubt this will happen), divide pot by how many players have royal flush
-    */
-    return 0
+  compareCards(index, c){ //TODO
+    console.log("CompareCards() called")
+    var completeCards = []
+    completeCards.push(c.player_cards[0].myCards)
+    for (var i = 0; i < index.length; i++){
+      for (var j = i + 1; j < index.length; j++){
+        if (index[i] > index[j]){
+          winner = index[i]
+        }
+      }
+    }
+    // Temp code: Randomly choose a winner amongst the players who have the same highest rank
+    var winner = index[Math.floor(Math.random() * index.length)]
+    return winner
   }
 
   // Rank 1
