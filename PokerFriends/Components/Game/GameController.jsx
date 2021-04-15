@@ -176,7 +176,7 @@ export default class GameSetting extends Component {
         game.size-=game.newPlayer
         
         //Figure out who won and give them pot
-        const roundWinner = this.findRoundWinner(game)
+        const roundWinner = 0//this.findRoundWinner(game)
         
         game.balance[roundWinner] += game.pot
         game.chipsWon[roundWinner] += game.pot
@@ -186,6 +186,11 @@ export default class GameSetting extends Component {
           if(i != roundWinner){
             game.chipsLost[i] += game.chipsIn[i]
           }
+        }
+
+        game.smallBlindLoc += 1
+        if(game.smallBlindLoc >= game.size){
+          game.smallBlindLoc = 0
         }
         //game.turn = 0
         //game.pot = 0
@@ -199,6 +204,7 @@ export default class GameSetting extends Component {
         updates[matchPath + '/chipsIn'] = game.chipsIn.fill(0)
         updates[matchPath + '/pot'] = 0
         updates[matchPath + '/raisedVal'] = 0;
+        updates[matchPath + '/smallBlindLoc'] = game.smallBlindLoc;
         //updates[matchPath + '/turnStart'] = true
         updates[matchPath + '/ready'] = game.ready.fill(false)
         updates[matchPath + '/turn'] = 0
