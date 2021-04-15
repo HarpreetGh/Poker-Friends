@@ -286,38 +286,75 @@ export default class GameSetting extends Component {
     return 0
   }
 
-  // TODO: Current code doesn't work! Just use isFlush isStraight and check for Ace
   // Rank 1
   isRoyalFlush(game, position){
-    return false
     console.log("isRoyalFlush() called")
     var completeCards = []
     completeCards.push(game.player_cards[position].myCards)
     completeCards.push(game.board)
     var hand = completeCards.flat()
-    console.log("isRoyalFlush hands is populated, contents: ", hand)
-    
-    // Sort the hands array by the suits (selection sort)
+ 
+    // Sort the array by the values (selection sort)
     for (var i = 0; i < hand.length; i++){
-      var min = i
+      var max = i
       for (var j = i + 1; j < hand.length; j++){
-        if (hand[j].suit < hand[min].suit){
-          min = j
-        }
+          if (hand[j] > hand[max]){
+            max = j
+          }
       }
       // Swap
-      var temp = hand[i]
-      hand[i] = hand[min]
-      hand[min] = temp
-    }
-    if (hand[0].suit == hand[4].suit){ // If you have 5 cards that are the same suit (flush condition)
-      // If royal condition Ace, King, Queen, Jack, 10
-      if (hand[0].value == 'A' && hand[1].value == 'K' && hand[2].value == 'Q' && hand[3].value == 'J' && hand[4].value == '10'){ 
-        console.log("Wow you actually got a Royal Flush! Unless you are cheating as the chances are 1 in 649737...")
-        return true 
+      if (max != i){
+        var temp = hand[i]
+        hand[i] = hand[max]
+        hand[max] = temp
       }
     }
+    console.log("isRoyalFlush Hand is populated, contents: ", hand)
+    var aceCheck = false
+    var kingCheck = false
+    var queenCheck = false
+    var jackCheck = false
+    var tenCheck = false
+    var previousSuit = ''
+    
 
+    // Because the array is sorted by the "value" of the rank/value (not necessarily Ace first), find the Ace and its suit to compare against the rest
+    for (var i = 0; i < hand.length; i++){
+      if (hand[i].value == 'A'){
+        var previousSuit = hand[i].suit
+        aceCheck = true
+      }
+    }
+    // Now check the rest of the hand for royal condition and if they are the same suit as the Ace
+    for (var i = 0; i < hand.length; i++){
+      if (hand[i].value == 'K' && hand[i].suit == previousSuit){
+        kingCheck = true
+      }      
+      if (hand[i].value == 'Q' && hand[i].suit == previousSuit){
+        queenCheck = true
+      }
+      if (hand[i].value == 'J' && hand[i].suit == previousSuit){
+        jackCheck = true
+      }
+      if (hand[i].value == '10' && hand[i].suit == previousSuit){
+        tenCheck = true
+      }
+    }
+    var royalCheck = false
+    console.log("Suit for Royal: ", previousSuit, aceCheck, kingCheck, queenCheck, jackCheck, tenCheck)
+    if (aceCheck && kingCheck && queenCheck && jackCheck && tenCheck){
+      royalCheck = true
+    }
+
+    var straightFlushCheck = false
+    if (this.isStraightFlush(game, position)){
+      straightFlushCheck = true
+    }
+
+    if (royalCheck && straightFlushCheck){
+      console.log("Congratulations, Royal Flush!", royalCheck, straightFlushCheck)
+      return true
+    }
     return false
   }
 
@@ -368,7 +405,6 @@ export default class GameSetting extends Component {
     completeCards.push(game.board)
     var hand = completeCards.flat()
     var intHand = []
-    
 
     // Convert the array to numerical/int values to sort
     for (var i = 0; i < hand.length; i++){
@@ -387,7 +423,6 @@ export default class GameSetting extends Component {
       }
     }
 
-
     // Sort the array by the values (selection sort)
     for (var i = 0; i < intHand.length; i++){
       var max = i
@@ -405,20 +440,39 @@ export default class GameSetting extends Component {
     }
     console.log("isFullHouse intHands is populated and sorted by value, contents: ", intHand)
 
+    // Check for three of a kind and record the value to be checked again in the check for pair loop
+    var counter = 1
+    var previousValue = 0
+    for(var i = 0; i < intHand.length - 2 && counter != 3; i++){
+      // console.log("Outer loop: ", "i is ", i, "counter is ", counter)
+      counter = 1
+      for(var j = i + 1; j < intHand.length; j++){
+        // console.log("Inner loop: ", "i is ", i, "j is ", j, "counter is ", counter)
+        if (intHand[i] == intHand[j]){
+          counter++
+          previousValue = intHand[i]
+          // console.log("Inner if reached ", counter)
+        }
+      }
+    }
+    console.log("Previous value: ", previousValue)
 
-    // DONE - Sort array by values [K, 8, 8, 8, 6, 2, 2]
-    // Use threeOfKind code to check if counter/isThree is 3 and move onto checking for pair if so
-    // If 3, loop again and move matched elements into another array in order to check for a pair
-    // If isThree != 3 not met, then just return false as FullHouse condition failed 
-    // If isThree == 3 && isTwo == 2 { return true }
+    var isThree = false
+    if (counter == 3){ isThree = true }
 
-
-
-    //return false
-    //if(this.isThreeOfKind(game, position) && this.isOnePair(game, position)){ return true }
+    // Check for a pair with the three kind's value in mind
+    var isTwo = false
+    for (var i = 0; i < intHand.length; i++){
+      for (var j = i + 1; j < intHand.length; j++){
+        if (intHand[i] == intHand[j] && intHand[i] != previousValue && intHand[j] != previousValue){
+          isTwo = true
+        }
+      }
+    }
+    console.log("isTwo value: " , isTwo, "isThree value: ", isThree)
+    if (isThree && isTwo){ return true }
   }  
   
-  ///TODO : FIX ME
   // Rank 5 - Five cards all same suit but not in numerical order
   isFlush(game, position){
     console.log("isFlush() called")
@@ -441,10 +495,41 @@ export default class GameSetting extends Component {
       hand[i] = hand[min]
       hand[min] = temp
     }
-    if (hand[0].suit == hand[4].suit){ 
-      console.log("True returned for isFlush()")  
-      return true 
-    } // Return true because hand has a flush since it is sorted by suit
+
+
+    var diamond = '♦'
+    var diamondCounter = 0
+
+    var heart = '♥'
+    var heartCounter = 0
+
+    var spade = '♠'
+    var spadeCounter = 0
+
+    var club = '♣'
+    var clubCounter = 0
+    for (var i = 0; i < hand.length; i++){
+      if (hand[i].suit == diamond){
+        console.log("isFlush() Diamond found")  
+        diamondCounter++
+      } 
+      if (hand[i].suit == heart){
+        console.log("isFlush() Heart found") 
+        heartCounter++
+      }
+      if (hand[i].suit == spade){
+        console.log("isFlush() Spade found") 
+        spadeCounter++
+      }
+      if (hand[i].suit == club){
+        console.log("isFlush() Club found") 
+        clubCounter++
+      }
+      if (diamondCounter == 5 || heartCounter == 5 || spadeCounter == 5 || clubCounter == 5){
+        console.log("Flush found, returning true for isFlush()")
+        return true
+      }
+    }
   }  
   
   // Rank 6 - Five cards in numerical order, but not of same suit
@@ -515,74 +600,6 @@ export default class GameSetting extends Component {
     }
     console.log("Straight never found - returning false")
     return false
-
-
-    if (uniqueHand.length == 5){
-      console.log("uniqueHand[] has 5 cards - checking for straight")
-      for (var i = 1; i < uniqueHand.length; i++){
-          if (uniqueHand[i] - uniqueHand[i-1] != -1){          
-            console.log("[x, x, x, x, x, x, x] Not a straight from size 5 cards - returning false")
-            return false 
-          }
-      }
-    }
-
-    if (uniqueHand.length == 6){
-      console.log("uniqueHand[] has 6 cards - checking for straight")
-      if(uniqueHand[0] - uniqueHand[1] != 1){ 
-        console.log("firts case reached!!")
-        for (var i = 2; i < uniqueHand.length; i++){ 
-          if (uniqueHand[i] - uniqueHand[i-1] != -1){
-            console.log("[_, x, x, x, x, x] Not a straight from size 6 cards and first element DOES NOT count- returning false")
-            return false
-          }
-        }
-      }        
-      var count = 0
-      for (var i = 1; i < uniqueHand.length; i++){
-        console.log("uniqueHand[i] is", uniqueHand[i])
-
-        console.log("counter is: ", count)
-        if (uniqueHand[i] - uniqueHand[i-1] == -1) { count++ } 
-        if (count >= 4) { 
-          console.log("477 success returning true")
-          return true 
-        }  
-        if (uniqueHand[i] - uniqueHand[i-1] != -1){ 
-            console.log("[x, x, x, x, x, _] Not a straight from size 6 cards and first element DOES count - returning false")
-            return false 
-        }
-      }
-    }
-
-    if (uniqueHand.length == 7){
-      console.log("uniqueHand[] has 7 cards - checking for straight")
-      if(uniqueHand[0] - uniqueHand[1] != 1){ 
-        for (var i = 2; i < uniqueHand.length; i++){ 
-          if (uniqueHand[i] - uniqueHand[i-1] != -1){
-            console.log("[_, x, x, x, x, x, _/x] Not a straight from size 7 cards and first element DOES NOT count- returning false")
-            return false
-          }
-        }
-      }
-      if(uniqueHand[1] - uniqueHand[2] != 1){ 
-        for (var i = 3; i < uniqueHand.length; i++){ 
-          if (uniqueHand[i] - uniqueHand[i-1] != -1){
-            console.log("Not a straight from size 7 cards and first two element DOES NOT count- returning false")
-            return false
-          }
-        }
-      }
-      for (var i = 1; i < uniqueHand.length; i++){
-        console.log("uniqueHand[i] is", uniqueHand[i])
-          if (uniqueHand[i] - uniqueHand[i-1] != -1){          
-            console.log("Not a straight from size 7 cards and first DOES count - returning false")
-            return false 
-          }
-      }
-    }
-    console.log("Straight found - returning true")
-    return true
   }
 
   // Rank 7 - Three of one card and two-non paired cards
