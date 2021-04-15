@@ -196,7 +196,7 @@ export default class GameSetting extends Component {
         //game.pot = 0
         
         updates[matchPath + '/move'] = game.move.fill('check')
-        updates[matchPath + '/playerTurn'] = 0
+        updates[matchPath + '/playerTurn'] = game.smallBlindLoc
         updates[matchPath + '/balance'] = game.balance
         updates[matchPath + '/round'] = game.round
         updates[matchPath + '/chipsWon'] = game.chipsWon
@@ -204,7 +204,7 @@ export default class GameSetting extends Component {
         updates[matchPath + '/chipsIn'] = game.chipsIn.fill(0)
         updates[matchPath + '/pot'] = 0
         updates[matchPath + '/raisedVal'] = 0;
-        updates[matchPath + '/smallBlindLoc'] = game.smallBlindLoc;
+        updates[matchPath + '/smallBlindLoc'] = game.smallBlindLoc
         //updates[matchPath + '/turnStart'] = true
         updates[matchPath + '/ready'] = game.ready.fill(false)
         updates[matchPath + '/turn'] = 0

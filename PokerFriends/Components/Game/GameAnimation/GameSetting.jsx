@@ -505,6 +505,7 @@ export default class GameSetting extends Component {
               
               <Slider 
                 style={{width: 200, height: 40}}
+                minimumValue={this.props.game.blindAmount}
                 maximumValue={maxChips}
                 step={10}
                 onValueChange={(raiseAmount) => { 
@@ -524,11 +525,11 @@ export default class GameSetting extends Component {
                   //this.raisePot();
                   if(this.state.raiseAmount > 0){
                     this.UpdateInitializer('raise', Number(this.state.raiseAmount)+callAmount)
+                    //this.fadeIn(this.props.playerNum);
                   }
                   else{
                     Alert.alert('Raise Value Invalid', 'Please Input Raise Value greater than 0')
                   }
-                  this.fadeIn(this.props.playerNum);
                 }}
               >
                 <Text style = {{fontWeight: 'bold'}}>APPLY</Text>
@@ -551,20 +552,20 @@ export default class GameSetting extends Component {
 
     actionsView(){
       var myTurn = this.props.game.playerTurn == this.props.playerNum
-      
+      var callAmount = 0
+
       if(myTurn){
         if(this.props.game.move[this.props.playerNum] == 'fold'){ //if you fold
           myTurn = false
           callAmount = 0
           this.UpdateInitializer('fold')
         }
-      }
 
         var balance = this.props.game.balance[this.props.playerNum]
         var setupCall = true
-        var callString
-        var callType
-        var callAmount
+        var callString = 'Call: '
+        var callType = 'call'
+        var callAmount = 0
         var raiseDisabled = false
 
         if(this.props.game.turn == 1) {
@@ -587,7 +588,7 @@ export default class GameSetting extends Component {
             callString += callAmount
             setupCall = false
           }
-          else if(bigBlindLoc == this.props.playerNum){
+          else if(bigBlindLoc == this.props.playerNum && this.props.game.raisedVal == this.props.game.blindAmount * 0.5){
             callString = "Big Blind: "
             callType = 'call'
             callAmount = this.props.game.blindAmount
@@ -600,18 +601,19 @@ export default class GameSetting extends Component {
           callAmount = 0
           this.UpdateInitializer('check')
         }
-        else if(setupCall){
+        if(setupCall){
           callString = 'Call: '
           callType = 'call'
           callAmount = Math.max(...this.props.game.chipsIn) - this.props.game.chipsIn[this.props.playerNum]
           callString += callAmount
 
-          if(callAmount > balance){ //partial still not implemented at pay out
+          if(callAmount >= balance){ //partial still not implemented at pay out
             callAmount = balance    //might also depricate later
             callString =  'All In'
             raiseDisabled = true
           }
         }
+      }
 
       return (
         <View style={styles.bettingButtonsView}>
