@@ -194,6 +194,9 @@ export default class GameSetting extends Component {
         }
         //game.turn = 0
         //game.pot = 0
+
+        // var user = firebase.auth().currentUser;
+        // updates['/users/'+ user.uid +'/wins'] = userData.wins + 1;
         
         updates[matchPath + '/move'] = game.move.fill('check')
         updates[matchPath + '/playerTurn'] = game.smallBlindLoc
@@ -843,8 +846,8 @@ export default class GameSetting extends Component {
     updates['/users/'+ user.uid +'/in_game'] = '';
     updates['/users/'+ user.uid +'/chips'] = userData.chips + quitBalance;
     updates['/users/'+ user.uid +'/games'] = userData.games + 1;
-    updates['/users/'+ user.uid +'/chips_won'] = chipsWon;
-    updates['/users/'+ user.uid +'/chips_lost'] = chipsLost;
+    updates['/users/'+ user.uid +'/chips_won'] = userData.chips_won + chipsWon;
+    updates['/users/'+ user.uid +'/chips_lost'] = userData.chips_lost + chipsLost;
 
     if(editGame.size == 0){ //delete game
       //by setting the data of these location to NULL, the branch is deleted.
