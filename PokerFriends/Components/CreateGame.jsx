@@ -50,6 +50,8 @@ export default class CreateGame extends Component {
 
     firebase.database().ref('games/' + type + '/' + matchName).set({
       balance: [buyIn],
+      blindAmount: buyIn * 0.1,
+      smallBlindLoc: 0,
       board: [''],
       buyIn: buyIn,
       chipsWon: [0],

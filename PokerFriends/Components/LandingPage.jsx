@@ -147,7 +147,8 @@ const styles = StyleSheet.create({
   textStyle:{
     alignItems: 'center',
     color: '#FFFFFF',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    textAlign: 'center'
   },
   button:{
     backgroundColor: '#27ae60',
@@ -159,6 +160,7 @@ const styles = StyleSheet.create({
   },
   accountStatsButton: {
     borderRadius: 50,
+    marginRight: 10,
     padding: 10,
     elevation: 2,
     backgroundColor: "#27ae60",

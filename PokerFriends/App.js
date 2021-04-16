@@ -22,9 +22,8 @@ import JoinGame from './Components/JoinGame'
 import AccountStats from './Components/AccountStats'
 
 
-
-
 LogBox.ignoreLogs(['Setting a timer for a long period of time'])
+LogBox.ignoreLogs(['VirtualizedLists should never be nested'])
 
 const Stack = createStackNavigator();
 

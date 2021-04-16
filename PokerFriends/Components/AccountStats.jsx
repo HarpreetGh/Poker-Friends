@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, ActivityIndicator} from 'react-native'
-
+import Logo from '../Components/Logo'
 
 
 export default class AccountStats extends Component {
@@ -12,6 +12,7 @@ export default class AccountStats extends Component {
             ready: false
         }
     }
+
     componentDidMount(){
         var temp = {...this.props.userData}
         temp.username = temp.username.slice(0, temp.username.indexOf('#'))
@@ -24,37 +25,16 @@ export default class AccountStats extends Component {
         if(this.state.ready){
             return ( 
             <View style = {styles.container}>
-                <View>
+                <Logo/>
+                <View style = {styles.bubble}>
                     <Text style = {styles.title}> {this.state.user.username}'s Stats</Text>
-                </View>
-
-                <View>
-                    <Text style = {styles.StatHolder}>Wins : {this.state.user.wins}</Text>
-                </View>
-
-                <View>
-                    <Text style = {styles.StatHolder}>Losses : {this.state.user.losses}</Text>
-                </View>
-
-                <View>
-                    <Text style = {styles.StatHolder}>Win/Loss Ratio : {this.state.user.winRatio}%</Text>
-                </View>
-
-                <View>
-                    <Text style = {styles.StatHolder}>Games Played : {this.state.user.games}</Text>
-                </View>
-
-                <View>
-                    <Text style = {styles.StatHolder}>Current Chips :  {this.state.user.chips} </Text>
-                </View>
-
-                <View>
-                    <Text style = {styles.StatHolder}>Life Time Earnings: {this.state.user.chips_won} </Text>
-                </View>
-
-                
-                <View>
-                    <Text style = {styles.StatHolder}>Life Time Losses: {this.state.user.chips_lost} </Text>
+                    <View style = {styles.textContainer}><Text style = {styles.Stats}>Wins: {this.state.user.wins}</Text></View>
+                    <View style = {styles.textContainer}><Text style = {styles.Stats}>Losses: {this.state.user.losses}</Text></View>
+                    <View style = {styles.textContainer}><Text style = {styles.Stats}>Win/Loss Ratio: {this.state.user.winRatio}%</Text></View>
+                    <View style = {styles.textContainer}><Text style = {styles.Stats}>Games Played: {this.state.user.games}</Text></View>
+                    <View style = {styles.textContainer}><Text style = {styles.Stats}>Current Chips:  {this.state.user.chips} </Text></View>
+                    <View style = {styles.textContainer}><Text style = {styles.Stats}>Life Time Earnings: {this.state.user.chips_won} </Text></View>
+                    <View style = {styles.textContainer}><Text style = {styles.Stats}>Life Time Losses: {this.state.user.chips_lost} </Text></View>
                 </View>
             </View> 
             );
@@ -74,20 +54,35 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#2ecc71',
         alignItems: 'center',
-        justifyContent: 'center',
-        
-      },
-      title:{
+        justifyContent: 'center'
+    },
+    title: {
         bottom: '100%',
         fontSize: 25,
-        fontWeight: 'bold'
-       
-      },
-      StatHolder: {
+        fontWeight: 'bold',
+        color: 'white'
+    },
+    Stats: {
         borderRadius: 50,
-        margin: 20,
-        padding: 10,
+        margin: 10,
         elevation: 2,
-        backgroundColor: "#27ae60"
-      }
-})
+        backgroundColor: "#7befb2",
+        color: 'black',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        padding: 10
+    },  
+    textContainer: {
+        width: '100%'
+    },
+    bubble: {
+        backgroundColor: '#27ae60',
+        paddingVertical: 20,
+        paddingHorizontal: 20,
+        borderRadius: 50,
+        width: '80%',
+        marginBottom: 30,
+        textAlign: 'center',
+        justifyContent: 'center'
+    }
+});

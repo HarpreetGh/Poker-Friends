@@ -78,7 +78,8 @@ export default class GameSetting extends Component {
       fiveCardsFin: 0,
 
       valueFoldCard: new Animated.ValueXY({ x: 25, y: 25 }),
-      fadeAnimation: new Animated.Value(0), 
+      fadeAnimation: [new Animated.Value(0), new Animated.Value(0),
+                      new Animated.Value(0), new Animated.Value(0)], 
 
       playerCardsGiven: 1,
       gamePot: 0,
@@ -139,16 +140,16 @@ export default class GameSetting extends Component {
       }).start();
     }
       
-    fadeIn() {
-      Animated.timing(this.state.fadeAnimation, {
+    fadeIn(num) {
+      Animated.timing(this.state.fadeAnimation[num], {
         toValue: 1,
         duration: 4000,
         useNativeDriver: false,
       }).start(() => this.fadeOut());
     }
 
-    fadeOut() {
-      Animated.timing(this.state.fadeAnimation, {
+    fadeOut(num) {
+      Animated.timing(this.state.fadeAnimation[num], {
         toValue: 0,
         duration: 3000,
         useNativeDriver: false,
@@ -191,7 +192,7 @@ export default class GameSetting extends Component {
     transitionBlinds(){
       //This first if statement should only be done in the
       //beginning of each game(New Lobby)
-      var fiveCardsFin = this.props.game.playerTurn
+      var fiveCardsFin = this.props.game.smallBlindLoc
       if(fiveCardsFin == 0){
         return <View>
           <Animated.View>
@@ -463,12 +464,12 @@ export default class GameSetting extends Component {
 
         this.setState({raiseAmount: 10})
       }
-      else if (type === 'buy in'){
+      else if (type === 'small blind'){
         game.move[this.props.playerNum] = type
         game.chipsIn[this.props.playerNum] += amount //what if you don't have enough chips Fix for Partial Calls
         game.pot += amount 
         game.balance[this.props.playerNum] -= amount
-        game.ready[this.props.playerNum] = true
+        game.ready[this.props.playerNum] = false //CHECK ME
         keys = ['move', 'chipsIn', 'balance', 'pot', 'playerTurn', 'ready']
       }
 
@@ -504,7 +505,7 @@ export default class GameSetting extends Component {
               
               <Slider 
                 style={{width: 200, height: 40}}
-                minimumValue={10+callAmount}
+                minimumValue={this.props.game.blindAmount}
                 maximumValue={maxChips}
                 step={10}
                 onValueChange={(raiseAmount) => { 
@@ -524,11 +525,11 @@ export default class GameSetting extends Component {
                   //this.raisePot();
                   if(this.state.raiseAmount > 0){
                     this.UpdateInitializer('raise', Number(this.state.raiseAmount)+callAmount)
+                    //this.fadeIn(this.props.playerNum);
                   }
                   else{
                     Alert.alert('Raise Value Invalid', 'Please Input Raise Value greater than 0')
                   }
-                  this.fadeIn();
                 }}
               >
                 <Text style = {{fontWeight: 'bold'}}>APPLY</Text>
@@ -551,91 +552,126 @@ export default class GameSetting extends Component {
 
     actionsView(){
       var myTurn = this.props.game.playerTurn == this.props.playerNum
-      var callString = 'Call '
-      var callAmount
+      var callAmount = 0
+
       if(myTurn){
         if(this.props.game.move[this.props.playerNum] == 'fold'){ //if you fold
           myTurn = false
           callAmount = 0
           this.UpdateInitializer('fold')
         }
-      }
 
-      if(this.props.game.turn > 1){
         var balance = this.props.game.balance[this.props.playerNum]
+        var setupCall = true
+        var callString = 'Call: '
+        var callType = 'call'
+        var callAmount = 0
+        var raiseDisabled = false
+
+        if(this.props.game.turn == 1) {
+          
+          if(balance == 0) { //if you run out of funds
+            callAmount = 0
+            this.UpdateInitializer('fold')
+            //LEave game?
+          }
+          
+          var bigBlindLoc = this.props.game.smallBlindLoc + 1
+          if(bigBlindLoc >= this.props.game.size){
+            bigBlindLoc = 0
+          }
+
+          if(this.props.game.smallBlindLoc == this.props.playerNum && !this.props.game.ready.includes(true)){
+            callString = "Small Blind: "
+            callType = 'small blind'
+            callAmount = Math.ceil(this.props.game.blindAmount * 0.5)
+            callString += callAmount
+            setupCall = false
+          }
+          else if(bigBlindLoc == this.props.playerNum && this.props.game.raisedVal == this.props.game.blindAmount * 0.5){
+            callString = "Big Blind: "
+            callType = 'call'
+            callAmount = this.props.game.blindAmount
+            callString += callAmount
+            setupCall = false
+          }
+        }
 
         if(balance == 0) { //if you run out of funds
           callAmount = 0
           this.UpdateInitializer('check')
         }
-        else {
+        if(setupCall){
+          callString = 'Call: '
+          callType = 'call'
           callAmount = Math.max(...this.props.game.chipsIn) - this.props.game.chipsIn[this.props.playerNum]
-
-          if(callAmount > balance){ //partial still not implemented at pay out
-            callAmount = balance    //might also depricate later
-            callString += '(partial) '
-          }
           callString += callAmount
+
+          if(callAmount >= balance){ //partial still not implemented at pay out
+            callAmount = balance    //might also depricate later
+            callString =  'All In'
+            raiseDisabled = true
+          }
         }
-
-        return (
-          <View style={styles.bettingButtonsView}>
-            {this.raiseView(callAmount, balance)}
-
-            <TouchableOpacity 
-              style={[styles.bettingButtons, (myTurn)? styles.raiseButt:styles.disabled]}
-              disabled={!myTurn} onPress={() => this.setRaiseVisible(true)}
-            >
-              {this.props.game.raisedVal == 0? (<Text>Raise</Text>):(<Text>Re-Raise</Text>)}
-            </TouchableOpacity>
-
-            {callAmount == 0? (
-              <TouchableOpacity style={[styles.bettingButtons, (myTurn)?{backgroundColor:"#D6A2E8"}:styles.disabled]}
-                disabled={!myTurn} onPress={() => this.UpdateInitializer('check')}
-              >
-                <Text>Check</Text>
-              </TouchableOpacity>
-            ):( 
-              <TouchableOpacity style={[styles.bettingButtons, (myTurn)? styles.callButt:styles.disabled]}
-                disabled={!myTurn} onPress={() => this.UpdateInitializer('call', callAmount)}
-              >
-                <Text>{callString}</Text>
-              </TouchableOpacity>
-            )}
-
-            <TouchableOpacity style={[styles.bettingButtons, (myTurn)? styles.foldButt:styles.disabled]} 
-              disabled={!myTurn} onPress = {() => {
-                this.foldCard() 
-                this.UpdateInitializer('fold')
-              }}
-            >
-              <Text>Fold</Text>
-            </TouchableOpacity>
-          </View>
-        )
       }
-      else{
-        const buyInAmount = this.props.game.buyIn * 0.1
-        return(
-          <View style={styles.bettingButtonsView}>
-            <TouchableOpacity style={[styles.bettingButtons, (myTurn)?{backgroundColor:"#ffeb91"}:styles.disabled]}
-              disabled={!myTurn} onPress={() => this.UpdateInitializer('buy in', buyInAmount)}
-            >
-              <Text>Buy In {buyInAmount}</Text>
-            </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.bettingButtons, (myTurn)? styles.foldButt:styles.disabled]} 
-              disabled={!myTurn} onPress = {() => {
-                this.foldCard() 
-                this.UpdateInitializer('fold')
-              }}
+      return (
+        <View style={styles.bettingButtonsView}>
+          {this.raiseView(callAmount, balance-callAmount)}
+
+          <TouchableOpacity 
+            style={[styles.bettingButtons, (myTurn)? styles.raiseButt:styles.disabled]}
+            disabled={!myTurn || raiseDisabled} onPress={() => this.setRaiseVisible(true)}
+          >
+            {this.props.game.raisedVal == 0? (<Text>Raise</Text>):(<Text>Re-Raise</Text>)}
+          </TouchableOpacity>
+
+          {callAmount == 0? (
+            <TouchableOpacity style={[styles.bettingButtons, (myTurn)?{backgroundColor:"#D6A2E8"}:styles.disabled]}
+              disabled={!myTurn} onPress={() => this.UpdateInitializer('check')}
             >
-              <Text>Fold</Text>
+              <Text>Check</Text>
             </TouchableOpacity>
-          </View>
-        )
-      }
+          ):( 
+            <TouchableOpacity style={[styles.bettingButtons, (myTurn)? styles.callButt:styles.disabled]}
+              disabled={!myTurn} onPress={() => this.UpdateInitializer(callType, callAmount)}
+            >
+              <Text>{callString}</Text>
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity style={[styles.bettingButtons, (myTurn)? styles.foldButt:styles.disabled]} 
+            disabled={!myTurn} onPress = {() => {
+              this.foldCard() 
+              this.UpdateInitializer('fold')
+            }}
+          >
+            <Text>Fold</Text>
+          </TouchableOpacity>
+        </View>
+      )
     }
+      // else{
+      //   const buyInAmount = this.props.game.buyIn * 0.1
+      //   return(
+      //     <View style={styles.bettingButtonsView}>
+      //       <TouchableOpacity style={[styles.bettingButtons, (myTurn)?{backgroundColor:"#ffeb91"}:styles.disabled]}
+      //         disabled={!myTurn} onPress={() => this.UpdateInitializer('buy in', buyInAmount)}
+      //       >
+      //         <Text>Buy In Big {buyInAmount}</Text>
+      //       </TouchableOpacity>
+
+      //       <TouchableOpacity style={[styles.bettingButtons, (myTurn)? styles.foldButt:styles.disabled]} 
+      //         disabled={!myTurn} onPress = {() => {
+      //           this.foldCard() 
+      //           this.UpdateInitializer('fold')
+      //         }}
+      //       >
+      //         <Text>Fold</Text>
+      //       </TouchableOpacity>
+      //     </View>
+      //   )
+      // }
     
     render() { 
       //console.log(this.props.game.deck)
@@ -666,7 +702,7 @@ export default class GameSetting extends Component {
             <Animated.View
               style={[
                 styles.pBet,
-                {opacity: this.state.fadeAnimation}
+                {opacity: this.state.fadeAnimation[0]}
               ]}
             >
               <Text>testing</Text>
@@ -687,7 +723,7 @@ export default class GameSetting extends Component {
             <Animated.View
               style={[
                 styles.pBet,
-                {opacity: this.state.fadeAnimation}
+                {opacity: this.state.fadeAnimation[1]}
               ]}
             >
               <Text>testing</Text>
@@ -714,7 +750,7 @@ export default class GameSetting extends Component {
               <Animated.View
                 style={[
                   styles.pBet,
-                  {opacity: this.state.fadeAnimation}
+                  {opacity: this.state.fadeAnimation[2]}
                 ]}
               >
                 <Text>testing</Text>
@@ -748,7 +784,7 @@ export default class GameSetting extends Component {
             <Animated.View
               style={[
                 styles.pBet,
-                {opacity: this.state.fadeAnimation}
+                {opacity: this.state.fadeAnimation[3]}
               ]}
             >
               <Text>testing</Text>
@@ -781,10 +817,10 @@ export default class GameSetting extends Component {
             </Text> 
           </View>
               
-          {/* {this.props.game.turn == 1? (this.transitionBlinds()
+          {this.props.game.turn == 1? (this.transitionBlinds()
           ):(
             <Text></Text>
-          )} */}
+          )}
           
           
           {/* <View style = {styles.foldContainer}>
