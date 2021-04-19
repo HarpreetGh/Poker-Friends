@@ -26,7 +26,7 @@ export default class JoinGame extends Component {
   */
 
   componentDidMount(){
-    firebase.database().ref('/games/list/').orderByChild('buyIn').endAt('3').on('value', (snapshot) => {
+    firebase.database().ref('/games/list/').orderByChild('size').endAt('3').on('value', (snapshot) => {
           var data =  []
           snapshot.forEach((child) => {
             data.push({
@@ -40,22 +40,16 @@ export default class JoinGame extends Component {
     })
    }
 
+   componentWillUnmount(){
+    //stops checking for updates on list
+    firebase.database().ref('/games/list/').off()
+  }
 
-  async joinGame(type){
+
+  async joinGame(matchName){
     var user = firebase.auth().currentUser;
     const username = user.displayName.slice(0, user.displayName.indexOf('#'))
-
-    if(!this.props.userData.in_game === ''){
-      Alert.alert('Already in a Game', 'Please leave the game you currently are in, to create a Game')
-      return false
-    }
-    else if(this.state.name === ''){
-      Alert.alert('Match must have a Name', 'Please enter a valid name for the Match')
-      return false
-    } 
-
-    const matchName = this.state.name;
-    const matchPath =  '/games/' + type + '/' + matchName;
+    const matchPath =  '/games/' + 'public' + '/' + matchName;
     const matchListPath = '/games/list/' + matchName;
 
     
@@ -80,14 +74,15 @@ export default class JoinGame extends Component {
       updates[matchPath + '/newPlayer'] = data.newPlayer
       updates[matchPath + '/size'] = data.size
 
-      if(type == 'public'){
-        updates['/games/list/' + matchName + '/size'] = data.size
-      }
+      
+      updates['/games/list/' + matchName + '/size'] = data.size
 
       firebase.database().ref().update(updates);
+      this.props.navigation.navigate('GameController')
+      ScreenOrientation.lockAsync
+      (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT)
     })
 
-    return true
   }
 
   render(){
@@ -97,15 +92,19 @@ export default class JoinGame extends Component {
         >
             <Logo />
               
-            <View style={{flex:1, alignSelf:'center', justifyContent:'center'}}>
+            <View style={{flex:1, alignSelf:'center', justifyContent:'center', paddingBottom: 10}}>
               <FlatList style={{width:'100%'}}
                 data={this.state.gameList}
                 keyExtractor={(item)=>item.key}
                 renderItem={({item})=>{
                   return(
                     <View style={styles.gameDisplay}>
-                      <Text style={styles.textStyle}>{item.key}</Text>
+                      <Text style={styles.textStyle}>{item.key.slice(item.key.indexOf('_')+1, item.key.indexOf('-'))}</Text>
                       <Text style={styles.textStyle}>Size: {item.size}                   Buy In: {item.buyIn}</Text>
+                      <TouchableOpacity style={styles.joinButton}
+                      onPress={() => this.joinGame(item.key)}>
+                        <Text style={styles.textStyle}>Join Game</Text>
+                      </TouchableOpacity>
                     </View>)
                 }}/>     
             </View>
@@ -137,8 +136,15 @@ const styles = StyleSheet.create({
       backgroundColor: '#27ae60',
       borderRadius: 50,
       width:"100%",
-      padding: 10,
-      marginBottom: 10
+      padding: 20,
+      marginBottom: 10,
+    },
+    joinButton:{
+      backgroundColor: '#000000',
+      borderRadius: 50,
+      width:"95%",
+      paddingTop: 5,
+      marginLeft: 5
     },
     buttonContainer:{
       backgroundColor: '#27ae60',
