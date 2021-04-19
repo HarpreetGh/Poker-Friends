@@ -1,15 +1,26 @@
 import React, { Component, useState } from 'react'
-import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, Touchable, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, FlatList, List, ListItem, Touchable, Alert, SafeAreaView } from 'react-native';
 import Slider from '@react-native-community/slider';
 import Logo from './Logo';
 import firebase from 'firebase'
 import * as ScreenOrientation from 'expo-screen-orientation';
 
+
+
+// const Item = ({ title }) => (
+//   <View style={styles.item}>
+//     <Text>{buyIn}</Text>
+//     <Text>{size}</Text>
+//   </View>
+// );
+
 export default class JoinGame extends Component {
   constructor(props){
     super(props)
     this.state = {
-      name: ''
+      name: '',
+      gameList: [],
+      keyList: []
     }
   }
   /*
@@ -21,6 +32,16 @@ export default class JoinGame extends Component {
     });
   }
   */
+
+  componentDidMount(){
+    firebase.database().ref('/games/list/').orderByChild('buyIn').endAt('3').on('value', (snapshot) => {
+          const data =  snapshot.val()
+          const kList = Object.keys(data)
+          //this.checkHost(data)
+          this.setState({gameList: data, keyList: kList})
+    })
+   }
+
 
   async joinGame(type){
     var user = firebase.auth().currentUser;
@@ -75,38 +96,23 @@ export default class JoinGame extends Component {
     return (
         <KeyboardAvoidingView 
           style={styles.container}
-          >
+        >
             <Logo />
-            <Text style={styles.textStyle}>Join Game</Text>
-
-            <TextInput
-                placeholder="Enter Lobby Name"
-                placeholderTextColor="rgba(255, 255, 255, 0.75)"
-                returnKeyType="next"
-                autoCapitalize="none"
-                autoCorrect={false}
-                style={styles.input}
-                onChangeText={text => this.setState({name: text})}
-                value={this.state.name}
-            />
-            
-            <TouchableOpacity style={styles.buttonContainer}
-              onPress={() => {
-                if(this.joinGame('public')){
-                  this.props.navigation.navigate('GameController')
-                  ScreenOrientation.lockAsync
-                  (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT)  
-                }
-              }}>
-                <Text style={styles.registerButtonText}>Join Game</Text>
-            </TouchableOpacity>
-
+            <SafeAreaView>
+              <FlatList
+                data= {this.state.gameList}
+                renderItem={({ item }) => (
+                  <View>
+                    <Text style={styles.textStyle}>{item.buyIn}</Text>
+                    <Text style={styles.textStyle}>{item.size}</Text>
+                  </View>
+                )}
+              />
+            </SafeAreaView>
             <TouchableOpacity style={styles.buttonContainer}
             onPress={() => this.props.navigation.navigate('LandingPage')}>
                 <Text style={styles.registerButtonText}>Go Back</Text>
             </TouchableOpacity>
-
-
         </KeyboardAvoidingView>
     );
   }
