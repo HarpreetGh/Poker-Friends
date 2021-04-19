@@ -7,20 +7,12 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 
 
 
-// const Item = ({ title }) => (
-//   <View style={styles.item}>
-//     <Text>{buyIn}</Text>
-//     <Text>{size}</Text>
-//   </View>
-// );
-
 export default class JoinGame extends Component {
   constructor(props){
     super(props)
     this.state = {
       name: '',
-      gameList: [],
-      keyList: []
+      gameList: []
     }
   }
   /*
@@ -35,10 +27,16 @@ export default class JoinGame extends Component {
 
   componentDidMount(){
     firebase.database().ref('/games/list/').orderByChild('buyIn').endAt('3').on('value', (snapshot) => {
-          const data =  snapshot.val()
-          const kList = Object.keys(data)
+          var data =  []
+          snapshot.forEach((child) => {
+            data.push({
+              key: child.key,
+              buyIn:child.val().buyIn,
+              size: child.val().size
+            })
+          })
           //this.checkHost(data)
-          this.setState({gameList: data, keyList: kList})
+          this.setState({gameList: data})
     })
    }
 
@@ -98,17 +96,20 @@ export default class JoinGame extends Component {
           style={styles.container}
         >
             <Logo />
-            <SafeAreaView>
-              <FlatList
-                data= {this.state.gameList}
-                renderItem={({ item }) => (
-                  <View>
-                    <Text style={styles.textStyle}>{item.buyIn}</Text>
-                    <Text style={styles.textStyle}>{item.size}</Text>
-                  </View>
-                )}
-              />
-            </SafeAreaView>
+              
+            <View style={{flex:1, alignSelf:'center', justifyContent:'center'}}>
+              <FlatList style={{width:'100%'}}
+                data={this.state.gameList}
+                keyExtractor={(item)=>item.key}
+                renderItem={({item})=>{
+                  return(
+                    <View style={styles.gameDisplay}>
+                      <Text style={styles.textStyle}>{item.key}</Text>
+                      <Text style={styles.textStyle}>Size: {item.size}                   Buy In: {item.buyIn}</Text>
+                    </View>)
+                }}/>     
+            </View>
+
             <TouchableOpacity style={styles.buttonContainer}
             onPress={() => this.props.navigation.navigate('LandingPage')}>
                 <Text style={styles.registerButtonText}>Go Back</Text>
@@ -131,6 +132,13 @@ const styles = StyleSheet.create({
       backgroundColor: '#2ecc71',
       alignItems: 'center',
       justifyContent: 'center'
+    },
+    gameDisplay:{
+      backgroundColor: '#27ae60',
+      borderRadius: 50,
+      width:"100%",
+      padding: 10,
+      marginBottom: 10
     },
     buttonContainer:{
       backgroundColor: '#27ae60',
