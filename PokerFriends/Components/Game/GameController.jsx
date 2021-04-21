@@ -189,8 +189,8 @@ export default class GameSetting extends Component {
         }
 
         game.smallBlindLoc += 1
-        if(game.smallBlindLoc >= game.size){
-          game.smallBlindLoc = 0
+        if(game.smallBlindLoc > game.size){
+          game.smallBlindLoc = 1
         }
         //game.turn = 0
         //game.pot = 0
