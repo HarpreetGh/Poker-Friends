@@ -450,7 +450,8 @@ export default class GameSetting extends Component {
                     this.props.playerNum,
                     this.props.matchType,
                     this.props.matchType+'_'+this.props.matchName,
-                    this.props.userData
+                    this.props.userData,
+                    this.props.newPlayer
                     )
                 }}
               >
@@ -526,10 +527,11 @@ export default class GameSetting extends Component {
       else if (type === 'small blind'){
         game.move[this.props.playerNum] = type
         game.chipsIn[this.props.playerNum] += amount //what if you don't have enough chips Fix for Partial Calls
+        game.raisedVal += amount 
         game.pot += amount 
         game.balance[this.props.playerNum] -= amount
         game.ready[this.props.playerNum] = false //CHECK ME
-        keys = ['move', 'chipsIn', 'balance', 'pot', 'playerTurn', 'ready']
+        keys = ['move', 'chipsIn', 'raisedVal', 'balance', 'pot', 'playerTurn', 'ready']
       }
 
       game.playerTurn++;
@@ -634,20 +636,26 @@ export default class GameSetting extends Component {
             this.UpdateInitializer('fold')
             //LEave game?
           }
-          
-          var bigBlindLoc = this.props.game.smallBlindLoc + 1
+          var smallBlindLoc = this.props.game.smallBlindLoc
+          if( 
+            this.props.game.smallBlindLoc == this.props.game.size)
+          {
+              smallBlindLoc = 0
+          }
+
+          var bigBlindLoc = smallBlindLoc + 1
           if(bigBlindLoc >= this.props.game.size){
             bigBlindLoc = 0
           }
 
-          if(this.props.game.smallBlindLoc == this.props.playerNum && !this.props.game.ready.includes(true)){
+          if(smallBlindLoc == this.props.playerNum && !this.props.game.ready.includes(true)){
             callString = "Small Blind: "
             callType = 'small blind'
             callAmount = Math.ceil(this.props.game.blindAmount * 0.5)
             callString += callAmount
             setupCall = false
           }
-          else if(bigBlindLoc == this.props.playerNum && this.props.game.raisedVal == this.props.game.blindAmount * 0.5){
+          else if(bigBlindLoc == this.props.playerNum && this.props.game.raisedVal == Math.ceil(this.props.game.blindAmount * 0.5)){
             callString = "Big Blind: "
             callType = 'call'
             callAmount = this.props.game.blindAmount

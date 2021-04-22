@@ -189,8 +189,15 @@ export default class GameSetting extends Component {
         }
 
         game.smallBlindLoc += 1
+        game.playerTurn = game.smallBlindLoc
+
+        if(game.playerTurn == game.size){
+          game.playerTurn = 0
+        }
+
         if(game.smallBlindLoc > game.size){
           game.smallBlindLoc = 1
+          game.playerTurn = 1
         }
         //game.turn = 0
         //game.pot = 0
@@ -199,7 +206,7 @@ export default class GameSetting extends Component {
         // updates['/users/'+ user.uid +'/wins'] = userData.wins + 1;
         
         updates[matchPath + '/move'] = game.move.fill('check')
-        updates[matchPath + '/playerTurn'] = game.smallBlindLoc
+        updates[matchPath + '/playerTurn'] = game.playerTurn
         updates[matchPath + '/balance'] = game.balance
         updates[matchPath + '/round'] = game.round
         updates[matchPath + '/chipsWon'] = game.chipsWon
@@ -818,54 +825,68 @@ export default class GameSetting extends Component {
   }
   */
     
-  leaveGame(editGame, playernum, matchType, fullMatchName, userData){ //When player wants leave game in progress
+  leaveGame(editGame, playernum, matchType, fullMatchName, userData, newPlayer){ //When player wants leave game in progress
     //var editGame = this.props.game
     //const playernum = this.state.playerNum
     //editGame, playernum, matchType, fullMatchName
-
-    const quitBalance = editGame.balance[playernum]
-    const chipsWon = editGame.chipsWon[playernum]
-    const chipsLost = editGame.chipsLost[playernum] + editGame.chipsIn[playernum]
-
-    editGame.balance.splice(playernum,1)
-    editGame.chipsWon.splice(playernum,1)
-    editGame.chipsLost.splice(playernum,1)
-    editGame.chipsIn.splice(playernum,1)
-    editGame.move.splice(playernum,1)
-    editGame.player_cards.splice(playernum,1)
-    editGame.players.splice(playernum,1)
-    editGame.ready.splice(playernum,1)
-    editGame.size -= 1
-
     var updates = {}; 
-    //var matchLocation = '/games/'+ this.state.matchType + '/' + this.state.fullMatchName
     var matchLocation = '/games/'+ matchType + '/' + fullMatchName
-
     var user = firebase.auth().currentUser;
+    
+    const quitBalance = editGame.balance[playernum]
+    
+    if(newPlayer){
+      editGame.newPlayer -=1
+      editGame.size -= 1
+      editGame.balance.splice(playernum,1)
+      editGame.players.splice(playernum,1)
 
-    updates['/users/'+ user.uid +'/in_game'] = '';
-    updates['/users/'+ user.uid +'/chips'] = userData.chips + quitBalance;
-    updates['/users/'+ user.uid +'/games'] = userData.games + 1;
-    updates['/users/'+ user.uid +'/chips_won'] = userData.chips_won + chipsWon;
-    updates['/users/'+ user.uid +'/chips_lost'] = userData.chips_lost + chipsLost;
+      updates[matchLocation + '/balance']   = editGame.balance
+      updates[matchLocation + '/players']   = editGame.players
+      updates[matchLocation + '/size']      = editGame.size
+      updates[matchLocation + '/newPlayer'] = editGame.newPlayer
 
-    if(editGame.size == 0){ //delete game
-      //by setting the data of these location to NULL, the branch is deleted.
-      //https://firebase.google.com/docs/database/web/read-and-write#delete_data
-      updates[matchLocation] = null
-      if(matchType == 'public'){
-        updates['/games/list/' + fullMatchName] = null
-      }
+      updates['/users/'+ user.uid +'/in_game'] = '';
+      updates['/users/'+ user.uid +'/chips'] = userData.chips + quitBalance;
     }
-    else{ //update game
-      updates['/games/list/' + fullMatchName + '/size'] = editGame.size
+    else{
+      const chipsWon = editGame.chipsWon[playernum]
+      const chipsLost = editGame.chipsLost[playernum] + editGame.chipsIn[playernum]
 
-      updates[matchLocation + '/balance']       = editGame.balance
-      updates[matchLocation + '/move']          = editGame.move
-      updates[matchLocation + '/player_cards']  = editGame.player_cards
-      updates[matchLocation + '/players']       = editGame.players
-      updates[matchLocation + '/ready']         = editGame.ready
-      updates[matchLocation + '/size']          = editGame.size
+      editGame.balance.splice(playernum,1)
+      editGame.chipsWon.splice(playernum,1)
+      editGame.chipsLost.splice(playernum,1)
+      editGame.chipsIn.splice(playernum,1)
+      editGame.move.splice(playernum,1)
+      editGame.player_cards.splice(playernum,1)
+      editGame.players.splice(playernum,1)
+      editGame.ready.splice(playernum,1)
+      editGame.size -= 1
+
+      updates['/users/'+ user.uid +'/in_game'] = '';
+      updates['/users/'+ user.uid +'/chips'] = userData.chips + quitBalance;
+      updates['/users/'+ user.uid +'/games'] = userData.games + 1;
+      updates['/users/'+ user.uid +'/chips_won'] = userData.chips_won + chipsWon;
+      updates['/users/'+ user.uid +'/chips_lost'] = userData.chips_lost + chipsLost;
+
+      if(editGame.size == 0){ //delete game
+        //by setting the data of these location to NULL, the branch is deleted.
+        //https://firebase.google.com/docs/database/web/read-and-write#delete_data
+        updates[matchLocation] = null
+        if(matchType == 'public'){
+          updates['/games/list/' + fullMatchName] = null
+        }
+      }
+      else{ //update game
+        updates['/games/list/' + fullMatchName + '/size'] = editGame.size
+
+        updates[matchLocation + '/balance']       = editGame.balance
+        updates[matchLocation + '/move']          = editGame.move
+        updates[matchLocation + '/player_cards']  = editGame.player_cards
+        updates[matchLocation + '/players']       = editGame.players
+        updates[matchLocation + '/ready']         = editGame.ready
+        updates[matchLocation + '/size']          = editGame.size
+      }
     }
     firebase.database().ref('/games/'+ matchType + '/' + fullMatchName).off()
     firebase.database().ref().update(updates);
@@ -916,6 +937,7 @@ export default class GameSetting extends Component {
           leaveGame = {this.leaveGame}
           updateGame = {this.updateGame}
           userData = {this.props.userData}
+          newPlayer = {this.state.newPlayer}
         />
       )
     }
