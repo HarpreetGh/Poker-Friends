@@ -176,8 +176,8 @@ export default class GameSetting extends Component {
         game.size-=game.newPlayer
         
         //Figure out who won and give them pot
-        const roundWinner = 0//this.findRoundWinner(game)
-        
+        const roundWinner = this.findRoundWinner(game)
+        console.log("180: ", roundWinner)
         game.balance[roundWinner] += game.pot
         game.chipsWon[roundWinner] += game.pot
         game.round++
@@ -244,6 +244,8 @@ export default class GameSetting extends Component {
     // Assign ranks for players before sorting ranks in hand[] array therefore updating
     // game.player_cards[i].rank should be updated
 
+    // Loop through all players and assign them a rank
+    game.size -= game.newPlayer
     for (var i = 0; i < game.size; i++){
       console.log("Assign Ranks loop reached")
       var position = i
@@ -299,11 +301,11 @@ export default class GameSetting extends Component {
       }
     }
 
-    console.log("This is rank at 0: ", game.player_cards[0].rank)
+    console.log("This is rank at all indexes: ", game.player_cards[0].rank)
 
     //  hands is an array of players with game.players_cards[i].rank sorted by highest rank to lowest (1, 2, 3, 4, 5, 6, 7, 8, 9, 10 hand rankings in order)
     var hands = game.player_cards.sort(function(a, b){return a.rank - b.rank}); //sorts from small to high
-    console.log("Hands array sorted!")
+    console.log("Hands array sorted!", hands)
 
 
     var handsNotFolded = [] // An array of hand rankings of players that have not folded
@@ -312,35 +314,81 @@ export default class GameSetting extends Component {
           handsNotFolded.push(hands[i])
       }
     }
-    var highestRank = handsNotFolded[0].rank
+    console.log("HNF: ", handsNotFolded)
 
-    var indexOfHighestRanks = []
-    for(var i = 0; i < game.size; i++){
-      if(highestRank == game.player_cards[i].rank){
-        indexOfHighestRanks.push(i)
+    
+    // TEMP: not using indexOfHighestRanks as it is only/just an array of numbers indicating indexes
+    //        and not the actual hands of players - mostly useless to use since handsNotFolded is what
+    //        we want to use instead to determine higher values of same rank between players
+    // // Set the max or highest rank to compare against for other players with same highest rank
+    // var highestRank = handsNotFolded[0].rank
+    // console.log("handsNotFolded and highestRank are: ", handsNotFolded, highestRank)
+    // // Populate an array of players who have the same highest rank
+    // var indexOfHighestRanks = []
+    // for(var i = 0; i < game.size; i++){
+    //   if(highestRank == game.player_cards[i].rank){
+    //     indexOfHighestRanks.push(i)//game.player_cards[i].myCards)
+    //   }
+    // }
+    // console.log("Contents of indexOfHighestRanks: ", indexOfHighestRanks)
+
+
+    var highestRank = handsNotFolded[0].rank
+    var indexHighestHands = [] // An array of the same highest ranks as INDEXES
+    var highestHands = [] // An array of hands with the same highest ranks
+    for (var i = 0; i < game.size; i++){
+      if (highestRank > handsNotFolded[i].rank){
+        highestRank = handsNotFolded[i].rank // Loop through all hands to find highest/max rank
       }
     }
+    console.log("highest rank is: ", highestRank)
+    for (var i = 0; i < game.size; i++){
+      if(highestRank == handsNotFolded[i].rank){
+        indexHighestHands.push(i) // Loop through all hands to find all players with highest/max rank
+      }
+    }
+    console.log("indexHighestHands contents: ", indexHighestHands)
+    for (var i = 0; i < game.size; i++){
+      if(highestRank == handsNotFolded[i].rank){
+        highestHands.push(handsNotFolded[i])
+      }
+    }
+    console.log("highestHands contents: ", highestHands)
 
     var roundWinner;
-    if(indexOfHighestRanks.length == 1){
-      roundWinner = indexOfHighestRanks[0]
-      console.log("Only one player has the highest rank: ", indexOfHighestRanks)
+    var rW;
+    if(indexHighestHands.length == 1){ // Only 1 person with the highest rank, then they are winner
+      rW = indexHighestHands[0]
+      roundWinner = game.players[rW]
+      console.log("Only one player has the highest rank: ", handsNotFolded)
     }
-    else{
-      roundWinner = compareCards(indexOfHighestRanks, game)
-      console.log("Calling Compare")
-      //index would be [0,3] or [1,2,3] or whatever amount of players have same # of cards
+    if(indexHighestHands.length > 1){
+      rW = compareCards(highestHands, indexHighestHands, game)
+      roundWinner = game.players[rW]
+      console.log("Calling Compare Cards to determine higher value hand of ranks", handsNotFolded, game.player_cards)
+      //indexOfHighestRanks would be [0,3] or [1,2,3] or whatever amount of players have same # of cards
       //game.player_cards is [{rank: 2, myCards: [Card, Card]}, {rank: 2, myCards: [Card, Card]}]
       //Card = {suit: 'heart', value: '3', image: 'somefilepath'}
     }
-    console.log("Rounder winner is: ", roundWinner)
+    console.log("Round winner is: ", roundWinner)
     return roundWinner
   }
 
-  compareCards(index, c){ //TODO
-    console.log("CompareCards() called")
+  compareCards(highestHands, indexHighestHands, game){ //TODO
+    // PSEUDOCODE: Loop through all players using index (indexOfHighestRanks) array
+    //           :  Check for which hand rank they have: if index[i] == 1, 2, 5, 10 etc.
+    //           :  Depending on hand rank, loop through their hand (similar to hand ranking functions)
+    //           :  Check for the literal card value of their hand and compare to other players, higher value wins
+    //           :  Return who had the highest
+    console.log("CompareCards() called")    
+    var winner = indexHighestHands[0]//indexHighestHands[Math.floor(Math.random() * index.length)]
+    return winner
+    for (var i = 0; i < game.size; i++){
+      console.log("cc inner loop reached")
+    }
+
     var completeCards = []
-    completeCards.push(c.player_cards[0].myCards)
+    completeCards.push(cards.player_cards[0].myCards)
     for (var i = 0; i < index.length; i++){
       for (var j = i + 1; j < index.length; j++){
         if (index[i] > index[j]){
@@ -349,8 +397,7 @@ export default class GameSetting extends Component {
       }
     }
     // Temp code: Randomly choose a winner amongst the players who have the same highest rank
-    var winner = index[Math.floor(Math.random() * index.length)]
-    return winner
+
   }
 
   // Rank 1
