@@ -20,6 +20,7 @@ import FriendsList from './Components/FriendsList'
 import CreateGame from './Components/CreateGame'
 import JoinGame from './Components/JoinGame'
 import AccountStats from './Components/AccountStats'
+import Leaderboard from './Components/Leaderboard'
 
 
 LogBox.ignoreLogs(['Setting a timer for a long period of time'])
@@ -94,7 +95,8 @@ export default class App extends Component {
             <Stack.Screen name = "AccountStats">
               {(props) => <AccountStats {...props} userData={this.state.userData}/>}
             </Stack.Screen>
-
+            
+            <Stack.Screen name = "Leaderboard" component = {Leaderboard}/>
             <Stack.Screen name = "AccountSettings" component = {AccountSettings}/>
             <Stack.Screen name = "ChangeUsername" component = {ChangeUsername}/>
             <Stack.Screen name = "ChangeEmail" component = {ChangeEmail}/>

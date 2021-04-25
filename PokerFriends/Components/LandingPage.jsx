@@ -65,6 +65,15 @@ export default class LandingPage extends Component {
             <Text style={styles.textStyle}>Create Game</Text>
           </TouchableOpacity>
 
+          <TouchableOpacity 
+            style={styles.button}
+            onPress = {() => {
+              this.props.navigation.navigate('Leaderboard'); 
+            }}
+          >
+            <Text style={styles.textStyle}>Leaderboard</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity style={styles.button} 
             onPress = {() => LogOut()}>
                 <Text style={styles.textStyle}>Log Out</Text>
