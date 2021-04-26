@@ -175,7 +175,8 @@ export default class GameSetting extends Component {
       else if(game.turn == 5){
         game.size-=game.newPlayer
         
-        //Figure out who won and give them pot
+        // Figure out who won and give them pot
+        // Could make an array called roundWinners that hold all winners with equal rank and give them all balance and chipsWon
         const roundWinner = this.findRoundWinner(game)
         console.log("180: ", roundWinner)
         game.balance[roundWinner] += game.pot
@@ -307,7 +308,6 @@ export default class GameSetting extends Component {
     var hands = game.player_cards.sort(function(a, b){return a.rank - b.rank}); //sorts from small to high
     console.log("Hands array sorted!", hands)
 
-
     var handsNotFolded = [] // An array of hand rankings of players that have not folded
     for(var i = 0; i < game.size; i++){ // Loop through all players
       if(game.move[i] != "fold"){ // If the player at position "i" has not folded they can move into the hNF array
@@ -315,23 +315,6 @@ export default class GameSetting extends Component {
       }
     }
     console.log("HNF: ", handsNotFolded)
-
-    
-    // TEMP: not using indexOfHighestRanks as it is only/just an array of numbers indicating indexes
-    //        and not the actual hands of players - mostly useless to use since handsNotFolded is what
-    //        we want to use instead to determine higher values of same rank between players
-    // // Set the max or highest rank to compare against for other players with same highest rank
-    // var highestRank = handsNotFolded[0].rank
-    // console.log("handsNotFolded and highestRank are: ", handsNotFolded, highestRank)
-    // // Populate an array of players who have the same highest rank
-    // var indexOfHighestRanks = []
-    // for(var i = 0; i < game.size; i++){
-    //   if(highestRank == game.player_cards[i].rank){
-    //     indexOfHighestRanks.push(i)//game.player_cards[i].myCards)
-    //   }
-    // }
-    // console.log("Contents of indexOfHighestRanks: ", indexOfHighestRanks)
-
 
     var highestRank = handsNotFolded[0].rank
     var indexHighestHands = [] // An array of the same highest ranks as INDEXES
@@ -355,17 +338,19 @@ export default class GameSetting extends Component {
     }
     console.log("highestHands contents: ", highestHands)
 
-    var roundWinner;
-    var rW;
+    var roundWinner = 0;
+    var rW = 0;
     if(indexHighestHands.length == 1){ // Only 1 person with the highest rank, then they are winner
       rW = indexHighestHands[0]
-      roundWinner = game.players[rW]
+      roundWinner = rW
       console.log("Only one player has the highest rank: ", handsNotFolded)
     }
     if(indexHighestHands.length > 1){
-      rW = compareCards(highestHands, indexHighestHands, game)
-      roundWinner = game.players[rW]
-      console.log("Calling Compare Cards to determine higher value hand of ranks", handsNotFolded, game.player_cards)
+      console.log("Calling Compare Cards to determine higher value hand of ranks - highestHands: ", highestHands)
+      rW = compareCards(highestHands, game)
+      roundWinner = rW
+      console.log("rW and roundWinner respectively: ", rW, roundWinner)
+      
       //indexOfHighestRanks would be [0,3] or [1,2,3] or whatever amount of players have same # of cards
       //game.player_cards is [{rank: 2, myCards: [Card, Card]}, {rank: 2, myCards: [Card, Card]}]
       //Card = {suit: 'heart', value: '3', image: 'somefilepath'}
@@ -374,30 +359,206 @@ export default class GameSetting extends Component {
     return roundWinner
   }
 
-  compareCards(highestHands, indexHighestHands, game){ //TODO
-    // PSEUDOCODE: Loop through all players using index (indexOfHighestRanks) array
-    //           :  Check for which hand rank they have: if index[i] == 1, 2, 5, 10 etc.
-    //           :  Depending on hand rank, loop through their hand (similar to hand ranking functions)
-    //           :  Check for the literal card value of their hand and compare to other players, higher value wins
-    //           :  Return who had the highest
-    console.log("CompareCards() called")    
-    var winner = indexHighestHands[0]//indexHighestHands[Math.floor(Math.random() * index.length)]
-    return winner
-    for (var i = 0; i < game.size; i++){
-      console.log("cc inner loop reached")
-    }
+  compareCards(highestHands, game){
+    // PSEUDOCODE: Loop through all players using highestHands array
+    //           : Check for which hand rank they have: if highestHands[i].rank == 1, 2, 5, 10 etc.
+    //           : Depending on hand rank, loop through their hand (similar to hand ranking functions)
+    //           : Check for the literal card value of their hand and compare to other players, higher value wins
+    //           : Return who had the highest
 
-    var completeCards = []
-    completeCards.push(cards.player_cards[0].myCards)
-    for (var i = 0; i < index.length; i++){
-      for (var j = i + 1; j < index.length; j++){
-        if (index[i] > index[j]){
-          winner = index[i]
+    //var winner = indexHighestHands[0]
+    //return winner
+
+    console.log("CompareCards() called")    
+
+    var rWcc;
+    if (highestHands[0].rank == 1){ // If everyone has Royal Flush then just the first player wins
+      rWcc = 0
+      console.log("rWcc 1")
+    }
+    if (highestHands[0].rank == 2){
+      rWcc = 0//this.compareStraightFlush(highestHands, game)
+      console.log("rWcc 2")
+    }
+    if (highestHands[0].rank == 3){
+      rWcc = 0//this.compareFourOfKind(highestHands, game)
+      console.log("rWcc 3")
+    }
+    if (highestHands[0].rank == 4){
+      rWcc = 0//this.compareFullHouse(highestHands, game)
+      console.log("rWcc 4")
+    }
+    if (highestHands[0].rank == 5){
+      rWcc = 0//this.compareFlush(highestHands, game)
+      console.log("rWcc 5")
+    }
+    if (highestHands[0].rank == 6){
+      rWcc = 0//this.compareStraight(highestHands, game)
+      console.log("rWcc 6")
+    }
+    if (highestHands[0].rank == 7){
+      rWcc = 0//this.compareThreeOfKind(highestHands, game)
+      console.log("rWcc 7")
+    }
+    if (highestHands[0].rank == 8){
+      rWcc = 0//this.compareTwoPair(highestHands, game)
+      console.log("rWcc 8")
+    }
+    if (highestHands[0].rank == 9){
+      rWcc = 0//this.compareOnePair(highestHands, game)
+      console.log("rWcc 9")
+    }
+    if (highestHands[0].rank == 10){
+      rWcc = this.compareHighCard(highestHands, game)
+      console.log("rWcc 10")
+    }
+      
+    return rWcc
+  }
+  compareHighCard(highestHands, game){
+    console.log("Comparing High Cards...")
+    var hand1 = []
+    var hand2 = []
+    var hand3 = []
+    var hand4 = []
+    if (highestHands.length == 2){
+      console.log("highestHands length is 2")
+      hand1.push(highestHands[0].myCards)
+      hand1.push(game.board)
+      var h1 = hand1.flat()
+      console.log("h1 is: ", h1)
+      hand2.push(highestHands[1].myCards)
+      hand2.push(game.board)
+      var h2 = hand2.flat()
+      console.log("h2 is: ", h2)
+      var highest1 = h1[0].value;
+      for (var i = 0; i < h1.length; i++){ // Find highest value card in player 1
+        if (h1[i].value > highest1){
+          highest1 = h1[i].value
         }
       }
-    }
-    // Temp code: Randomly choose a winner amongst the players who have the same highest rank
+      var highest2 = h2[0].value;
+      for (var i = 0; i < h2.length; i++){
+        if (h2[i].value > highest2){
+          highest2 = h2[i].value
+        }
+      }
+      console.log("highest1 and 2 respectively: ", highest1, highest2)
 
+      var maxCompare = 0
+      var highestCard = 0
+      var max = []
+      max.push(highest1)
+      max.push(highest2)
+      for (var i = 0; i < max.length; i++){
+        if (max[i] > highestCard){
+          highestcard = max[i]
+          maxCompare = i
+        }
+      }
+      return maxCompare
+    }
+    if (highestHands.length == 3){
+      console.log("highestHands length is 3")
+      hand1.push(highestHands[0].myCards)
+      hand1.push(game.board)
+      var h1 = hand1.flat()
+      hand2.push(highestHands[1].myCards)
+      hand2.push(game.board)
+      var h2 = hand2.flat()
+      hand3.push(highestHands[2].myCards)
+      hand3.push(game.board)
+      var h3 = hand3.flat()
+      
+      var highest1 = h1[0].value;
+      for (var i = 0; i < h1.length; i++){ // Find highest value card in player 1
+        if (h1[i].value > highest1){
+          highest1 = h1[i].value
+        }
+      }
+      var highest2 = h2[0].value;
+      for (var i = 0; i < h2.length; i++){
+        if (h2[i].value > highest2){
+          highest2 = h2[i].value
+        }
+      }
+      var highest3 = h3[0].value;
+      for (var i = 0; i < h3.length; i++){
+        if (h3[i].value > highest3){
+          highest3 = h3[i].value
+        }
+      }
+      console.log("highestX: ", highest1, highest2, highest3)
+
+      var maxCompare = 0
+      var highestCard = 0
+      var max = []
+      max.push(highest1)
+      max.push(highest2)
+      max.push(highest3)
+      for (var i = 0; i < max.length; i++){
+        if (max[i] > highestCard){
+          highestcard = max[i]
+          maxCompare = i
+        }
+      }
+      return maxCompare
+    }
+    if (highestHands.length == 4){
+      console.log("highestHands length is 4")
+      hand1.push(highestHands[0].myCards)
+      hand1.push(game.board)
+      var h1 = hand1.flat()
+      hand2.push(highestHands[1].myCards)
+      hand2.push(game.board)
+      var h2 = hand2.flat()
+      hand3.push(highestHands[2].myCards)
+      hand3.push(game.board)
+      var h3 = hand3.flat()
+      hand4.push(highestHands[3].myCards)
+      hand4.push(game.board)
+      var h4 = hand4.flat()
+      var highest1 = h1[0].value;
+      for (var i = 0; i < h1.length; i++){ // Find highest value card in player 1
+        if (h1[i].value > highest1){
+          highest1 = h1[i].value
+        }
+      }
+      var highest2 = h2[0].value;
+      for (var i = 0; i < h2.length; i++){
+        if (h2[i].value > highest2){
+          highest2 = h2[i].value
+        }
+      }
+      var highest3 = h3[0].value;
+      for (var i = 0; i < h3.length; i++){
+        if (h3[i].value > highest3){
+          highest3 = h3[i].value
+        }
+      }
+      var highest4 = h4[0].value;
+      for (var i = 0; i < h4.length; i++){
+        if (h4[i].value > highest4){
+          highest4 = h4[i].value
+        }
+      }
+      console.log("highestX respectively: ", highest1, highest2, highest3, highest4)
+
+      var maxCompare = 0
+      var highestCard = 0
+      var max = []
+      max.push(highest1)
+      max.push(highest2)
+      max.push(highest3)
+      max.push(highest4)
+      for (var i = 0; i < max.length; i++){
+        if (max[i] > highestCard){
+          highestcard = max[i]
+          maxCompare = i
+        }
+      }
+      return maxCompare
+    }
   }
 
   // Rank 1
@@ -808,6 +969,7 @@ export default class GameSetting extends Component {
     if (match > 0){ return false }
     else { return true }
   }
+
   async giveOutCards() {
     gameDeck.shuffle()
 
