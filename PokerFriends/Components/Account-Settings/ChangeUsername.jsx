@@ -11,7 +11,7 @@ export default class ChangeUsername extends Component {
     console.log(user.displayName)
     this.state = {
       newUsername: '',
-      oldUsername: user.displayName.slice(0, user.displayName.indexOf('#'))
+      oldUsername: user.displayName
     }
   }
 
@@ -26,7 +26,7 @@ export default class ChangeUsername extends Component {
     .then(() => {
       Alert.alert("Username changed", "From: " + this.state.oldUsername + 
         " to: " + this.state.newUsername)
-      updates['/users/'+ user.uid +'/username'] = usernameID;
+      updates['/users/'+ user.uid +'/data/username'] = usernameID;
       firebase.database().ref().update(updates);
       this.props.navigation.navigate('AccountSettings')
     })
