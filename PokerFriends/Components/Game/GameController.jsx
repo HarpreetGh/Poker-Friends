@@ -846,8 +846,8 @@ export default class GameSetting extends Component {
       updates[matchLocation + '/size']      = editGame.size
       updates[matchLocation + '/newPlayer'] = editGame.newPlayer
 
-      updates['/users/'+ user.uid +'/in_game'] = '';
-      updates['/users/'+ user.uid +'/chips'] = userData.chips + quitBalance;
+      updates['/users/'+ user.uid +'/data/in_game'] = '';
+      updates['/users/'+ user.uid +'/data/chips'] = userData.chips + quitBalance;
     }
     else{
       const chipsWon = editGame.chipsWon[playernum]
@@ -863,11 +863,11 @@ export default class GameSetting extends Component {
       editGame.ready.splice(playernum,1)
       editGame.size -= 1
 
-      updates['/users/'+ user.uid +'/in_game'] = '';
-      updates['/users/'+ user.uid +'/chips'] = userData.chips + quitBalance;
-      updates['/users/'+ user.uid +'/games'] = userData.games + 1;
-      updates['/users/'+ user.uid +'/chips_won'] = userData.chips_won + chipsWon;
-      updates['/users/'+ user.uid +'/chips_lost'] = userData.chips_lost + chipsLost;
+      updates['/users/'+ user.uid +'/data/in_game'] = '';
+      updates['/users/'+ user.uid +'/data/chips'] = userData.chips + quitBalance;
+      updates['/users/'+ user.uid +'/data/games'] = userData.games + 1;
+      updates['/users/'+ user.uid +'/data/chips_won'] = userData.chips_won + chipsWon;
+      updates['/users/'+ user.uid +'/data/chips_lost'] = userData.chips_lost + chipsLost;
 
       if(editGame.size == 0){ //delete game
         //by setting the data of these location to NULL, the branch is deleted.
@@ -910,14 +910,14 @@ export default class GameSetting extends Component {
     }
     
     var user = firebase.auth().currentUser;
-    updates['/users/'+ user.uid +'/in_game'] = '';
-    updates['/users/'+ user.uid +'/chips'] = this.props.userData.chips + endBalance;
-    updates['/users/'+ user.uid +'/games'] = this.props.userData.games + 1;
-    updates['/users/'+ user.uid +'/chips_won'] = chipsWon;
-    updates['/users/'+ user.uid +'/chips_lost'] = chipsLost;
+    updates['/users/'+ user.uid +'/data/in_game'] = '';
+    updates['/users/'+ user.uid +'/data/chips'] = this.props.userData.chips + endBalance;
+    updates['/users/'+ user.uid +'/data/games'] = this.props.userData.games + 1;
+    updates['/users/'+ user.uid +'/data/chips_won'] = chipsWon;
+    updates['/users/'+ user.uid +'/data/chips_lost'] = chipsLost;
 
     if(endGame.balance[playernum] > 0){
-      updates['/users/'+ user.uid +'/wins'] = this.props.userData.wins + 1;
+      updates['/users/'+ user.uid +'/data/wins'] = this.props.userData.wins + 1;
     }
 
     firebase.database().ref().update(updates);

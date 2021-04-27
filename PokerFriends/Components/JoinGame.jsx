@@ -48,7 +48,7 @@ export default class JoinGame extends Component {
 
   async joinGame(matchName){
     var user = firebase.auth().currentUser;
-    const username = user.displayName.slice(0, user.displayName.indexOf('#'))
+    const username = user.displayName
     const matchPath =  '/games/' + 'public' + '/' + matchName;
     const matchListPath = '/games/list/' + matchName;
 
@@ -66,8 +66,8 @@ export default class JoinGame extends Component {
       
       var updates = {};
       
-      updates['/users/'+ user.uid +'/in_game'] = matchName
-      updates['/users/'+ user.uid +'/chips'] = this.props.userData.chips
+      updates['/users/'+ user.uid +'/data/in_game'] = matchName
+      updates['/users/'+ user.uid +'/data/chips'] = this.props.userData.chips
 
       updates[matchPath + '/balance'] = data.balance
       updates[matchPath + '/players'] = data.players

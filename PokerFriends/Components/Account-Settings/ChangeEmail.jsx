@@ -21,7 +21,7 @@ export default class ChangeEmail extends Component {
     user.updateEmail(this.state.email)
     .then(() =>{
       Alert.alert("Email changed","From: " + this.state.oldEmail + " to: " + this.state.email)
-      updates['/users/'+ user.uid +'/email'] = this.state.email;
+      updates['/users/'+ user.uid +'/data/email'] = this.state.email;
       firebase.database().ref().update(updates);
       this.props.navigation.navigate('AccountSettings')
     })
