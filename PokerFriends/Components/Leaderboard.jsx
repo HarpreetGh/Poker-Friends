@@ -15,15 +15,15 @@ export default class Leaderboard extends Component {
   }
 
   componentDidMount(){
-    firebase.database().ref('/users/').orderByChild(this.state.lbStatistic).on('value', (snapshot) => {
+    firebase.database().ref('/users/').orderByChild('data/' + this.state.lbStatistic).on('value', (snapshot) => {
       var data =  []
       snapshot.forEach((child) => {
         data.push({
-        key: child.val().username,
-        chips: child.val().chips,
-        chips_won: child.val().chips_won,
-        chips_lost: child.val().chips_lost,
-        wins: child.val().wins
+        key: child.val().data.username,
+        chips: child.val().data.chips,
+        chips_won: child.val().data.chips_won,
+        chips_lost: child.val().data.chips_lost,
+        wins: child.val().data.wins
       })
     })
     data.reverse()
@@ -32,15 +32,15 @@ export default class Leaderboard extends Component {
     })
   }
   componentDidUpdate(){
-    firebase.database().ref('/users/').orderByChild(this.state.lbStatistic).on('value', (snapshot) => {
+    firebase.database().ref('/users/').orderByChild('data/' + this.state.lbStatistic).on('value', (snapshot) => {
       var data =  []
       snapshot.forEach((child) => {
         data.push({
-        key: child.val().username,
-        chips: child.val().chips,
-        chips_won: child.val().chips_won,
-        chips_lost: child.val().chips_lost,
-        wins: child.val().wins
+        key: child.val().data.username,
+        chips: child.val().data.chips,
+        chips_won: child.val().data.chips_won,
+        chips_lost: child.val().data.chips_lost,
+        wins: child.val().data.wins
       })
     })
     data.reverse()
