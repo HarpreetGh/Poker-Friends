@@ -25,7 +25,7 @@ export default class CreateGame extends Component {
 
   createGame(type){
     var user = firebase.auth().currentUser;
-    const username = user.displayName.slice(0, user.displayName.indexOf('#'))
+    const username = user.displayName
     //const username = user.displayName
     const buyIn = Number(this.state.buyIn)
     
@@ -45,8 +45,8 @@ export default class CreateGame extends Component {
     var d = new Date
     var matchName = type + '_' + this.state.name +"-"+ d.getTime();
     var updates = {};
-    updates['/users/'+ user.uid +'/in_game'] = matchName;
-    updates['/users/'+ user.uid +'/chips'] = this.props.userData.chips
+    updates['/users/'+ user.uid +'/data/in_game'] = matchName;
+    updates['/users/'+ user.uid +'/data/chips'] = this.props.userData.chips
 
     firebase.database().ref('games/' + type + '/' + matchName).set({
       balance: [buyIn],

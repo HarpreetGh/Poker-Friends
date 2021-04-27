@@ -15,17 +15,16 @@ export default class Register extends Component {
     }
   }
 
-  SignUp(){
+  async SignUp(){
     firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
       .then((userCredential) =>{
         var user = firebase.auth().currentUser;
           if (user) {
-            this.setState({username: this.state.username+"#"+user.uid})
+            this.InitializeUserInDB(user, this.state.username+"#"+user.uid)
             user.updateProfile({
               displayName: this.state.username
             })
               .then(() => {
-                this.InitializeUserInDB(user)
                 this.props.navigation.navigate('LandingPage')
               })
               .catch(function(error) {
@@ -40,17 +39,21 @@ export default class Register extends Component {
     });
   }
 
-  InitializeUserInDB(user){
-    firebase.database().ref('users/' + user.uid ).set({
-      chips: 1000,
-      username: this.state.username,
-      email: this.state.email,
-      friends: '',
-      games: 0,
-      wins: 0,
-      chips_lost: 0,
-      chips_won: 0,
-      in_game: ''
+  async InitializeUserInDB(user, username){
+    firebase.database().ref('users/' + user.uid +'/data').set({
+        chips: 1000,
+        username: username,
+        email: this.state.email,
+        friends: [''],
+        games: 0,
+        wins: 0,
+        chips_lost: 0,
+        chips_won: 0,
+        in_game: ''
+    });
+
+    firebase.database().ref('users/' + user.uid +'/request').set({
+      friend_request: ['']
     });
   }
 

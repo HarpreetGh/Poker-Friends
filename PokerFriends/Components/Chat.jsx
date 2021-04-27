@@ -26,7 +26,7 @@ export default function Chat(matchInfo){
  const [modalVisible, setModalVisible] = useState(false)
  const chatRef = db.collection('gameChats/'+ matchInfo.matchType+ '/'+ matchInfo.matchName)// + this.props.matchName
  var user = firebase.auth().currentUser;
- var userName = user.displayName.slice(0, user.displayName.indexOf('#'))
+ var userName = user.displayName
  var userid = user.uid
  
  const [userInChat] = useState({ _id:userid, name:userName})
