@@ -33,6 +33,7 @@ export default class App extends Component {
     
     this.state = {
       userData: {},
+      userRequest: {},
       ready: false,
       LoggedIn: false
     };
@@ -51,10 +52,12 @@ export default class App extends Component {
   async getData(){
     var user = firebase.auth().currentUser;
     if(user != null){
-      firebase.database().ref('/users/' + user.uid + '/data').on('value', (snapshot) => {
-        const data =  snapshot.val()
+      firebase.database().ref('/users/' + user.uid).on('value', (snapshot) => {
+        const data =  snapshot.val().data
+        const request = snapshot.val().request
         if(snapshot.val() != null){
-          this.setState({userData: data, LoggedIn: true, ready: true})
+          this.setState({userData: data, userRequest: request, 
+            LoggedIn: true, ready: true})
         }
       })
     }
@@ -76,7 +79,7 @@ export default class App extends Component {
             <Stack.Screen name = "Register" component = {Register}/>
             
             <Stack.Screen name = "FriendsList">
-              {(props) => <FriendsList {...props} userData={this.state.userData}/>}
+              {(props) => <FriendsList {...props} userData={this.state.userData} userRequest={this.state.userRequest}/>}
             </Stack.Screen>
 
             <Stack.Screen name = "GameController">
