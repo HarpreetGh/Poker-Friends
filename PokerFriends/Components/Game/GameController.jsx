@@ -390,13 +390,13 @@ export default class GameSetting extends Component {
       if (aH[i].value == "J") {
         intAllHands[i] = 11;
       }
-      if (aH[i].value == "Q") {
+      else if (aH[i].value == "Q") {
         intAllHands[i] = 12;
       }
-      if (aH[i].value == "K") {
+      else if (aH[i].value == "K") {
         intAllHands[i] = 13;
       }
-      if (aH[i].value == "A") {
+      else if (aH[i].value == "A") {
         intAllHands[i] = 14;
       }
       console.log("intAllHands[" + i.toString() + "]: ", intAllHands);
@@ -429,220 +429,6 @@ export default class GameSetting extends Component {
     return rWHH;
   }
 
-  compareCards(highestHands, game) {
-    // PSEUDOCODE: Loop through all players using highestHands array
-    //           : Check for which hand rank they have: if highestHands[i].rank == 1, 2, 5, 10 etc.
-    //           : Depending on hand rank, loop through their hand (similar to hand ranking functions)
-    //           : COULD SORT ALL PLAYERS HANDS BY VALUE AND COMPARE FIRST CARD AND SEE WHO IS HIGHER (similar to some hand ranking functions)
-    //           : Check for the literal card value of their hand and compare to other players, higher value wins
-    //           : Return who had the highest
-
-    //var winner = indexHighestHands[0]
-    //return winner
-
-    console.log("CompareCards() called");
-    var rWcc;
-    rWcc = 0;
-    return rWcc;
-    if (highestHands[0].rank == 1) {
-      // If everyone has Royal Flush then just the first player wins
-      rWcc = 0;
-      console.log("rWcc 1");
-    }
-    if (highestHands[0].rank == 2) {
-      rWcc = 0; //this.compareStraightFlush(highestHands, game)
-      console.log("rWcc 2");
-    }
-    if (highestHands[0].rank == 3) {
-      rWcc = 0; //this.compareFourOfKind(highestHands, game)
-      console.log("rWcc 3");
-    }
-    if (highestHands[0].rank == 4) {
-      rWcc = 0; //this.compareFullHouse(highestHands, game)
-      console.log("rWcc 4");
-    }
-    if (highestHands[0].rank == 5) {
-      rWcc = 0; //this.compareFlush(highestHands, game)
-      console.log("rWcc 5");
-    }
-    if (highestHands[0].rank == 6) {
-      rWcc = 0; //this.compareStraight(highestHands, game)
-      console.log("rWcc 6");
-    }
-    if (highestHands[0].rank == 7) {
-      rWcc = 0; //this.compareThreeOfKind(highestHands, game)
-      console.log("rWcc 7");
-    }
-    if (highestHands[0].rank == 8) {
-      rWcc = 0; //this.compareTwoPair(highestHands, game)
-      console.log("rWcc 8");
-    }
-    if (highestHands[0].rank == 9) {
-      rWcc = 0; //this.compareOnePair(highestHands, game)
-      console.log("rWcc 9");
-    }
-    if (highestHands[0].rank == 10) {
-      rWcc = this.compareHighCard(highestHands, game);
-      console.log("rWcc 10");
-    }
-
-    return rWcc;
-  }
-
-  compareHighCard(highestHands, game) {
-    console.log("Comparing High Cards...");
-    var hand1 = [];
-    var hand2 = [];
-    var hand3 = [];
-    var hand4 = [];
-    if (highestHands.length == 2) {
-      console.log("highestHands length is 2");
-      hand1.push(highestHands[0].myCards);
-      hand1.push(game.board);
-      var h1 = hand1.flat();
-      console.log("h1 is: ", h1);
-      hand2.push(highestHands[1].myCards);
-      hand2.push(game.board);
-      var h2 = hand2.flat();
-      console.log("h2 is: ", h2);
-      var highest1 = h1[0].value;
-      for (var i = 0; i < h1.length; i++) {
-        // Find highest value card in player 1
-        if (h1[i].value > highest1) {
-          highest1 = h1[i].value;
-        }
-      }
-      var highest2 = h2[0].value;
-      for (var i = 0; i < h2.length; i++) {
-        if (h2[i].value > highest2) {
-          highest2 = h2[i].value;
-        }
-      }
-      console.log("highest1 and 2 respectively: ", highest1, highest2);
-
-      var maxCompare = 0;
-      var highestCard = 0;
-      var max = [];
-      max.push(highest1);
-      max.push(highest2);
-      for (var i = 0; i < max.length; i++) {
-        if (max[i] > highestCard) {
-          highestcard = max[i];
-          maxCompare = i;
-        }
-      }
-      return maxCompare;
-    }
-    if (highestHands.length == 3) {
-      console.log("highestHands length is 3");
-      hand1.push(highestHands[0].myCards);
-      hand1.push(game.board);
-      var h1 = hand1.flat();
-      hand2.push(highestHands[1].myCards);
-      hand2.push(game.board);
-      var h2 = hand2.flat();
-      hand3.push(highestHands[2].myCards);
-      hand3.push(game.board);
-      var h3 = hand3.flat();
-
-      var highest1 = h1[0].value;
-      for (var i = 0; i < h1.length; i++) {
-        // Find highest value card in player 1
-        if (h1[i].value > highest1) {
-          highest1 = h1[i].value;
-        }
-      }
-      var highest2 = h2[0].value;
-      for (var i = 0; i < h2.length; i++) {
-        if (h2[i].value > highest2) {
-          highest2 = h2[i].value;
-        }
-      }
-      var highest3 = h3[0].value;
-      for (var i = 0; i < h3.length; i++) {
-        if (h3[i].value > highest3) {
-          highest3 = h3[i].value;
-        }
-      }
-      console.log("highestX: ", highest1, highest2, highest3);
-
-      var maxCompare = 0;
-      var highestCard = 0;
-      var max = [];
-      max.push(highest1);
-      max.push(highest2);
-      max.push(highest3);
-      for (var i = 0; i < max.length; i++) {
-        if (max[i] > highestCard) {
-          highestcard = max[i];
-          maxCompare = i;
-        }
-      }
-      return maxCompare;
-    }
-    if (highestHands.length == 4) {
-      console.log("highestHands length is 4");
-      hand1.push(highestHands[0].myCards);
-      hand1.push(game.board);
-      var h1 = hand1.flat();
-      hand2.push(highestHands[1].myCards);
-      hand2.push(game.board);
-      var h2 = hand2.flat();
-      hand3.push(highestHands[2].myCards);
-      hand3.push(game.board);
-      var h3 = hand3.flat();
-      hand4.push(highestHands[3].myCards);
-      hand4.push(game.board);
-      var h4 = hand4.flat();
-      var highest1 = h1[0].value;
-      for (var i = 0; i < h1.length; i++) {
-        // Find highest value card in player 1
-        if (h1[i].value > highest1) {
-          highest1 = h1[i].value;
-        }
-      }
-      var highest2 = h2[0].value;
-      for (var i = 0; i < h2.length; i++) {
-        if (h2[i].value > highest2) {
-          highest2 = h2[i].value;
-        }
-      }
-      var highest3 = h3[0].value;
-      for (var i = 0; i < h3.length; i++) {
-        if (h3[i].value > highest3) {
-          highest3 = h3[i].value;
-        }
-      }
-      var highest4 = h4[0].value;
-      for (var i = 0; i < h4.length; i++) {
-        if (h4[i].value > highest4) {
-          highest4 = h4[i].value;
-        }
-      }
-      console.log(
-        "highestX respectively: ",
-        highest1,
-        highest2,
-        highest3,
-        highest4
-      );
-
-      var maxCompare = 0;
-      var highestCard = 0;
-      var max = [];
-      max.push(highest1);
-      max.push(highest2);
-      max.push(highest3);
-      max.push(highest4);
-      for (var i = 0; i < max.length; i++) {
-        if (max[i] > highestCard) {
-          highestcard = max[i];
-          maxCompare = i;
-        }
-      }
-      return maxCompare;
-    }
-  }
 
   // Rank 1
   isRoyalFlush(game, position) {
@@ -1177,44 +963,47 @@ export default class GameSetting extends Component {
     var updates = {};
     var matchLocation = "/games/" + matchType + "/" + fullMatchName;
     var user = firebase.auth().currentUser;
-    
-    const quitBalance = editGame.balance[playernum]
-    
-    if(newPlayer){
-      editGame.newPlayer -=1
-      editGame.size -= 1
-      editGame.balance.splice(playernum,1)
-      editGame.players.splice(playernum,1)
 
-      updates[matchLocation + '/balance']   = editGame.balance
-      updates[matchLocation + '/players']   = editGame.players
-      updates[matchLocation + '/size']      = editGame.size
-      updates[matchLocation + '/newPlayer'] = editGame.newPlayer
+    const quitBalance = editGame.balance[playernum];
 
-      updates['/users/'+ user.uid +'/data/in_game'] = '';
-      updates['/users/'+ user.uid +'/data/chips'] = userData.chips + quitBalance;
-    }
-    else{
-      const chipsWon = editGame.chipsWon[playernum]
-      const chipsLost = editGame.chipsLost[playernum] + editGame.chipsIn[playernum]
+    if (newPlayer) {
+      editGame.newPlayer -= 1;
+      editGame.size -= 1;
+      editGame.balance.splice(playernum, 1);
+      editGame.players.splice(playernum, 1);
 
-      editGame.balance.splice(playernum,1)
-      editGame.chipsWon.splice(playernum,1)
-      editGame.chipsLost.splice(playernum,1)
-      editGame.chipsIn.splice(playernum,1)
-      editGame.move.splice(playernum,1)
-      editGame.player_cards.splice(playernum,1)
-      editGame.players.splice(playernum,1)
-      editGame.ready.splice(playernum,1)
-      editGame.size -= 1
+      updates[matchLocation + "/balance"] = editGame.balance;
+      updates[matchLocation + "/players"] = editGame.players;
+      updates[matchLocation + "/size"] = editGame.size;
+      updates[matchLocation + "/newPlayer"] = editGame.newPlayer;
 
-      updates['/users/'+ user.uid +'/data/in_game'] = '';
-      updates['/users/'+ user.uid +'/data/chips'] = userData.chips + quitBalance;
-      updates['/users/'+ user.uid +'/data/games'] = userData.games + 1;
-      updates['/users/'+ user.uid +'/data/chips_won'] = userData.chips_won + chipsWon;
-      updates['/users/'+ user.uid +'/data/chips_lost'] = userData.chips_lost + chipsLost;
+      updates["/users/" + user.uid + "/in_game"] = "";
+      updates["/users/" + user.uid + "/chips"] = userData.chips + quitBalance;
+    } else {
+      const chipsWon = editGame.chipsWon[playernum];
+      const chipsLost =
+        editGame.chipsLost[playernum] + editGame.chipsIn[playernum];
 
-      if(editGame.size == 0){ //delete game
+      editGame.balance.splice(playernum, 1);
+      editGame.chipsWon.splice(playernum, 1);
+      editGame.chipsLost.splice(playernum, 1);
+      editGame.chipsIn.splice(playernum, 1);
+      editGame.move.splice(playernum, 1);
+      editGame.player_cards.splice(playernum, 1);
+      editGame.players.splice(playernum, 1);
+      editGame.ready.splice(playernum, 1);
+      editGame.size -= 1;
+
+      updates["/users/" + user.uid + "/in_game"] = "";
+      updates["/users/" + user.uid + "/chips"] = userData.chips + quitBalance;
+      updates["/users/" + user.uid + "/games"] = userData.games + 1;
+      updates["/users/" + user.uid + "/chips_won"] =
+        userData.chips_won + chipsWon;
+      updates["/users/" + user.uid + "/chips_lost"] =
+        userData.chips_lost + chipsLost;
+
+      if (editGame.size == 0) {
+        //delete game
         //by setting the data of these location to NULL, the branch is deleted.
         //https://firebase.google.com/docs/database/web/read-and-write#delete_data
         updates[matchLocation] = null;
@@ -1259,16 +1048,17 @@ export default class GameSetting extends Component {
     if (this.state.matchType == "public") {
       updates["/games/list/" + this.state.fullMatchName] = null;
     }
-    
-    var user = firebase.auth().currentUser;
-    updates['/users/'+ user.uid +'/data/in_game'] = '';
-    updates['/users/'+ user.uid +'/data/chips'] = this.props.userData.chips + endBalance;
-    updates['/users/'+ user.uid +'/data/games'] = this.props.userData.games + 1;
-    updates['/users/'+ user.uid +'/data/chips_won'] = chipsWon;
-    updates['/users/'+ user.uid +'/data/chips_lost'] = chipsLost;
 
-    if(endGame.balance[playernum] > 0){
-      updates['/users/'+ user.uid +'/data/wins'] = this.props.userData.wins + 1;
+    var user = firebase.auth().currentUser;
+    updates["/users/" + user.uid + "/in_game"] = "";
+    updates["/users/" + user.uid + "/chips"] =
+      this.props.userData.chips + endBalance;
+    updates["/users/" + user.uid + "/games"] = this.props.userData.games + 1;
+    updates["/users/" + user.uid + "/chips_won"] = chipsWon;
+    updates["/users/" + user.uid + "/chips_lost"] = chipsLost;
+
+    if (endGame.balance[playernum] > 0) {
+      updates["/users/" + user.uid + "/wins"] = this.props.userData.wins + 1;
     }
 
     firebase.database().ref().update(updates);
