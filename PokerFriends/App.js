@@ -53,12 +53,21 @@ export default class App extends Component {
     var user = firebase.auth().currentUser;
     if(user != null){
       firebase.database().ref('/users/' + user.uid).on('value', (snapshot) => {
-        const data =  snapshot.val().data
-        const request = snapshot.val().request
+        
         if(snapshot.val() != null){
+          const data =  snapshot.val().data
+          const request = snapshot.val().request
           this.setState({userData: data, userRequest: request, 
-            LoggedIn: true, ready: true})
+              LoggedIn: true, ready: true})
+          if(request.friend_confirmed.length > 1){
+            var updates = {}
+            var newFriends = data.friends.concat(request.friend_confirmed.slice(1))
+            updates['/users/'+ user.uid +'/request/friend_confirmed'] = [""]
+            updates['/users/'+ user.uid +'/data/friends'] = newFriends
+            firebase.database().ref().update(updates);
+          }
         }
+       
       })
     }
     else{

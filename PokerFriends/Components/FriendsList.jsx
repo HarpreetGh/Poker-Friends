@@ -1,15 +1,16 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, 
-  TouchableOpacity, Touchable, Alert, ActivityIndicator, Modal } from 'react-native';
+  TouchableOpacity, Touchable, Alert, ActivityIndicator, Modal, FlatList } from 'react-native';
 import Logo from './Logo';
 import firebase from 'firebase'
+import { set } from 'react-native-reanimated';
 
 export default class FriendsList extends Component {
   constructor(props){
     super(props)
     this.state = {
       ready: false,
-      friends: this.props.userData.friends.splice(0,1),
+      friends: this.props.userData.friends.slice(1),
       friendSize: this.props.userData.friends.length - 1,
       friendData: [],
 
@@ -17,24 +18,28 @@ export default class FriendsList extends Component {
       foundUser: false,
       foundUserData: {},
       foundUserRequest: [],
-      ModalVisible: false,
-
+      foundModalVisible: false,
       userAbleAdd: true,
+
+      requestModalVisible: false,
+      confirmFriend:'',
     }
   }
 
   componentDidMount(){
     var uid
-    this.state.friends.forEach(name => { 
-      uid = name.slice(name.indexOf('#')+1)
+    var name
+    var data = []
+    this.state.friends.forEach((fullName, index) => { 
+      uid = fullName.slice(fullName.indexOf('#')+1)
+      name = fullName.slice(0, fullName.indexOf('#'))
+      console.log(name)
       firebase.database().ref('/users/'+ uid + '/data').on('value', (snapshot) => {
-        this.setState({friendData: this.state.friendData.push(snapshot.val())})
+        data.push({key: name, ...snapshot.val()})
       })
     });
-    
-    //if(this.state.friendData.length == this.state.friendSize){
-      this.setState({ready: true})
-    //}
+    console.log("lazy", data)
+    this.setState({friendData:data, ready: true})
    }
 
    componentWillUnmount(){
@@ -75,7 +80,7 @@ export default class FriendsList extends Component {
         foundUserData: foundUserData, 
         foundUserRequest: foundUserRequest,
         userAbleAdd: userAbleAdd,
-        ModalVisible: true
+        foundModalVisible: true
       })
     })
     //}
@@ -89,27 +94,32 @@ export default class FriendsList extends Component {
     const friendID = this.state.foundUserData.username.slice(this.state.foundUserData.username.indexOf('#')+1)
     updates['/users/'+ friendID +'/request/friend_request'] = 
       this.state.foundUserRequest.friend_request
-    //console.log(this.state.foundUserRequest.friend_request)
     firebase.database().ref().update(updates);
   }
 
-  AcceptFriendRequest(friendName){
-    updates = {}
-    updates['/users/'+ user.uid +'/request/friend_request'] = 
-      this.props.userRequest.friend_request.splice(this.props.userRequest.friend_request.indexOf(friendName),1)
-    updates['/users/'+ user.uid +'/data/friends'] = 
-      this.props.userData.friends.push(friendName)
+  async RespondFriendRequest(friendName, accept){
+    var user = firebase.auth().currentUser;
 
-
-    const friendID = friendName.slice(friendName.indexOf('#')+1)
+    var updates = {}
+    var newFriendRequest = this.props.userRequest.friend_request
+    newFriendRequest.splice(this.props.userRequest.friend_request.indexOf(friendName), 1)
+    updates['/users/'+ user.uid +'/request/friend_request'] = newFriendRequest
     
-    
-    //FETCH FRIEND INFO AND PUSH IT 
-    var friend_confirmed = firebase.database().ref('/users/'+ friendID + '/request/friend_confrimed').once('value').then((snapshot) => {
-      return snapshot.val()
-    })
+    if(accept){
+      var newFriends = this.props.userData.friends
+      newFriends.push(friendName)
+      updates['/users/'+ user.uid +'/data/friends'] = newFriends
 
-    updates['/users/'+ friendID +'/request/friend_confirmed'] = friend_confirmed.push(this.props.userData.username)
+      const friendID = friendName.slice(friendName.indexOf('#')+1)
+      
+      //FETCH FRIEND INFO AND PUSH IT 
+      var friend_confirmed = await firebase.database().ref('/users/'+ friendID + '/request/friend_confirmed').once('value').then((snapshot) => {  
+        return snapshot.val()
+      })
+      friend_confirmed.push(this.props.userData.username)
+      updates['/users/'+ friendID +'/request/friend_confirmed'] = friend_confirmed
+    }
+
     firebase.database().ref().update(updates);
   }
 
@@ -118,7 +128,7 @@ export default class FriendsList extends Component {
       <Modal
         animationType="slide"
         transparent={true}
-        visible={this.state.ModalVisible}
+        visible={this.state.foundModalVisible}
       >
         <View style = {styles.centeredView}>
           <View style = {styles.modalView}>
@@ -136,7 +146,7 @@ export default class FriendsList extends Component {
             <View style = {{padding: 5}}></View>
             <TouchableOpacity
               style={styles.buttonStyle}
-              onPress={() => this.setState({ModalVisible: false })}
+              onPress={() => this.setState({foundModalVisible: false })}
             >
               <Text>EXIT</Text>
             </TouchableOpacity>
@@ -145,53 +155,122 @@ export default class FriendsList extends Component {
       </Modal>
       )
   }
+  
+  DisplayFriendRequest(){
+    var friendRequests = []
+    this.props.userRequest.friend_request.slice(1).forEach((fullName, index) => {
+      friendRequests.push({key:fullName})
+    });
+  
+    return (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={this.state.requestModalVisible}
+    >
+      <View style = {styles.centeredView}>
+        <View style = {styles.modalView}>
+          <Text>-------</Text>
+          {friendRequests.length == 0? (
+            <Text>No Friend Requests</Text>
+          ):(
+          <FlatList style={{width:'100%'}}
+            data={friendRequests}
+            keyExtractor={(item)=>item.key}
+            renderItem={({item})=>{
+              return(
+                <View style={{flex:1}}>
+                  <Text>{item.key}</Text>
+                  
+                  <TouchableOpacity
+                    style={[styles.buttonStyle]}
+                    onPress={() => { this.RespondFriendRequest(item.key, true)} }
+                  >
+                    <Text>Accept</Text>
+                  </TouchableOpacity>
 
+                   <TouchableOpacity
+                    style={[styles.buttonStyle]}
+                    onPress={() => { this.RespondFriendRequest(item.key, false)} }
+                  >
+                    <Text>Decline</Text>
+                  </TouchableOpacity>
+                  
+                  <Text>-------</Text>
+                </View>)
+            }}
+            />
+          )}
+          
+          
+          <View style = {{padding: 5}}></View>
+          <TouchableOpacity
+            style={styles.buttonStyle}
+            onPress={() => this.setState({requestModalVisible: false })}
+          >
+            <Text>EXIT</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+    )
+  }
+
+  setRequestModalVisible = () => {
+    this.setState({ requestModalVisible: true });
+  }
 
     render(){
       if(this.state.ready){
         return (
-            <KeyboardAvoidingView 
-              style={styles.container} 
+          <KeyboardAvoidingView 
+            style={styles.container} 
+            >
+              {(this.state.foundModalVisible)? (this.DisplayFoundUser()):(<Text></Text>)}
+              {(this.state.requestModalVisible)? (this.DisplayFriendRequest()):(<Text></Text>)}
+              <Text style={styles.textStyle}>Find Friends</Text>
+
+              <TextInput
+                style={styles.input} 
+                placeholder="Find Friend via Email"
+                placeholderTextColor="rgba(255, 255, 255, 0.75)"
+                returnKeyType="next"
+                autoCapitalize="none"
+                autoCorrect={false}
+                onChangeText={text => this.setState({searchEmail: text})}
+                value={this.state.searchEmail}
+              />
+                
+              <TouchableOpacity style={styles.buttonContainer}
+                onPress={() => this.FindUser()}
               >
-                {(this.state.ModalVisible)? (this.DisplayFoundUser()):(<Text></Text>)}
-                <Text style={styles.textStyle}>Friends</Text>
+                <Text style={styles.textStyle}>Find</Text>
+              </TouchableOpacity>
 
-                <TextInput
-                  style={styles.input} 
-                  placeholder="Find Friend via Email"
-                  placeholderTextColor="rgba(255, 255, 255, 0.75)"
-                  returnKeyType="next"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  onChangeText={text => this.setState({searchEmail: text})}
-                  value={this.state.searchEmail}
+              <TouchableOpacity style={styles.buttonContainer}
+                onPress={() => this.setRequestModalVisible()}
+              >
+                <Text style={styles.textStyle}>Friend Requests: {this.props.userRequest.friend_request.length - 1}</Text>
+              </TouchableOpacity>
+
+              <View style={{flex:1, alignSelf:'center', justifyContent:'center', paddingBottom: 10}}>
+                <Text style={styles.textStyle}>Friends:</Text>
+                <Text style={styles.textStyle}>-------</Text>
+                <FlatList style={{width:'100%'}}
+                  data={this.state.friendData}
+                  keyExtractor={(item)=>item.key}
+                  renderItem={({item})=>{
+                    return(
+                      <View style={{flex:1}}>
+                        <Text style={styles.textStyle}>{item.key}</Text>
+                        <Text style={styles.textStyle}>{item.in_game.slice(0, item.in_game.indexOf('-'))}</Text>
+                        <Text style={styles.textStyle}>-------</Text>
+                      </View>)
+                  }}
                 />
-                  
-                <TouchableOpacity style={styles.buttonContainer}
-                  onPress={() => this.FindUser()}
-                >
-                 <Text style={styles.textStyle}>Find</Text>
-                </TouchableOpacity>
+              </View>
 
-                {/*<View style={{flex:1, alignSelf:'center', justifyContent:'center', paddingBottom: 10}}>
-                  <FlatList style={{width:'100%'}}
-                    data={this.state.friendData}
-                    keyExtractor={(item)=>item.key}
-                    renderItem={({item})=>{
-                      return(
-                        <View style={styles.gameDisplay}>
-                          <Text style={styles.textStyle}>{item.key.slice(item.key.indexOf('_')+1, item.key.indexOf('-'))}</Text>
-                          <Text style={styles.textStyle}>Size: {item.size}                   Buy In: {item.buyIn}</Text>
-                          <TouchableOpacity style={styles.joinButton}
-                          onPress={() => this.joinGame(item.key)}>
-                            <Text style={styles.textStyle}>Join Game</Text>
-                          </TouchableOpacity>
-                        </View>)
-                    }}
-                  />
-                  </View>*/}
-
-            </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
         );
       }
       else{
