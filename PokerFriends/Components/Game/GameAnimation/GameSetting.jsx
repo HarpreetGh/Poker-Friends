@@ -764,7 +764,7 @@ export default class GameSetting extends Component {
 
           <View style={styles.player1View}>
             <View style={styles.webcam}>
-              <Text style={styles.textStyle}>{this.props.game.players[0]}</Text>
+               <Text style={styles.textStyle}>{this.props.game.players[0]}</Text>
             </View>
             <Animated.View
               style={[
@@ -780,7 +780,9 @@ export default class GameSetting extends Component {
           <View style={styles.player2View}>
             <View style={styles.webcam}>
               {this.props.game.size > 1?( 
-                <Text style={styles.textStyle}>{this.props.game.players[1]}</Text> 
+                 <Text style={styles.textStyle}>{this.props.game.players[1]}</Text>
+                
+                 
                 ):(
                 <Text style={styles.textStyle}>Empty</Text>
                 )

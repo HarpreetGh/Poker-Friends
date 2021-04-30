@@ -20,6 +20,8 @@ import FriendsList from './Components/FriendsList'
 import CreateGame from './Components/CreateGame'
 import JoinGame from './Components/JoinGame'
 import AccountStats from './Components/AccountStats'
+import ChangeAvatar from './Components/Account-Settings/ChangeAvatar'
+
 
 
 LogBox.ignoreLogs(['Setting a timer for a long period of time'])
@@ -100,6 +102,7 @@ export default class App extends Component {
             <Stack.Screen name = "ChangeEmail" component = {ChangeEmail}/>
             <Stack.Screen name = "ForgotPassword" component = {ForgotPassword}/>
             <Stack.Screen name = "DeleteAccount" component = {DeleteAccount}/>
+            <Stack.Screen name = "ChangeAvatar" component = {ChangeAvatar}/>
 
           </Stack.Navigator>
         </NavigationContainer>

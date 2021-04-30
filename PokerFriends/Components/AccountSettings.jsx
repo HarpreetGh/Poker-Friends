@@ -1,7 +1,9 @@
 import React, { Component, useState } from 'react'
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, Touchable } from 'react-native';
 import Logo from './Logo';
+
 import firebase from 'firebase'
+
 
 export default class AccountSettings extends Component {
 
@@ -32,6 +34,18 @@ export default class AccountSettings extends Component {
               onPress={() => this.props.navigation.navigate('DeleteAccount')}>
                 <Text style={styles.registerButtonText}>Delete Account</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity style={styles.buttonContainer}
+              onPress={() => this.props.navigation.navigate('ChangeAvatar')}>
+                <Text style={styles.registerButtonText}>ChangeAvatar</Text>
+            </TouchableOpacity>
+
+            
+{/* 
+            <TouchableOpacity style={styles.buttonContainer}
+              onPress={() => this.props.navigation.navigate('SetAvatar')}>
+                <Text style={styles.registerButtonText}>Set profile avatar</Text>
+            </TouchableOpacity> */}
 
 
         </KeyboardAvoidingView>
