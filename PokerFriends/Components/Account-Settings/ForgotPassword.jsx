@@ -36,7 +36,6 @@ export default class ForgotPassword extends Component {
                     keyboardType="email-address"
                     autoCapitalize="none"
                     autoCorrect={false}
-                    onSubmitEditing={() => this.passwordInput.focus()}
                     style={styles.input}
                     ref={(input) => this.emailInput = input}
                     onChangeText={text => this.setState({email: text})}
