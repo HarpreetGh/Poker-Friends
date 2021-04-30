@@ -972,13 +972,13 @@ export default class GameSetting extends Component {
       editGame.balance.splice(playernum, 1);
       editGame.players.splice(playernum, 1);
 
-      updates[matchLocation + "/balance"] = editGame.balance;
-      updates[matchLocation + "/players"] = editGame.players;
-      updates[matchLocation + "/size"] = editGame.size;
-      updates[matchLocation + "/newPlayer"] = editGame.newPlayer;
+      updates[matchLocation + "/data/balance"] = editGame.balance;
+      updates[matchLocation + "/data/players"] = editGame.players;
+      updates[matchLocation + "/data/size"] = editGame.size;
+      updates[matchLocation + "/data/newPlayer"] = editGame.newPlayer;
 
-      updates["/users/" + user.uid + "/in_game"] = "";
-      updates["/users/" + user.uid + "/chips"] = userData.chips + quitBalance;
+      updates["/users/" + user.uid + "/data/in_game"] = "";
+      updates["/users/" + user.uid + "/data/chips"] = userData.chips + quitBalance;
     } else {
       const chipsWon = editGame.chipsWon[playernum];
       const chipsLost =
@@ -994,12 +994,12 @@ export default class GameSetting extends Component {
       editGame.ready.splice(playernum, 1);
       editGame.size -= 1;
 
-      updates["/users/" + user.uid + "/in_game"] = "";
-      updates["/users/" + user.uid + "/chips"] = userData.chips + quitBalance;
-      updates["/users/" + user.uid + "/games"] = userData.games + 1;
-      updates["/users/" + user.uid + "/chips_won"] =
+      updates["/users/" + user.uid + "/data/in_game"] = "";
+      updates["/users/" + user.uid + "/data/chips"] = userData.chips + quitBalance;
+      updates["/users/" + user.uid + "/data/games"] = userData.games + 1;
+      updates["/users/" + user.uid + "/data/chips_won"] =
         userData.chips_won + chipsWon;
-      updates["/users/" + user.uid + "/chips_lost"] =
+      updates["/users/" + user.uid + "/data/chips_lost"] =
         userData.chips_lost + chipsLost;
 
       if (editGame.size == 0) {
