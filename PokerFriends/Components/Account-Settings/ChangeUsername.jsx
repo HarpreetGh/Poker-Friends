@@ -21,7 +21,7 @@ export default class ChangeUsername extends Component {
     const usernameID = this.state.newUsername+"#"+user.uid
 
     user.updateProfile({
-      displayName: usernameID
+      displayName: this.state.newUsername
     })
     .then(() => {
       Alert.alert("Username changed", "From: " + this.state.oldUsername + 

@@ -35,7 +35,6 @@ export default class JoinGame extends Component {
               size: child.val().size
             })
           })
-          //this.checkHost(data)
           this.setState({gameList: data})
     })
    }
