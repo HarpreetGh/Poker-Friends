@@ -12,9 +12,9 @@ export default class FriendsList extends Component {
         this.setState({chips: snapshot.val().friends})
     });
     this.state = {
-        friends: '',
-        friendsize: 0,
-        newFriendname: ''
+      friends: '',
+      friendsize: 0,
+      newFriendname: ''
     }
   }
     render(){
