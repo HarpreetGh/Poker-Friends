@@ -18,10 +18,10 @@ export default class ChangeUsername extends Component {
   UpdateUsername(){
     var user = firebase.auth().currentUser;
     var updates = {};
-    const usernameID = this.state.newUsername+
+    const usernameID = this.state.newUsername+"#"+user.uid
 
     user.updateProfile({
-      displayName: usernameID
+      displayName: this.state.newUsername
     })
     .then(() => {
       Alert.alert("Username changed", "From: " + this.state.oldUsername + 
