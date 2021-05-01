@@ -21,6 +21,7 @@ import CreateGame from './Components/CreateGame'
 import JoinGame from './Components/JoinGame'
 import AccountStats from './Components/AccountStats'
 import ChangeAvatar from './Components/Account-Settings/ChangeAvatar'
+import Leaderboard from './Components/Leaderboard'
 
 
 
@@ -35,6 +36,7 @@ export default class App extends Component {
     
     this.state = {
       userData: {},
+      userRequest: {},
       ready: false,
       LoggedIn: false
     };
@@ -53,11 +55,22 @@ export default class App extends Component {
   async getData(){
     var user = firebase.auth().currentUser;
     if(user != null){
-      firebase.database().ref('/users/' + user.uid + '/data').on('value', (snapshot) => {
-        const data =  snapshot.val()
+      firebase.database().ref('/users/' + user.uid).on('value', (snapshot) => {
+        
         if(snapshot.val() != null){
-          this.setState({userData: data, LoggedIn: true, ready: true})
+          const data =  snapshot.val().data
+          const request = snapshot.val().request
+          this.setState({userData: data, userRequest: request, 
+              LoggedIn: true, ready: true})
+          if(request.friend_confirmed.length > 1){
+            var updates = {}
+            var newFriends = data.friends.concat(request.friend_confirmed.slice(1))
+            updates['/users/'+ user.uid +'/request/friend_confirmed'] = [""]
+            updates['/users/'+ user.uid +'/data/friends'] = newFriends
+            firebase.database().ref().update(updates);
+          }
         }
+       
       })
     }
     else{
@@ -78,7 +91,7 @@ export default class App extends Component {
             <Stack.Screen name = "Register" component = {Register}/>
             
             <Stack.Screen name = "FriendsList">
-              {(props) => <FriendsList {...props} userData={this.state.userData}/>}
+              {(props) => <FriendsList {...props} userData={this.state.userData} userRequest={this.state.userRequest}/>}
             </Stack.Screen>
 
             <Stack.Screen name = "GameController">
@@ -96,7 +109,8 @@ export default class App extends Component {
             <Stack.Screen name = "AccountStats">
               {(props) => <AccountStats {...props} userData={this.state.userData}/>}
             </Stack.Screen>
-
+            
+            <Stack.Screen name = "Leaderboard" component = {Leaderboard}/>
             <Stack.Screen name = "AccountSettings" component = {AccountSettings}/>
             <Stack.Screen name = "ChangeUsername" component = {ChangeUsername}/>
             <Stack.Screen name = "ChangeEmail" component = {ChangeEmail}/>
