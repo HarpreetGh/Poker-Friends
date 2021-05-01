@@ -54,7 +54,8 @@ export default class Register extends Component {
     });
 
     firebase.database().ref('users/' + user.uid +'/request').set({
-      friend_request: ['']
+      friend_request: [''],
+      friend_confirmed: ['']
     });
   }
 

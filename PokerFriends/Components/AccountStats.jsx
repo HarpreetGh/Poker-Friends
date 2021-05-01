@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, ActivityIndicator, Image} from 'react-native'
 import Logo from '../Components/Logo'
-//import firebase from 'firebase'
+import firebase from 'firebase'
 
 export default class AccountStats extends Component {
     constructor(props){
@@ -14,13 +14,13 @@ export default class AccountStats extends Component {
     }
 
     componentDidMount(){
-       // var user = firebase.auth().currentUser;
+        var user = firebase.auth().currentUser;
         var temp = {...this.props.userData}
-        temp.username = temp.username.slice(0, temp.username.indexOf('#'))
+        temp.username = user.displayName
         temp['losses'] = temp.games - temp.wins
         temp['winRatio'] = (temp.wins/temp.games) * 100
         this.setState({
-            //userPhoto: user.photoURL, 
+            userPhoto: user.photoURL, 
             user: temp, ready: true})
     }
 
@@ -61,10 +61,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     title: {
-        bottom: '100%',
         fontSize: 25,
         fontWeight: 'bold',
-        color: 'white'
+        color: 'white',
+        justifyContent: 'center',
+        alignContent: 'center',
+        textAlign: 'center',
     },
     Stats: {
         borderRadius: 50,
@@ -87,6 +89,7 @@ const styles = StyleSheet.create({
         width: '80%',
         marginBottom: 30,
         textAlign: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        alignContent: 'center'
     }
 });
