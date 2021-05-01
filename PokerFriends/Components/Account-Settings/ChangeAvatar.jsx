@@ -1,33 +1,43 @@
-import * as firebase from 'firebase'
-import 'firebase/storage'
+import React, { useState, useEffect } from 'react';
+import { Button, Image, View, Platform } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
-import React from "react";
-import {
-    StyleSheet,
-    View,
-    Button,
-    Image,
-    ActivityIndicator,
-    Platform,
-    SafeAreaView,
-    Text,
-} from "react-native";
-import * as ImagePicker from 'react-native-image-picker';
+var storageRef = firebase.storage.ref();
 
 
-var storage = firebase.storage();
-var storageRef = storage.ref('Images/default_player_image.jpg')
-var url =  storageRef.getDownloadURL();
+export default function ChangeAvatar() {
+  const [image, setImage] = useState(null);
 
-console.log(url)
-export default class ChangeAvatar extends React.Component {
-    state = {
-        defaultPic: url
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS !== 'web') {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+          alert('Sorry, we need camera roll permissions to make this work!');
+        }
+      }
+    })();
+  }, []);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      setImage(result.uri);
     }
-    render() {
-        return (
-            //<Text>Hello</Text>
-             <Image source = {{uri: this.state.defaultPic}} />
-        );
-    }
- }
+  };
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Button title="Pick an image from camera roll" onPress={pickImage} />
+      {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+    </View>
+  );
+}
