@@ -155,6 +155,45 @@ export default class FriendsList extends Component {
       </Modal>
       )
   }
+
+  async joinGame(matchName){
+    var user = firebase.auth().currentUser;
+    const username = user.displayName
+    const matchPath =  '/games/' + 'public' + '/' + matchName;
+    const matchListPath = '/games/list/' + matchName;
+
+    
+    
+    firebase.database().ref(matchPath).once('value', (snapshot) => {
+      console.log('game data recieved')
+      var data = snapshot.val()
+      data.balance.push(data.buyIn)
+      data.players.push(username)
+      data.newPlayer +=1
+      data.size += 1
+
+      this.props.userData.chips -= data.buyIn
+      
+      var updates = {};
+      
+      updates['/users/'+ user.uid +'/data/in_game'] = matchName
+      updates['/users/'+ user.uid +'/data/chips'] = this.props.userData.chips
+
+      updates[matchPath + '/balance'] = data.balance
+      updates[matchPath + '/players'] = data.players
+      updates[matchPath + '/newPlayer'] = data.newPlayer
+      updates[matchPath + '/size'] = data.size
+
+      
+      updates['/games/list/' + matchName + '/size'] = data.size
+
+      firebase.database().ref().update(updates);
+      this.props.navigation.navigate('GameController')
+      ScreenOrientation.lockAsync
+      (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT)
+    })
+
+  }
   
   DisplayFriendRequest(){
     var friendRequests = []
@@ -261,9 +300,13 @@ export default class FriendsList extends Component {
                   keyExtractor={(item)=>item.key}
                   renderItem={({item})=>{
                     return(
-                      <View style={{flex:1}}>
+                      <View style={[{flex:1}, styles.friendListContainer]}>
                         <Text style={styles.textStyle}>{item.key}</Text>
-                        <Text style={styles.textStyle}>{item.in_game.slice(0, item.in_game.indexOf('-'))}</Text>
+                        <Text style={styles.textStyle}>Game: {item.in_game.slice(0, item.in_game.indexOf('-'))}</Text>
+                        <TouchableOpacity style={styles.joinButton}
+                        onPress={() => this.joinGame(item.in_game)}>
+                          <Text style={styles.joinTextStyle}>Join Game</Text>
+                        </TouchableOpacity>
                         <Text style={styles.textStyle}>-------</Text>
                       </View>)
                   }}
@@ -350,6 +393,23 @@ const styles = StyleSheet.create({
       shadowOpacity: 0.25,
       shadowRadius: 4,
       elevation: 5
+    },
+    friendListContainer: {
+      backgroundColor: '#27ae60',
+      borderRadius: 10,
+      textAlign: 'center',
+      justifyContent: 'center',
+      padding: 10
+    },
+    joinButton:{
+      backgroundColor: '#000000',
+      borderRadius: 50,
+      width:"95%",
+      marginLeft: 5
+    },
+    joinTextStyle: {
+      color: "white",
+      textAlign: "center"
     },
 
 })
