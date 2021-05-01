@@ -87,7 +87,7 @@ export default class Leaderboard extends Component {
                   renderItem={({item})=>{
                     return(
                       <View style={styles.gameDisplay}>
-                        <Text style={styles.textStyle}>{item.key.slice(0, item.key.indexOf('#'))}</Text>
+                        <Text style={[styles.textStyle, {fontSize: 25}]}>{item.key.slice(0, item.key.indexOf('#'))}</Text>
                         <Text style={styles.textStyle}>Chips: {item.chips} Wins: {item.wins} </Text>
                         <Text style={styles.textStyle}>ChipsWon: {item.chips_won} ChipsLost: {item.chips_lost}</Text>
                       </View>)
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 50,
     width:"100%",
-    marginBottom: 20
+    marginBottom: 20,
   },
   registerButtonText: {
     textAlign: 'center',
@@ -160,14 +160,15 @@ const styles = StyleSheet.create({
   },
   statButtonText: {
     textAlign: 'center',
-    color: '#FFF',
+    color: '#000',
     fontWeight: '900'
   },
   statButton: {
-    backgroundColor: '#27ae60',
+    backgroundColor: '#89CFF0',
     paddingVertical: 20,
     padding: 5,
     borderRadius: 50,
+    marginLeft: 4
   },
   input: {
     height:40,
@@ -182,6 +183,7 @@ const styles = StyleSheet.create({
   statButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingTop: 100
+    paddingTop: 50,
+    paddingBottom: 25
   }
 })
