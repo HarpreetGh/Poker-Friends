@@ -58,6 +58,7 @@ export default class JoinGame extends Component {
       var data = snapshot.val()
       data.balance.push(data.buyIn)
       data.players.push(username)
+      data.playerAvatar.push(user.photoURL)
       data.newPlayer +=1
       data.size += 1
 
@@ -70,6 +71,7 @@ export default class JoinGame extends Component {
 
       updates[matchPath + '/balance'] = data.balance
       updates[matchPath + '/players'] = data.players
+      updates[matchPath + '/playerAvatar'] = data.playerAvatar
       updates[matchPath + '/newPlayer'] = data.newPlayer
       updates[matchPath + '/size'] = data.size
 

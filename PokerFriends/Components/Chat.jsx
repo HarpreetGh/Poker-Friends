@@ -29,7 +29,7 @@ export default function Chat(matchInfo){
  var userName = user.displayName
  var userid = user.uid
  
- const [userInChat] = useState({ _id:userid, name:userName})
+ const [userInChat] = useState({ _id:userid, name:userName, avatar: user.photoURL})
  const [messages, setMessages] = useState([])
   const [newMessages, setNewMessages] = useState(0)
 

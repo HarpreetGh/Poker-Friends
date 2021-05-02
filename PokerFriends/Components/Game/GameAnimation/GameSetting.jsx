@@ -361,14 +361,12 @@ export default class GameSetting extends Component {
 
     flopTurnRiver(suit,value, i){
       return (
-        <View style = {{right: '390%', top: '75%'}}>
+        <View style = {{right: 369, top: 310}}>
           <Animated.View style = {this.state.tableCardsStart[i].getLayout()}>
             <View style = {
-              {position: 'absolute',
-                flex: 1,
+              {position:'absolute',
                 borderRadius: 2,
                 alignItems: 'center',
-                justifyContent:'center',
                 paddingVertical: 20,
                 paddingHorizontal: 20,
                 backgroundColor:"white",}}
@@ -743,118 +741,126 @@ export default class GameSetting extends Component {
     render() { 
       //console.log(this.props.game.deck)
       
-      return (  
-        <View style = {styles.container}>
+      return (
+        <View style={styles.container}>
           {/*<StatusBar hidden/>*/}
 
           {this.quitView()}
 
-          {this.props.game.size == 1? (
+          {this.props.game.size == 1 ? (
             this.waitingView()
-          ):(
+          ) : (
             <View>
               <TouchableOpacity
                 style={[styles.button, styles.buttonOpen]}
                 onPress={() => this.setModalVisible(true)}
               >
-                <Text style ={styles.textStyle}>EXIT</Text>
+                <Text style={styles.textStyle}>EXIT</Text>
               </TouchableOpacity>
             </View>
           )}
 
           <View style={styles.player1View}>
-            <View style={styles.webcam}>
-               <Text style={styles.textStyle}>{this.props.game.players[0]}</Text>
+              <View style = {{alignItems: 'center'}}>
+                <Image 
+                  source={{ uri: this.props.game.playerAvatar[0] }}
+                  style={styles.avatarImage}/>
+                <View style={styles.textBackground}>
+                  <Text style={styles.playerNames}> {this.props.game.players[0]} </Text>
+                </View>
             </View>
             <Animated.View
-              style={[
-                styles.pBet,
-                {opacity: this.state.fadeAnimation[0]}
-              ]}
+              style={[styles.pBet, { opacity: this.state.fadeAnimation[0] }]}
             >
               <Text>testing</Text>
             </Animated.View>
           </View>
-          
-        
+
           <View style={styles.player2View}>
-            <View style={styles.webcam}>
-              {this.props.game.size > 1?( 
-                 <Text style={styles.textStyle}>{this.props.game.players[1]}</Text>
-                
-                 
-                ):(
+              {this.props.game.size > 1 ? (
+                <View style = {{alignItems: 'center'}}>
+                  <Image
+                    source={{ uri: this.props.game.playerAvatar[1] }}
+                    style = {styles.avatarImage}/>
+                    <View style={styles.textBackground}> 
+                      <Text style={styles.playerNames}>
+                        {this.props.game.players[1]}</Text>
+                  </View>
+                </View>
+              ) : (
                 <Text style={styles.textStyle}>Empty</Text>
-                )
-              }
-            </View>
+              )}
             
+
             <Animated.View
-              style={[
-                styles.pBet,
-                {opacity: this.state.fadeAnimation[1]}
-              ]}
+              style={[styles.pBet, { opacity: this.state.fadeAnimation[1] }]}
             >
               <Text>testing</Text>
             </Animated.View>
           </View>
-           
-          
-          
 
-          <Image  style = {styles.tableView}
-            source = {require('../../../assets/pokertable.png')}
+          <Image
+            style={styles.tableView}
+            source={require("../../../assets/pokertable.png")}
           />
-         
-            <View style={styles.player3View}>
-              <View style={styles.webcam}>
-                {this.props.game.size > 2?( 
-                  <Text style={styles.textStyle}>{this.props.game.players[2]}</Text> 
-                  ):(
-                  <Text style={styles.textStyle}>Empty</Text>
-                  )
-                }
-              </View>
 
-              <Animated.View
-                style={[
-                  styles.pBet,
-                  {opacity: this.state.fadeAnimation[2]}
-                ]}
-              >
-                <Text>testing</Text>
-              </Animated.View>
-            </View> 
+          <View style={styles.player3View}>
+              {this.props.game.size > 2 ? (
+                <View style = {{alignItems: 'center'}}> 
+                  <Image 
+                  source={{ uri: this.props.game.playerAvatar[2] }}
+                  style = {styles.avatarImage}/>
+                  <View style={styles.textBackground}>
+                    <Text style={styles.playerNames}>
+                      {this.props.game.players[2]}
+                    </Text>
+                  </View>
+                </View>
+              ) : (
+                <Text style={styles.textStyle}>Empty</Text>
+              )}
+          
+            <Animated.View
+              style={[styles.pBet, { opacity: this.state.fadeAnimation[2] }]}
+            >
+              <Text>testing</Text>
+            </Animated.View>
+          </View>
 
           <View style={styles.potView}>
-            <Image style = {{   
-              width: 50, 
-              height:50,
-              resizeMode: 'contain',
+            <Image
+              style={{
+                width: 50,
+                height: 50,
+                resizeMode: "contain",
               }}
-              source={require('../../../assets/table.png')}
+              source={require("../../../assets/table.png")}
             />
-              
-            <Text style = {{ fontSize: 20 ,fontWeight: 'bold',color: 'white'}}>
+
+            <Text style={{ fontSize: 20, fontWeight: "bold", color: "white" }}>
               Pot: {this.props.game.pot}
             </Text>
           </View>
-          
+
           <View style={styles.player4View}>
-            <View style={styles.webcam}>
-              {this.props.game.size > 3?( 
-                <Text style={styles.textStyle}>{this.props.game.players[3]}</Text> 
-                ):( 
+              {this.props.game.size > 3 ? (
+                <View style = {{alignItems: 'center'}}>
+                  <Image 
+                  source={{ uri: this.props.game.playerAvatar[3] }}
+                  style = {styles.avatarImage}/>
+                  <View style={styles.textBackground}>
+                    <Text style={styles.playerNames}>
+                      {this.props.game.players[3]}
+                    </Text>
+                  </View>
+                </View>
+              ) : (
                 <Text style={styles.textStyle}>Empty</Text>
-                )
-              }
-            </View>
+              )}
+            
 
             <Animated.View
-              style={[
-                styles.pBet,
-                {opacity: this.state.fadeAnimation[3]}
-              ]}
+              style={[styles.pBet, { opacity: this.state.fadeAnimation[3] }]}
             >
               <Text>testing</Text>
             </Animated.View>
@@ -862,49 +868,55 @@ export default class GameSetting extends Component {
 
           {this.actionsView()}
 
-          <View style = {styles.dealer}>
-            <Image style = {styles.dealer}
-            source = {require('../../../assets/cards.png')}
+          <View style={styles.dealer}>
+            <Image
+              style={styles.dealer}
+              source={require("../../../assets/cards.png")}
             />
           </View>
-          
+
           <View style={styles.chat}>
-              <Chat matchName={this.props.matchName} matchType={this.props.matchType}/>
-          </View>    
-          
+            <Chat
+              matchName={this.props.matchName}
+              matchType={this.props.matchType}
+            />
+          </View>
+
           <View style={styles.chipView}>
             <Image
-              style = {{
-              width: 40, 
-              height:40,
-              resizeMode: 'contain',
+              style={{
+                width: 40,
+                height: 40,
+                resizeMode: "contain",
               }}
-              source={require('../../../assets/chipAmount.png')}
-            /> 
-            <Text style = {{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>
+              source={require("../../../assets/chipAmount.png")}
+            />
+            <Text style={{ fontSize: 20, fontWeight: "bold", color: "white" }}>
               {this.props.game.balance[this.props.playerNum]}
-            </Text> 
+            </Text>
           </View>
-              
-          {this.props.game.turn == 1? (this.transitionBlinds()
-          ):(
-            <Text></Text>
-          )}
-          
-          
+
+          {this.props.game.turn == 1 ? this.transitionBlinds() : <Text></Text>}
+
           {/* <View style = {styles.foldContainer}>
             <Animated.View style = {[styles.foldCard, this.state.valueFoldCard.getLayout()]}>
               <Image style = {styles.cardImage} source = {require("../../../assets/deckOfCards/PNG/♥J.png")}/>
             </Animated.View>
           </View> */}
 
-        
           <View>
-
-            {this.props.myCards.map((card,i)=> this.cardDeal(card.suit, card.value, i+this.props.playerNum*2))}
-            {1 < this.props.game.turn && this.props.game.turn < 5  ? (this.props.game.board.map((card,i)=> this.flopTurnRiver(card.suit, card.value, i))):(<Text></Text>)}
+            {this.props.myCards.map((card, i) =>
+              this.cardDeal(card.suit, card.value, i + this.props.playerNum * 2)
+            )}
+            {1 < this.props.game.turn && this.props.game.turn < 5 ? (
+              this.props.game.board.map((card, i) =>
+                this.flopTurnRiver(card.suit, card.value, i)
+              )
+            ) : (
+              <Text></Text>
+            )}
           </View>
-                {/* {this.flop(this.props.game.deck.shift(),2,3)}
+          {/* {this.flop(this.props.game.deck.shift(),2,3)}
                               {this.turn(1)}
                               {this.river(1)} */}
         </View>
@@ -914,6 +926,12 @@ export default class GameSetting extends Component {
  
 
 const styles = StyleSheet.create({
+  avatarImage: {
+    width: 80, 
+    height: 80, 
+    borderRadius: 100, 
+    marginBottom: -10
+  },
   exitButton2: {
     alignSelf:'center',
     flex: 1
@@ -981,12 +999,19 @@ const styles = StyleSheet.create({
     width: 125, 
     height:125,
     resizeMode: 'contain',
-    bottom: '0%',
+    bottom: '-5%',
     left: '35%',
     position: 'absolute'
   },
   textStyle:{
     color: '#FFFFFF',
+    fontWeight: 'bold',
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  playerNames:{
+    color: 'white',
+    fontSize: 18,
     fontWeight: 'bold',
     justifyContent: "center",
     alignItems: "center",
@@ -1006,10 +1031,11 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5
   },
-  webcam:{
-    backgroundColor:"#778899",
-    paddingVertical: 30,
-    paddingHorizontal: 10,
+  textBackground:{
+    backgroundColor:"#ff9f1a",
+    paddingVertical: 5,
+    paddingHorizontal: 5,
+    borderRadius: 50
   },
   pBet: {
     bottom: "0%",
@@ -1020,7 +1046,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     borderColor: 'black',
     top: "35%",
-    left: "5%",
+    left: "1%",
     alignContent: "center",
     paddingBottom: 15
   },
@@ -1063,7 +1089,7 @@ const styles = StyleSheet.create({
   },
   chipView:{
     position: 'absolute',
-    right: "0%",
+    right: "1%",
     bottom: "0%"
   },
   tableView: {
@@ -1072,7 +1098,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     bottom: '0%',
     right: '0%',
-    left: '20%',
+    left: '0%',
     marginLeft: 5
   },
   chat:{
