@@ -5,6 +5,8 @@ import Logo from './Logo';
 import firebase from 'firebase'
 import * as ScreenOrientation from 'expo-screen-orientation';
 
+import Balance from './Balance'
+
 
 
 export default class JoinGame extends Component {
@@ -26,7 +28,7 @@ export default class JoinGame extends Component {
   */
 
   componentDidMount(){
-    firebase.database().ref('/games/list/').orderByChild('size').endAt('3').on('value', (snapshot) => {
+    firebase.database().ref('/games/list/').orderByChild('size').endAt(3).on('value', (snapshot) => {
           var data =  []
           snapshot.forEach((child) => {
             data.push({
@@ -91,16 +93,18 @@ export default class JoinGame extends Component {
         <KeyboardAvoidingView 
           style={styles.container}
         >
-            <Logo />
-              
-            <View style={{flex:1, alignSelf:'center', justifyContent:'center', paddingBottom: 10}}>
+          { /* <Logo />*/}
+          <View style={styles.balance}>
+            <Balance chips={this.props.userData.chips}/>    
+          </View>
+            <View style={{flex:1, alignSelf:'center', justifyContent:'center', paddingBottom: 10, paddingTop: 40}}>
               <FlatList style={{width:'100%'}}
                 data={this.state.gameList}
                 keyExtractor={(item)=>item.key}
                 renderItem={({item})=>{
                   return(
                     <View style={styles.gameDisplay}>
-                      <Text style={styles.textStyle}>{item.key.slice(item.key.indexOf('_')+1, item.key.indexOf('-'))}</Text>
+                      <Text style={[styles.textStyle, {fontSize: 25}]}>{item.key.slice(item.key.indexOf('_')+1, item.key.indexOf('-'))}</Text>
                       <Text style={styles.textStyle}>Size: {item.size}                   Buy In: {item.buyIn}</Text>
                       <TouchableOpacity style={styles.joinButton}
                       onPress={() => this.joinGame(item.key)}>
@@ -126,41 +130,41 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center"
   },
-    container: {
-      padding: 20,
-      flex: 1,
-      backgroundColor: '#2ecc71',
-      alignItems: 'center',
-      justifyContent: 'center'
-    },
-    gameDisplay:{
-      backgroundColor: '#27ae60',
-      borderRadius: 50,
-      width:"100%",
-      padding: 20,
-      marginBottom: 10,
-    },
-    joinButton:{
-      backgroundColor: '#000000',
-      borderRadius: 50,
-      width:"95%",
-      paddingTop: 5,
-      marginLeft: 5
-    },
-    buttonContainer:{
-      backgroundColor: '#27ae60',
-      paddingVertical: 20,
-      padding: 20,
-      borderRadius: 50,
-      width:"100%",
-      marginBottom: 20
-    },
-    registerButtonText: {
-      textAlign: 'center',
-      color: '#FFF',
-      fontWeight: '900'
-    },
-    input: {
+  container: {
+    padding: 20,
+    flex: 1,
+    backgroundColor: '#2ecc71',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  gameDisplay:{
+    backgroundColor: '#27ae60',
+    borderRadius: 50,
+    width:"100%",
+    padding: 20,
+    marginBottom: 10,
+  },
+  joinButton:{
+    backgroundColor: '#000000',
+    borderRadius: 50,
+    width:"95%",
+    paddingTop: 5,
+    marginLeft: 5
+  },
+  buttonContainer:{
+    backgroundColor: '#27ae60',
+    paddingVertical: 20,
+    padding: 20,
+    borderRadius: 50,
+    width:"100%",
+    marginBottom: 20
+  },
+  registerButtonText: {
+    textAlign: 'center',
+    color: '#FFF',
+    fontWeight: '900'
+  },
+  input: {
     height:40,
     backgroundColor: 'rgba(255, 255, 255, 0.25)',
     marginBottom: 20,
@@ -169,5 +173,10 @@ const styles = StyleSheet.create({
     paddingEnd: 10,
     borderRadius: 50,
     width:'100%'
+  },
+  balance: {
+    position: 'absolute',
+    right: 85,
+    top: 30,
   },
 })
