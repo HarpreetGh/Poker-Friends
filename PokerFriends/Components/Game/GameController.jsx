@@ -981,13 +981,9 @@ export default class GameSetting extends Component {
       updates[matchLocation + "/newPlayer"] = editGame.newPlayer;
     } 
     else {
-        if(editGame.smallBlindLoc == editGame.size + 1){
-        console.log('triggered')
+      if(editGame.smallBlindLoc == editGame.size + 1){
         editGame.smallBlindLoc -= 1
         updates[matchLocation + "/smallBlindLoc"] = editGame.smallBlindLoc;
-      }
-      else{
-        console.log('bypass')
       }
       const chipsWon = editGame.chipsWon[playernum];
       const chipsLost =
@@ -998,7 +994,6 @@ export default class GameSetting extends Component {
       editGame.chipsIn.splice(playernum, 1);
       editGame.move.splice(playernum, 1);
       editGame.player_cards.splice(playernum, 1);
-      editGame.players.splice(playernum, 1);
       editGame.ready.splice(playernum, 1);
 
       updates["/users/" + user.uid + "/data/games"] = userData.games + 1;
@@ -1024,10 +1019,7 @@ export default class GameSetting extends Component {
         updates[matchLocation + "/chipsWon"] = editGame.chipsWon;
         updates[matchLocation + "/move"] = editGame.move;
         updates[matchLocation + "/player_cards"] = editGame.player_cards;
-        updates[matchLocation + "/players"] = editGame.players;
-        updates[matchLocation + "/playerAvatar"] = editGame.playerAvatar;
         updates[matchLocation + "/ready"] = editGame.ready;
-        updates[matchLocation + "/size"] = editGame.size;
       }
     }
     firebase
