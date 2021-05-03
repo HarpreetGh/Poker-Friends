@@ -133,6 +133,7 @@ export default class GameSetting extends Component {
       if (game.turn == 0) {
         if (game.newPlayer > 0) {
           for (var i = 0; i < game.newPlayer; i++) {
+            game.wins.push(0);
             game.chipsIn.push(0);
             game.chipsLost.push(0);
             game.chipsWon.push(0);
@@ -140,6 +141,7 @@ export default class GameSetting extends Component {
             game.ready.push(false);
           }
 
+          updates[matchPath + "/wins"] = game.wins;
           updates[matchPath + "/move"] = game.move;
           updates[matchPath + "/chipsWon"] = game.chipsWon;
           updates[matchPath + "/chipsLost"] = game.chipsLost;
@@ -201,6 +203,7 @@ export default class GameSetting extends Component {
         console.log("202: ", roundWinner);
         game.balance[roundWinner] += game.pot;
         game.chipsWon[roundWinner] += game.pot;
+        game.wins[roundWinner] += 1;
         game.round++;
 
         for (var i = 0; i < game.size; i++) {
@@ -220,16 +223,12 @@ export default class GameSetting extends Component {
           game.smallBlindLoc = 1;
           game.playerTurn = 1;
         }
-        //game.turn = 0
-        //game.pot = 0
-
-        // var user = firebase.auth().currentUser;
-        // updates['/users/'+ user.uid +'/wins'] = userData.wins + 1;
 
         updates[matchPath + "/move"] = game.move.fill("check");
         updates[matchPath + "/playerTurn"] = game.playerTurn;
         updates[matchPath + "/balance"] = game.balance;
         updates[matchPath + "/round"] = game.round;
+        updates[matchPath + "/wins"] = game.wins;
         updates[matchPath + "/chipsWon"] = game.chipsWon;
         updates[matchPath + "/chipsLost"] = game.chipsLost;
         updates[matchPath + "/chipsIn"] = game.chipsIn.fill(0);
@@ -971,32 +970,24 @@ export default class GameSetting extends Component {
     editGame.playerAvatar.splice(playernum, 1);
     editGame.size -= 1;
 
-    updates[matchLocation + "/balance"] = editGame.balance;
-    updates[matchLocation + "/players"] = editGame.players;
-    updates[matchLocation + "/playerAvatar"] = editGame.playerAvatar;
-    updates[matchLocation + "/size"] = editGame.size;
-
     if (newPlayer) {
       editGame.newPlayer -= 1;
+      updates[matchLocation + "/balance"] = editGame.balance;
+      updates[matchLocation + "/players"] = editGame.players;
+      updates[matchLocation + "/playerAvatar"] = editGame.playerAvatar;
+      updates[matchLocation + "/size"] = editGame.size;
+
       updates[matchLocation + "/newPlayer"] = editGame.newPlayer;
     } 
     else {
-      if(editGame.smallBlindLoc == editGame.size + 1){
-        editGame.smallBlindLoc -= 1
-        updates[matchLocation + "/smallBlindLoc"] = editGame.smallBlindLoc;
-      }
+      const wins = editGame.wins[playernum] + userData.wins
+      const games = userData.games + editGame.round
       const chipsWon = editGame.chipsWon[playernum];
       const chipsLost =
         editGame.chipsLost[playernum] + editGame.chipsIn[playernum];
 
-      editGame.chipsWon.splice(playernum, 1);
-      editGame.chipsLost.splice(playernum, 1);
-      editGame.chipsIn.splice(playernum, 1);
-      editGame.move.splice(playernum, 1);
-      editGame.player_cards.splice(playernum, 1);
-      editGame.ready.splice(playernum, 1);
-
-      updates["/users/" + user.uid + "/data/games"] = userData.games + 1;
+      updates["/users/" + user.uid + "/data/wins"] = wins
+      updates["/users/" + user.uid + "/data/games"] = games
       updates["/users/" + user.uid + "/data/chips_won"] =
         userData.chips_won + chipsWon;
       updates["/users/" + user.uid + "/data/chips_lost"] =
@@ -1013,7 +1004,24 @@ export default class GameSetting extends Component {
       } else {
         //update game
         updates["/games/list/" + fullMatchName + "/size"] = editGame.size;
-
+        
+        if(editGame.smallBlindLoc == editGame.size + 1){
+          editGame.smallBlindLoc -= 1
+          updates[matchLocation + "/smallBlindLoc"] = editGame.smallBlindLoc;
+        } 
+        editGame.wins.splice(playernum, 1);
+        editGame.chipsWon.splice(playernum, 1);
+        editGame.chipsLost.splice(playernum, 1);
+        editGame.chipsIn.splice(playernum, 1);
+        editGame.move.splice(playernum, 1);
+        editGame.player_cards.splice(playernum, 1);
+        editGame.ready.splice(playernum, 1);
+        
+        updates[matchLocation + "/balance"] = editGame.balance;
+        updates[matchLocation + "/players"] = editGame.players;
+        updates[matchLocation + "/playerAvatar"] = editGame.playerAvatar;
+        updates[matchLocation + "/size"] = editGame.size;
+        updates[matchLocation + "/wins"] = editGame.wins;
         updates[matchLocation + "/chipsLost"] = editGame.chipsLost;
         updates[matchLocation + "/chipsIn"] = editGame.chipsIn;
         updates[matchLocation + "/chipsWon"] = editGame.chipsWon;

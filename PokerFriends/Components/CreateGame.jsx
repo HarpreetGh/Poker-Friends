@@ -71,6 +71,7 @@ export default class CreateGame extends Component {
       ready: [false],
       round: 1,
       size: 1,
+      wins: [0]
     });
     
     if(type === 'public'){
