@@ -23,7 +23,7 @@ export default class Register extends Component {
             this.InitializeUserInDB(user, this.state.username+"#"+user.uid)
             user.updateProfile({
               displayName: this.state.username,
-              photoURL: 'https://firebasestorage.googleapis.com/v0/b/pokerfriends-843ef.appspot.com/o/default_player_image.jpg?alt=media&token=8353b7ac-d6f0-4c6c-a379-712cb8cb48de'
+              photoURL:"https://firebasestorage.googleapis.com/v0/b/pokerfriends-843ef.appspot.com/o/default_player_image.jpg?alt=media&token=8353b7ac-d6f0-4c6c-a379-712cb8cb48de"
             })
               .then(() => {
                 this.props.navigation.navigate('LandingPage')
