@@ -199,57 +199,55 @@ export default class GameSetting extends Component {
 
         // Figure out who won and give them pot
         const roundWinner = await this.findRoundWinner(game);
-        console.log("203: ", roundWinner);
+        console.log("Roundwinner is after function call: ", roundWinner);
 
-        this.setState({roundWinner: game.players[roundWinner]}, () => this.setRoundWinner());
+        this.setState({roundWinner: game.players[roundWinner], roundWinnerFound: true}, () => console.log("Round winner passed and found!"));
+        
+        
+          game.balance[roundWinner] += game.pot;
+          game.chipsWon[roundWinner] += game.pot;
+          game.round++;
 
-        game.balance[roundWinner] += game.pot;
-        game.chipsWon[roundWinner] += game.pot;
-        game.round++;
-
-        for (var i = 0; i < game.size; i++) {
-          if (i != roundWinner) {
-            game.chipsLost[i] += game.chipsIn[i];
+          for (var i = 0; i < game.size; i++) {
+            if (i != roundWinner) {
+              game.chipsLost[i] += game.chipsIn[i];
+            }
           }
-        }
 
-        game.smallBlindLoc += 1;
-        game.playerTurn = game.smallBlindLoc;
+          game.smallBlindLoc += 1;
+          game.playerTurn = game.smallBlindLoc;
 
-        if (game.playerTurn == game.size) {
-          game.playerTurn = 0;
-        }
+          if (game.playerTurn == game.size) {
+            game.playerTurn = 0;
+          }
 
-        if (game.smallBlindLoc > game.size) {
-          game.smallBlindLoc = 1;
-          game.playerTurn = 1;
-        }
-        //game.turn = 0
-        //game.pot = 0
+          if (game.smallBlindLoc > game.size) {
+            game.smallBlindLoc = 1;
+            game.playerTurn = 1;
+          }
+          //game.turn = 0
+          //game.pot = 0
 
-        // var user = firebase.auth().currentUser;
-        // updates['/users/'+ user.uid +'/wins'] = userData.wins + 1;
+          // var user = firebase.auth().currentUser;
+          // updates['/users/'+ user.uid +'/wins'] = userData.wins + 1;
 
-        updates[matchPath + "/move"] = game.move.fill("check");
-        updates[matchPath + "/playerTurn"] = game.playerTurn;
-        updates[matchPath + "/balance"] = game.balance;
-        updates[matchPath + "/round"] = game.round;
-        updates[matchPath + "/chipsWon"] = game.chipsWon;
-        updates[matchPath + "/chipsLost"] = game.chipsLost;
-        updates[matchPath + "/chipsIn"] = game.chipsIn.fill(0);
-        updates[matchPath + "/pot"] = 0;
-        updates[matchPath + "/raisedVal"] = 0;
-        updates[matchPath + "/smallBlindLoc"] = game.smallBlindLoc;
-        updates[matchPath + "/ready"] = game.ready.fill(false);
-        updates[matchPath + "/turn"] = 0;
-        updates[matchPath + "/board"] = "";
-
-
-
-
-      } else {
-        console.log("Something Wrong with GameTurnAction in GameController");
+          updates[matchPath + "/move"] = game.move.fill("check");
+          updates[matchPath + "/playerTurn"] = game.playerTurn;
+          updates[matchPath + "/balance"] = game.balance;
+          updates[matchPath + "/round"] = game.round;
+          updates[matchPath + "/chipsWon"] = game.chipsWon;
+          updates[matchPath + "/chipsLost"] = game.chipsLost;
+          updates[matchPath + "/chipsIn"] = game.chipsIn.fill(0);
+          updates[matchPath + "/pot"] = 0;
+          updates[matchPath + "/raisedVal"] = 0;
+          updates[matchPath + "/smallBlindLoc"] = game.smallBlindLoc;
+          updates[matchPath + "/ready"] = game.ready.fill(false);
+          updates[matchPath + "/turn"] = 0;
+          updates[matchPath + "/board"] = "";
+          setTimeout(() => { console.log("Setting timeout for 2000ms")
+        }, 200)
       }
+      else { console.log("Something Wrong with GameTurnAction in GameController"); }
 
       if (Object.keys(updates).length > 0) {
         firebase.database().ref().update(updates);
@@ -1072,10 +1070,6 @@ export default class GameSetting extends Component {
     }
 
     firebase.database().ref().update(updates);
-  }
-
-  setRoundWinner(){
-    roundWinnerFound = true;
   }
 
   render() {

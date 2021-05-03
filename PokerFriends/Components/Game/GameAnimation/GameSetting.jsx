@@ -104,6 +104,7 @@ export default class GameSetting extends Component {
 
       modalVisible: false,
       raiseVisible: false,
+      //winnerVisible: false,
       //fiveCardsFin: 0,
 
       valueFoldCard: new Animated.ValueXY({ x: 25, y: 25 }),
@@ -223,6 +224,9 @@ export default class GameSetting extends Component {
     setRaiseVisible = (visible) => {
       this.setState({ raiseVisible: visible });
     }
+    // setModalWinnerVisible = (visible) => {
+    //   this.setState({ winnerVisible: visible});
+    // }
 
     backAction = () => {
       Alert.alert("Hold on!", "Are you sure you want to go back?", [
@@ -478,7 +482,7 @@ export default class GameSetting extends Component {
             <View style = {{padding: 5}}></View>
             <TouchableOpacity
               style={styles.buttonInExit}
-              onPress={() => this.setModalVisible(true)}
+              onPress={() => this.setModalVisible(!true)}
             >
               <Text>EXIT</Text>
             </TouchableOpacity>
@@ -738,17 +742,32 @@ export default class GameSetting extends Component {
       //   )
       // }
 
-    roundWinnerView(){
-      return (
-          <View>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.textStyle}> {this.props.roundWinnerIndex} is the round winner! </Text>
-            </TouchableOpacity>
-          </View>
-      )
-    }
-
-
+    // roundWinnerView(){
+    //   console.log("742 round winner view")
+    //   const { winnerVisible } = this.state;
+    //   var isVisible = true
+    //   return (
+    //     <Modal
+    //       animationType="slide"
+    //       transparent={true}
+    //       visible={winnerVisible}
+    //     >
+    //       <View style = {styles.centeredView}>
+    //         <View style = {styles.modalView}>
+    //           <Text style = {{padding: 0, fontWeight: 'bold'}}>{this.props.roundWinner} is the round winner!</Text>
+    //           <ActivityIndicator size='large' color="#0062ff"/>
+    //           <View style = {{padding: 5}}></View>
+    //           <TouchableOpacity
+    //             style={styles.buttonInExit}
+    //             onPress={() => this.setModalWinnerVisible(false)}
+    //           >
+    //             <Text>OK</Text>
+    //           </TouchableOpacity>
+    //         </View>
+    //       </View>
+    //     </Modal>
+    //    )
+    //   }
 
     render() { 
       //console.log(this.props.game.deck)
@@ -757,9 +776,10 @@ export default class GameSetting extends Component {
         <View style={styles.container}>
           {/*<StatusBar hidden/>*/}
 
-          {this.props.game.turn == 5 && this.props.roundWinnerFound ?(
+          {/* {this.props.game.turn == 5 && this.props.roundWinnerFound ? (
            this.roundWinnerView()
-           ):(<Text></Text>)}
+           ) : (<Text></Text>)} */}
+            
           
           
           {this.quitView()}
