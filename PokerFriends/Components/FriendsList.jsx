@@ -163,10 +163,10 @@ export default class FriendsList extends Component {
     const username = user.displayName
     var matchPath
     if (matchName.search('private') == -1) {
-       matchPath =  '/games/public/' + matchName 
+      matchPath =  '/games/public/' + matchName 
     }
     else {
-       matchPath =  '/games/private/' + matchName 
+      matchPath =  '/games/private/' + matchName 
     }
 
     firebase.database().ref(matchPath).once('value', (snapshot) => {
