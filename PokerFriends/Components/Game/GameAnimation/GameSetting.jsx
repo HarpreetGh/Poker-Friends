@@ -60,8 +60,8 @@ export default class GameSetting extends Component {
       //newValueBB_3P: [{ x: 185, y: 0 }, { x: 400, y: 80 },{ x: -225, y: 75 }, { x: 0, y: 0 }],
       //newValueSB_3P: [{ x: 225, y: -75 },{ x: 185, y: 0 }, { x: 415, y: -75 },{ x: 0, y: 0 }],
 
-      newValueBB_2P: [{ x: -225, y: 75 }, { x: 0, y: 0 }],
-      newValueSB_2P: [{ x: 225, y: -75 }, { x: 0, y: 0 }],
+      newValueBB_2P: [{ x: -170, y: 100 }, { x: 0, y: 0 }],
+      newValueSB_2P: [{ x: 180, y: -90 }, { x: 0, y: 0 }],
       
       
 
@@ -84,22 +84,22 @@ export default class GameSetting extends Component {
         new Animated.ValueXY({ x: 0, y: 0 }),
       ],
       tableCardsMove: [
-        { x: -117, y: -150 },
-        { x: -46, y: -150 },
-        { x: 23, y: -150 },
-        { x: 91, y: -150 },
-        { x: 165, y: -150 },
+        { x: -158, y: -150 },
+        { x: -88, y: -150 },
+        { x: -19, y: -150 },
+        { x: 49, y: -150 },
+        { x: 123, y: -150 },
       ],
 
       playerNewValues: [
-        { x: -350, y: -45 },
-        { x: -320, y: -45 },
-        { x: -290, y: -270 },
-        { x: -260, y: -270 },
-        { x: 150, y: -270 },
-        { x: 120, y: -270 },
-        { x: 320, y: -35 },
-        { x: 290, y: -35 },
+        { x: -350, y: -10 },
+        { x: -320, y: -10 },
+        { x: -300, y: -270 },
+        { x: -270, y: -270 },
+        { x: 60, y: -270 },
+        { x: 30, y: -270 },
+        { x: 280, y: -10 },
+        { x: 250, y: -10 },
       ],
 
       modalVisible: false,
@@ -254,9 +254,6 @@ export default class GameSetting extends Component {
       //This first if statement should only be done in the
       //beginning of each game(New Lobby)
 
-     
-      
-      
       var fiveCardsFin = this.props.game.smallBlindLoc;
       console.log("FIVE CARD FIN IS ", fiveCardsFin);
       if (fiveCardsFin == 0) {
@@ -271,7 +268,7 @@ export default class GameSetting extends Component {
                   backgroundColor: "black",
                   justifyContent: "center",
                   top: "150%",
-                  right: "1400%",
+                  right: "1700%",
                 }}
               >
                 <Text style={{ textAlign: "center", color: "white" }}>BB</Text>
@@ -286,7 +283,7 @@ export default class GameSetting extends Component {
                   backgroundColor: "white",
                   justifyContent: "center",
                   top: "350%",
-                  right: "2300%",
+                  right: "2500%",
                 }}
               >
                 <Text style={{ textAlign: "center" }}>SB</Text>
@@ -326,8 +323,8 @@ export default class GameSetting extends Component {
                   borderRadius: 25,
                   backgroundColor: "black",
                   justifyContent: "center",
-                  top: "150%",
-                  right: "1400%",
+                  top: "100%",
+                  right: "1700%",
                 }}
               >
                 {this.moveBB(index)}
@@ -346,8 +343,8 @@ export default class GameSetting extends Component {
                   borderRadius: 25,
                   backgroundColor: "white",
                   justifyContent: "center",
-                  top: "350%",
-                  right: "2300%",
+                  top: "390%",
+                  right: "2400%",
                 }}
               >
                 {this.moveSB(index)}
@@ -361,7 +358,7 @@ export default class GameSetting extends Component {
 
     flopTurnRiver(suit,value, i){
       return (
-        <View style = {{right: 369, top: 310}}>
+        <View style = {{right: 328, top: 310}}>
           <Animated.View style = {this.state.tableCardsStart[i].getLayout()}>
             <View style = {
               {position:'absolute',
@@ -738,6 +735,19 @@ export default class GameSetting extends Component {
       //   )
       // }
     
+      defaultEmptyAvatar() {
+        return (
+          <View style = {{alignItems: 'center'}}>
+            <Image 
+              source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/pokerfriends-843ef.appspot.com/o/transparent.png?alt=media&token=30b3c6ed-592b-4802-a2ee-d9c846ab3a05' }}
+              style = {styles.avatarImage}/>
+            <View style={styles.textBackground}>
+              <Text style={styles.playerNames}>
+                Empty
+              </Text>
+            </View>
+          </View>)
+      }
     render() { 
       //console.log(this.props.game.deck)
       
@@ -788,7 +798,7 @@ export default class GameSetting extends Component {
                   </View>
                 </View>
               ) : (
-                <Text style={styles.textStyle}>Empty</Text>
+                this.defaultEmptyAvatar()
               )}
             
 
@@ -817,7 +827,7 @@ export default class GameSetting extends Component {
                   </View>
                 </View>
               ) : (
-                <Text style={styles.textStyle}>Empty</Text>
+                this.defaultEmptyAvatar()
               )}
           
             <Animated.View
@@ -855,7 +865,7 @@ export default class GameSetting extends Component {
                   </View>
                 </View>
               ) : (
-                <Text style={styles.textStyle}>Empty</Text>
+                this.defaultEmptyAvatar()
               )}
             
 

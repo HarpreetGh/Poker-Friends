@@ -197,7 +197,7 @@ export default class GameSetting extends Component {
 
         // Figure out who won and give them pot
         // Could make an array called roundWinners that hold all winners with equal rank and give them all balance and chipsWon
-        const roundWinner = await this.findRoundWinner(game);
+        const roundWinner = 0 //await this.findRoundWinner(game);
         console.log("202: ", roundWinner);
         game.balance[roundWinner] += game.pot;
         game.chipsWon[roundWinner] += game.pot;
