@@ -963,28 +963,36 @@ export default class GameSetting extends Component {
     var user = firebase.auth().currentUser;
 
     const quitBalance = editGame.balance[playernum];
+    updates["/users/" + user.uid + "/data/in_game"] = ""; 
+    updates["/users/" + user.uid + "/data/chips"] = userData.chips + quitBalance;
+
+    editGame.balance.splice(playernum, 1);
+    editGame.players.splice(playernum, 1);
+    editGame.playerAvatar.splice(playernum, 1);
+    editGame.size -= 1;
+
+    updates[matchLocation + "/balance"] = editGame.balance;
+    updates[matchLocation + "/players"] = editGame.players;
+    updates[matchLocation + "/playerAvatar"] = editGame.playerAvatar;
+    updates[matchLocation + "/size"] = editGame.size;
 
     if (newPlayer) {
       editGame.newPlayer -= 1;
-      editGame.size -= 1;
-      editGame.balance.splice(playernum, 1);
-      editGame.players.splice(playernum, 1);
-      editGame.playerAvatar.splice(playernum, 1);
-
-      updates[matchLocation + "/balance"] = editGame.balance;
-      updates[matchLocation + "/players"] = editGame.players;
-      updates[matchLocation + "/playerAvatar"] = editGame.playerAvatar;
-      updates[matchLocation + "/size"] = editGame.size;
       updates[matchLocation + "/newPlayer"] = editGame.newPlayer;
-
-      updates["/users/" + user.uid + "/data/in_game"] = "";
-      updates["/users/" + user.uid + "/data/chips"] = userData.chips + quitBalance;
-    } else {
+    } 
+    else {
+        if(editGame.smallBlindLoc == editGame.size + 1){
+        console.log('triggered')
+        editGame.smallBlindLoc -= 1
+        updates[matchLocation + "/smallBlindLoc"] = editGame.smallBlindLoc;
+      }
+      else{
+        console.log('bypass')
+      }
       const chipsWon = editGame.chipsWon[playernum];
       const chipsLost =
         editGame.chipsLost[playernum] + editGame.chipsIn[playernum];
 
-      editGame.balance.splice(playernum, 1);
       editGame.chipsWon.splice(playernum, 1);
       editGame.chipsLost.splice(playernum, 1);
       editGame.chipsIn.splice(playernum, 1);
@@ -992,11 +1000,7 @@ export default class GameSetting extends Component {
       editGame.player_cards.splice(playernum, 1);
       editGame.players.splice(playernum, 1);
       editGame.ready.splice(playernum, 1);
-      editGame.playerAvatar.splice(playernum, 1);
-      editGame.size -= 1;
 
-      updates["/users/" + user.uid + "/data/in_game"] = "";
-      updates["/users/" + user.uid + "/data/chips"] = userData.chips + quitBalance;
       updates["/users/" + user.uid + "/data/games"] = userData.games + 1;
       updates["/users/" + user.uid + "/data/chips_won"] =
         userData.chips_won + chipsWon;
@@ -1015,7 +1019,9 @@ export default class GameSetting extends Component {
         //update game
         updates["/games/list/" + fullMatchName + "/size"] = editGame.size;
 
-        updates[matchLocation + "/balance"] = editGame.balance;
+        updates[matchLocation + "/chipsLost"] = editGame.chipsLost;
+        updates[matchLocation + "/chipsIn"] = editGame.chipsIn;
+        updates[matchLocation + "/chipsWon"] = editGame.chipsWon;
         updates[matchLocation + "/move"] = editGame.move;
         updates[matchLocation + "/player_cards"] = editGame.player_cards;
         updates[matchLocation + "/players"] = editGame.players;
