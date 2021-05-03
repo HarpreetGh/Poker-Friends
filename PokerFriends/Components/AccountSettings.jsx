@@ -1,18 +1,22 @@
 import React, { Component, useState } from 'react'
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, Touchable } from 'react-native';
 import Logo from './Logo';
+
 import firebase from 'firebase'
 
+
 export default class AccountSettings extends Component {
+  
 
   render(){
+    var user = firebase.auth().currentUser;
     return (
         <KeyboardAvoidingView 
           style={styles.container}
           >
-            <Logo />
-            <Text style={styles.textStyle}>Account Settings</Text>
-
+            <Image  source ={{ uri: user.photoURL }} style={{ width: 200, height: 200, marginBottom: 20, borderRadius: 100}} />
+            <Text style={styles.title}>{user.displayName}'s Account Settings</Text>
+          
             <TouchableOpacity style={styles.buttonContainer}
               onPress={() => this.props.navigation.navigate('ForgotPassword')}>
                 <Text style={styles.registerButtonText}>Password Reset</Text>
@@ -29,9 +33,23 @@ export default class AccountSettings extends Component {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.buttonContainer}
+              onPress={() => this.props.navigation.navigate('ChangeAvatar')}>
+                <Text style={styles.registerButtonText}>Change Avatar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.buttonContainer}
               onPress={() => this.props.navigation.navigate('DeleteAccount')}>
                 <Text style={styles.registerButtonText}>Delete Account</Text>
             </TouchableOpacity>
+
+            
+
+            
+{/* 
+            <TouchableOpacity style={styles.buttonContainer}
+              onPress={() => this.props.navigation.navigate('SetAvatar')}>
+                <Text style={styles.registerButtonText}>Set profile avatar</Text>
+            </TouchableOpacity> */}
 
 
         </KeyboardAvoidingView>
@@ -45,6 +63,15 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     textAlign: "center"
+  },
+  title: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: 'white',
+    justifyContent: 'center',
+    alignContent: 'center',
+    textAlign: 'center',
+    marginBottom: 50
   },
     container: {
       padding: 20,

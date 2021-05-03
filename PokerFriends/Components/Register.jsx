@@ -22,7 +22,8 @@ export default class Register extends Component {
           if (user) {
             this.InitializeUserInDB(user, this.state.username+"#"+user.uid)
             user.updateProfile({
-              displayName: this.state.username
+              displayName: this.state.username,
+              photoURL:'https://firebasestorage.googleapis.com/v0/b/pokerfriends-843ef.appspot.com/o/Images%2Fdefault_player_image.jpg?alt=media&token=bd688e29-fbf9-4193-9974-1a57e404a69d'
             })
               .then(() => {
                 this.props.navigation.navigate('LandingPage')
@@ -49,7 +50,8 @@ export default class Register extends Component {
         wins: 0,
         chips_lost: 0,
         chips_won: 0,
-        in_game: ''
+        in_game: '',
+        photoURL:'https://firebasestorage.googleapis.com/v0/b/pokerfriends-843ef.appspot.com/o/Images%2Fdefault_player_image.jpg?alt=media&token=bd688e29-fbf9-4193-9974-1a57e404a69d'
     });
 
     firebase.database().ref('users/' + user.uid +'/request').set({

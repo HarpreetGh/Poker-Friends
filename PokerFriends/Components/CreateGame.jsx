@@ -65,6 +65,7 @@ export default class CreateGame extends Component {
       player_cards: [{rank: 0, cards: ['']}],
       playerTurn: 0,
       players: [username],
+      playerAvatar: [user.photoURL],
       pot: 0,
       raisedVal: 0,
       ready: [false],
