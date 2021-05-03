@@ -28,7 +28,7 @@ export default class ChangeUsername extends Component {
         " to: " + this.state.newUsername)
       updates['/users/'+ user.uid +'/data/username'] = usernameID;
       firebase.database().ref().update(updates);
-      this.props.navigation.navigate('AccountSettings')
+      this.props.navigation.navigate('LandingPage')
     })
     .catch(function(error) {
       console.log(error)
