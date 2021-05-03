@@ -40,8 +40,14 @@ export default function ChangeAvatar() {
           photoURL: "" + photoUrl
         })
         navigation.navigate('LandingPage')
-      }).catch((error) => {
-          console.log(error)
+      })
+      .then(()=> {
+        var updates = {}
+        updates['/users/'+ user.uid +'/data/photoURL'] = "" + photoUrl;
+        firebase.database().ref().update(updates);
+      })
+      .catch((error) => {
+        console.log(error)
       })
   }
 
