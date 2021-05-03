@@ -192,7 +192,6 @@ export default class GameSetting extends Component {
           }
 
           updates[matchPath + "/ready"] = game.ready.fill(false);
-          updates[matchPath + "/turnStart"] = true;
           updates[matchPath + "/raisedVal"] = 0;
         }
       } else if (game.turn == 5) {
@@ -241,7 +240,6 @@ export default class GameSetting extends Component {
         updates[matchPath + "/pot"] = 0;
         updates[matchPath + "/raisedVal"] = 0;
         updates[matchPath + "/smallBlindLoc"] = game.smallBlindLoc;
-        //updates[matchPath + '/turnStart'] = true
         updates[matchPath + "/ready"] = game.ready.fill(false);
         updates[matchPath + "/turn"] = 0;
         updates[matchPath + "/board"] = "";
@@ -260,7 +258,7 @@ export default class GameSetting extends Component {
       //all players but host
       if (this.state.newPlayer) {
         this.setState({ myCards: [{ suit: "wait", value: "wait" }] });
-      } else if (game.turn == 1 && game.turnStart) {
+      } else if (game.turn == 1) {
         this.setState({
           myCards: game.player_cards[this.state.playerNum].myCards,
         });
