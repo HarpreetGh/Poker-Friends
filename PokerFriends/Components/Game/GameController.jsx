@@ -1095,6 +1095,7 @@ export default class GameSetting extends Component {
           userData={this.props.userData}
           newPlayer={this.state.newPlayer}
           roundWinner = {this.state.roundWinner}
+          roundWinnerFound = {this.state.roundWinnerFound}
         />
       );
     } else {
