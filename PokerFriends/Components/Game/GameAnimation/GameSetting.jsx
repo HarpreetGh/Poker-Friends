@@ -737,7 +737,19 @@ export default class GameSetting extends Component {
       //     </View>
       //   )
       // }
-    
+
+    roundWinnerView(){
+      return (
+          <View>
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.textStyle}> {this.props.roundWinnerIndex} is the round winner! </Text>
+            </TouchableOpacity>
+          </View>
+      )
+    }
+
+
+
     render() { 
       //console.log(this.props.game.deck)
       
@@ -745,6 +757,11 @@ export default class GameSetting extends Component {
         <View style={styles.container}>
           {/*<StatusBar hidden/>*/}
 
+          {this.props.game.turn == 5 && this.props.roundWinnerFound ?(
+           this.roundWinnerView()
+           ):(<Text></Text>)}
+          
+          
           {this.quitView()}
 
           {this.props.game.size == 1 ? (

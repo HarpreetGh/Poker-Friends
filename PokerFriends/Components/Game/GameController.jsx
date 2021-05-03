@@ -40,6 +40,8 @@ export default class GameSetting extends Component {
       host: false,
       ready: false,
       newPlayer: true,
+      roundWinner: "",
+      roundWinnerFound: false
     };
   }
 
@@ -197,9 +199,11 @@ export default class GameSetting extends Component {
         game.size -= game.newPlayer;
 
         // Figure out who won and give them pot
-        // Could make an array called roundWinners that hold all winners with equal rank and give them all balance and chipsWon
         const roundWinner = await this.findRoundWinner(game);
-        console.log("202: ", roundWinner);
+        console.log("203: ", roundWinner);
+
+        this.setState({roundWinner: game.players[roundWinner]}, () => this.setRoundWinner());
+
         game.balance[roundWinner] += game.pot;
         game.chipsWon[roundWinner] += game.pot;
         game.round++;
@@ -241,6 +245,10 @@ export default class GameSetting extends Component {
         updates[matchPath + "/ready"] = game.ready.fill(false);
         updates[matchPath + "/turn"] = 0;
         updates[matchPath + "/board"] = "";
+
+
+
+
       } else {
         console.log("Something Wrong with GameTurnAction in GameController");
       }
@@ -1068,6 +1076,10 @@ export default class GameSetting extends Component {
     firebase.database().ref().update(updates);
   }
 
+  setRoundWinner(){
+    roundWinnerFound = true;
+  }
+
   render() {
     if (this.state.ready) {
       return (
@@ -1082,6 +1094,7 @@ export default class GameSetting extends Component {
           updateGame={this.updateGame}
           userData={this.props.userData}
           newPlayer={this.state.newPlayer}
+          roundWinner = {this.state.roundWinner}
         />
       );
     } else {
