@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput,
 import Logo from './Logo';
 import firebase from 'firebase'
 import { set } from 'react-native-reanimated';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 export default class FriendsList extends Component {
   constructor(props){
@@ -157,18 +158,23 @@ export default class FriendsList extends Component {
   }
 
   async joinGame(matchName){
+    console.log(matchName)
     var user = firebase.auth().currentUser;
     const username = user.displayName
-    const matchPath =  '/games/' + 'public' + '/' + matchName;
-    const matchListPath = '/games/list/' + matchName;
+    var matchPath
+    if (matchName.search('private') == -1) {
+      matchPath =  '/games/public/' + matchName 
+    }
+    else {
+      matchPath =  '/games/private/' + matchName 
+    }
 
-    
-    
     firebase.database().ref(matchPath).once('value', (snapshot) => {
       console.log('game data recieved')
       var data = snapshot.val()
       data.balance.push(data.buyIn)
       data.players.push(username)
+      data.playerAvatar.push(user.photoURL)
       data.newPlayer +=1
       data.size += 1
 
@@ -181,6 +187,7 @@ export default class FriendsList extends Component {
 
       updates[matchPath + '/balance'] = data.balance
       updates[matchPath + '/players'] = data.players
+      updates[matchPath + '/playerAvatar'] = data.playerAvatar
       updates[matchPath + '/newPlayer'] = data.newPlayer
       updates[matchPath + '/size'] = data.size
 

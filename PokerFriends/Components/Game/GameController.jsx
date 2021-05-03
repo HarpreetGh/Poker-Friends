@@ -971,11 +971,13 @@ export default class GameSetting extends Component {
       editGame.size -= 1;
       editGame.balance.splice(playernum, 1);
       editGame.players.splice(playernum, 1);
+      editGame.playerAvatar.splice(playernum, 1);
 
-      updates[matchLocation + "/data/balance"] = editGame.balance;
-      updates[matchLocation + "/data/players"] = editGame.players;
-      updates[matchLocation + "/data/size"] = editGame.size;
-      updates[matchLocation + "/data/newPlayer"] = editGame.newPlayer;
+      updates[matchLocation + "/balance"] = editGame.balance;
+      updates[matchLocation + "/players"] = editGame.players;
+      updates[matchLocation + "/playerAvatar"] = editGame.playerAvatar;
+      updates[matchLocation + "/size"] = editGame.size;
+      updates[matchLocation + "/newPlayer"] = editGame.newPlayer;
 
       updates["/users/" + user.uid + "/data/in_game"] = "";
       updates["/users/" + user.uid + "/data/chips"] = userData.chips + quitBalance;
@@ -992,6 +994,7 @@ export default class GameSetting extends Component {
       editGame.player_cards.splice(playernum, 1);
       editGame.players.splice(playernum, 1);
       editGame.ready.splice(playernum, 1);
+      editGame.playerAvatar.splice(playernum, 1);
       editGame.size -= 1;
 
       updates["/users/" + user.uid + "/data/in_game"] = "";
@@ -1018,6 +1021,7 @@ export default class GameSetting extends Component {
         updates[matchLocation + "/move"] = editGame.move;
         updates[matchLocation + "/player_cards"] = editGame.player_cards;
         updates[matchLocation + "/players"] = editGame.players;
+        updates[matchLocation + "/playerAvatar"] = editGame.playerAvatar;
         updates[matchLocation + "/ready"] = editGame.ready;
         updates[matchLocation + "/size"] = editGame.size;
       }
