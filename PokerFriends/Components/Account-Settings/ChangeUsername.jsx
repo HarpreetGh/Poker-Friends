@@ -58,6 +58,11 @@ export default class ChangeUsername extends Component {
                     <Text style={styles.sendButtonText}>Update</Text>
                 </TouchableOpacity>
 
+                <TouchableOpacity style={styles.buttonContainer}
+                onPress={() => this.props.navigation.navigate('AccountSettings')}>
+                  <Text style={styles.sendButtonText}>Go Back</Text>
+                </TouchableOpacity>
+
             </KeyboardAvoidingView>
         );
     }

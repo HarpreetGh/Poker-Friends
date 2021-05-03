@@ -135,6 +135,7 @@ export default class GameSetting extends Component {
       if (game.turn == 0) {
         if (game.newPlayer > 0) {
           for (var i = 0; i < game.newPlayer; i++) {
+            game.wins.push(0);
             game.chipsIn.push(0);
             game.chipsLost.push(0);
             game.chipsWon.push(0);
@@ -142,6 +143,7 @@ export default class GameSetting extends Component {
             game.ready.push(false);
           }
 
+          updates[matchPath + "/wins"] = game.wins;
           updates[matchPath + "/move"] = game.move;
           updates[matchPath + "/chipsWon"] = game.chipsWon;
           updates[matchPath + "/chipsLost"] = game.chipsLost;
@@ -206,6 +208,7 @@ export default class GameSetting extends Component {
         
           game.balance[roundWinner] += game.pot;
           game.chipsWon[roundWinner] += game.pot;
+          game.wins[roundWinner] += 1;
           game.round++;
 
           for (var i = 0; i < game.size; i++) {
@@ -235,6 +238,7 @@ export default class GameSetting extends Component {
           updates[matchPath + "/playerTurn"] = game.playerTurn;
           updates[matchPath + "/balance"] = game.balance;
           updates[matchPath + "/round"] = game.round;
+          updates[matchPath + "/wins"] = game.wins;
           updates[matchPath + "/chipsWon"] = game.chipsWon;
           updates[matchPath + "/chipsLost"] = game.chipsLost;
           updates[matchPath + "/chipsIn"] = game.chipsIn.fill(0);
@@ -244,8 +248,7 @@ export default class GameSetting extends Component {
           updates[matchPath + "/ready"] = game.ready.fill(false);
           updates[matchPath + "/turn"] = 0;
           updates[matchPath + "/board"] = "";
-          setTimeout(() => { console.log("Setting timeout for 2000ms")
-        }, 200)
+          setTimeout(() => { console.log("Setting timeout for 2000ms")}, 200)
       }
       else { console.log("Something Wrong with GameTurnAction in GameController"); }
 
@@ -969,41 +972,32 @@ export default class GameSetting extends Component {
     var user = firebase.auth().currentUser;
 
     const quitBalance = editGame.balance[playernum];
+    updates["/users/" + user.uid + "/data/in_game"] = ""; 
+    updates["/users/" + user.uid + "/data/chips"] = userData.chips + quitBalance;
+
+    editGame.balance.splice(playernum, 1);
+    editGame.players.splice(playernum, 1);
+    editGame.playerAvatar.splice(playernum, 1);
+    editGame.size -= 1;
 
     if (newPlayer) {
       editGame.newPlayer -= 1;
-      editGame.size -= 1;
-      editGame.balance.splice(playernum, 1);
-      editGame.players.splice(playernum, 1);
-      editGame.playerAvatar.splice(playernum, 1);
-
       updates[matchLocation + "/balance"] = editGame.balance;
       updates[matchLocation + "/players"] = editGame.players;
       updates[matchLocation + "/playerAvatar"] = editGame.playerAvatar;
       updates[matchLocation + "/size"] = editGame.size;
-      updates[matchLocation + "/newPlayer"] = editGame.newPlayer;
 
-      updates["/users/" + user.uid + "/data/in_game"] = "";
-      updates["/users/" + user.uid + "/data/chips"] = userData.chips + quitBalance;
-    } else {
+      updates[matchLocation + "/newPlayer"] = editGame.newPlayer;
+    } 
+    else {
+      const wins = editGame.wins[playernum] + userData.wins
+      const games = userData.games + editGame.round
       const chipsWon = editGame.chipsWon[playernum];
       const chipsLost =
         editGame.chipsLost[playernum] + editGame.chipsIn[playernum];
 
-      editGame.balance.splice(playernum, 1);
-      editGame.chipsWon.splice(playernum, 1);
-      editGame.chipsLost.splice(playernum, 1);
-      editGame.chipsIn.splice(playernum, 1);
-      editGame.move.splice(playernum, 1);
-      editGame.player_cards.splice(playernum, 1);
-      editGame.players.splice(playernum, 1);
-      editGame.ready.splice(playernum, 1);
-      editGame.playerAvatar.splice(playernum, 1);
-      editGame.size -= 1;
-
-      updates["/users/" + user.uid + "/data/in_game"] = "";
-      updates["/users/" + user.uid + "/data/chips"] = userData.chips + quitBalance;
-      updates["/users/" + user.uid + "/data/games"] = userData.games + 1;
+      updates["/users/" + user.uid + "/data/wins"] = wins
+      updates["/users/" + user.uid + "/data/games"] = games
       updates["/users/" + user.uid + "/data/chips_won"] =
         userData.chips_won + chipsWon;
       updates["/users/" + user.uid + "/data/chips_lost"] =
@@ -1020,14 +1014,30 @@ export default class GameSetting extends Component {
       } else {
         //update game
         updates["/games/list/" + fullMatchName + "/size"] = editGame.size;
-
+        
+        if(editGame.smallBlindLoc == editGame.size + 1){
+          editGame.smallBlindLoc -= 1
+          updates[matchLocation + "/smallBlindLoc"] = editGame.smallBlindLoc;
+        } 
+        editGame.wins.splice(playernum, 1);
+        editGame.chipsWon.splice(playernum, 1);
+        editGame.chipsLost.splice(playernum, 1);
+        editGame.chipsIn.splice(playernum, 1);
+        editGame.move.splice(playernum, 1);
+        editGame.player_cards.splice(playernum, 1);
+        editGame.ready.splice(playernum, 1);
+        
         updates[matchLocation + "/balance"] = editGame.balance;
-        updates[matchLocation + "/move"] = editGame.move;
-        updates[matchLocation + "/player_cards"] = editGame.player_cards;
         updates[matchLocation + "/players"] = editGame.players;
         updates[matchLocation + "/playerAvatar"] = editGame.playerAvatar;
-        updates[matchLocation + "/ready"] = editGame.ready;
         updates[matchLocation + "/size"] = editGame.size;
+        updates[matchLocation + "/wins"] = editGame.wins;
+        updates[matchLocation + "/chipsLost"] = editGame.chipsLost;
+        updates[matchLocation + "/chipsIn"] = editGame.chipsIn;
+        updates[matchLocation + "/chipsWon"] = editGame.chipsWon;
+        updates[matchLocation + "/move"] = editGame.move;
+        updates[matchLocation + "/player_cards"] = editGame.player_cards;
+        updates[matchLocation + "/ready"] = editGame.ready;
       }
     }
     firebase

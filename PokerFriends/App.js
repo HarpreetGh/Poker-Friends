@@ -74,8 +74,17 @@ export default class App extends Component {
               LoggedIn: true,
               ready: true,
             });
+            var updates = {};
+            var newDate = new Date().getDay()
+            if(data.daily_login != newDate){
+              //every new day you login you get more chips
+              data.chips += 200;
+              data.daily_login = newDate
+
+              updates["/users/" + user.uid + "/data/chips"] = data.chips;
+              updates["/users/" + user.uid + "/data/daily_login"] = data.daily_login;
+            }
             if (request.friend_confirmed.length > 1) {
-              var updates = {};
               var newFriends = data.friends.concat(
                 request.friend_confirmed.slice(1)
               );
@@ -83,6 +92,9 @@ export default class App extends Component {
                 "",
               ];
               updates["/users/" + user.uid + "/data/friends"] = newFriends;
+              
+            }
+            if (Object.keys(updates).length > 0) {
               firebase.database().ref().update(updates);
             }
           }

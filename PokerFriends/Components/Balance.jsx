@@ -15,7 +15,7 @@ export default class Balance extends Component {
   render() {
     return (
       <View style={styles.cornerView}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} disabled={true}>
           <Text style={styles.textStyle}>{this.props.chips +" Chips"}</Text>
         </TouchableOpacity>
       </View>

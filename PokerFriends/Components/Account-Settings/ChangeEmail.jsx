@@ -54,6 +54,11 @@ export default class ChangeEmail extends Component {
                     <Text style={styles.sendButtonText}>Change Email</Text>
                 </TouchableOpacity>
 
+                <TouchableOpacity style={styles.buttonContainer}
+                onPress={() => this.props.navigation.navigate('AccountSettings')}>
+                    <Text style={styles.sendButtonText}>Go Back</Text>
+                </TouchableOpacity>
+
             </KeyboardAvoidingView>
         );
     }

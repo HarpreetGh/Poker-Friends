@@ -42,6 +42,7 @@ export default class Register extends Component {
 
   async InitializeUserInDB(user, username){
     firebase.database().ref('users/' + user.uid +'/data').set({
+        daily_login: new Date().getDay(),
         chips: 1000,
         username: username,
         email: this.state.email,
