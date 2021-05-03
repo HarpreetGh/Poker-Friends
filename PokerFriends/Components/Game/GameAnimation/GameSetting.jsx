@@ -442,16 +442,8 @@ export default class GameSetting extends Component {
               <TouchableOpacity
                 style={styles.buttonInExit}
                 onPress={() => {
-                  this.props.navigation.navigate('LandingPage')
-                  ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
                   this.setModalVisible(!modalVisible)
-                  this.props.leaveGame(this.props.game,
-                    this.props.playerNum,
-                    this.props.matchType,
-                    this.props.matchType+'_'+this.props.matchName,
-                    this.props.userData,
-                    this.props.newPlayer
-                    )
+                  this.leaveGame()
                 }}
               >
                 <Text style={ styles.exitStyle }>Quit Game</Text>
@@ -459,6 +451,19 @@ export default class GameSetting extends Component {
             </View>
           </View>
         </Modal>
+      )
+    }
+
+    leaveGame(){
+      this.props.navigation.navigate('LandingPage')
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+      
+      this.props.leaveGame(this.props.game,
+        this.props.playerNum,
+        this.props.matchType,
+        this.props.matchType+'_'+this.props.matchName,
+        this.props.userData,
+        this.props.newPlayer
       )
     }
 
@@ -523,6 +528,18 @@ export default class GameSetting extends Component {
 
         this.setState({raiseAmount: 10})
       }
+      else if (type === 'all in'){
+        game.move[this.props.playerNum] = type
+        game.ready[this.props.playerNum] = true
+        keys = ['move', 'playerTurn', 'ready']
+
+        if(amount > 0){
+          game.chipsIn[this.props.playerNum] += amount //what if you don't have enough chips Fix for Partial Calls
+          game.pot += amount 
+          game.balance[this.props.playerNum] -= amount
+          keys.push('chipsIn', 'balance', 'pot')
+        }
+      }
       else if (type === 'small blind'){
         game.move[this.props.playerNum] = type
         game.chipsIn[this.props.playerNum] += amount //what if you don't have enough chips Fix for Partial Calls
@@ -584,7 +601,12 @@ export default class GameSetting extends Component {
                   this.setRaiseVisible(!raiseVisible);
                   //this.raisePot();
                   if(this.state.raiseAmount > 0){
-                    this.UpdateInitializer('raise', Number(this.state.raiseAmount)+callAmount)
+                    if(Number(this.state.raiseAmount) == this.props.game.balance[this.props.playerNum]){
+                      this.UpdateInitializer('all in', Number(this.state.raiseAmount)+callAmount)
+                    }
+                    else{
+                      this.UpdateInitializer('raise', Number(this.state.raiseAmount)+callAmount)
+                    }
                     //this.fadeIn(this.props.playerNum);
                   }
                   else{
@@ -613,15 +635,24 @@ export default class GameSetting extends Component {
     actionsView(){
       var myTurn = this.props.game.playerTurn == this.props.playerNum
       var callAmount = 0
+      var balance = this.props.game.balance[this.props.playerNum]
+
+      if(this.props.game.turn == 0 && balance < this.props.game.blindAmount) { //if you run out of funds
+        callAmount = 0
+        myTurn = false
+        this.leaveGame()
+      }
 
       if(myTurn){
-        if(this.props.game.move[this.props.playerNum] == 'fold'){ //if you fold
+        if(this.props.game.move[this.props.playerNum] == 'fold'|| 
+        this.props.game.move[this.props.playerNum] == 'all in' ){ //if you fold
           myTurn = false
           callAmount = 0
-          this.UpdateInitializer('fold')
+          this.UpdateInitializer(this.props.game.move[this.props.playerNum], callAmount)
         }
 
-        var balance = this.props.game.balance[this.props.playerNum]
+        
+        var lowestPlayerBalance = Math.min(...this.props.game.balance)
         var setupCall = true
         var callString = 'Call: '
         var callType = 'call'
@@ -629,12 +660,6 @@ export default class GameSetting extends Component {
         var raiseDisabled = false
 
         if(this.props.game.turn == 1) {
-          
-          if(balance == 0) { //if you run out of funds
-            callAmount = 0
-            this.UpdateInitializer('fold')
-            //LEave game?
-          }
           var smallBlindLoc = this.props.game.smallBlindLoc
           if( 
             this.props.game.smallBlindLoc == this.props.game.size)
@@ -675,7 +700,11 @@ export default class GameSetting extends Component {
 
           if(callAmount >= balance){ //partial still not implemented at pay out
             callAmount = balance    //might also depricate later
-            callString =  'All In'
+            callString =  'All In!'
+            callType = 'all in'
+            raiseDisabled = true
+          }
+          if(callAmount >= lowestPlayerBalance){
             raiseDisabled = true
           }
         }
@@ -683,10 +712,10 @@ export default class GameSetting extends Component {
 
       return (
         <View style={styles.bettingButtonsView}>
-          {this.raiseView(callAmount, balance-callAmount)}
+          {this.raiseView(callAmount, lowestPlayerBalance-callAmount)}
 
           <TouchableOpacity 
-            style={[styles.bettingButtons, (myTurn)? styles.raiseButt:styles.disabled]}
+            style={[styles.bettingButtons, (myTurn && !raiseDisabled)? styles.raiseButt:styles.disabled]}
             disabled={!myTurn || raiseDisabled} onPress={() => this.setRaiseVisible(true)}
           >
             {this.props.game.raisedVal == 0? (<Text>Raise</Text>):(<Text>Re-Raise</Text>)}

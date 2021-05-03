@@ -150,7 +150,8 @@ export default class GameSetting extends Component {
           updates[matchPath + "/chipsIn"] = game.chipsIn;
           updates[matchPath + "/ready"] = game.ready;
           updates[matchPath + "/newPlayer"] = 0;
-        } else if (game.size == 1) {
+        } else if (game.size == 1 || 
+          Math.min(...game.balance) < game.blindAmount) {
           //don't move wait?
         } else {
           var cards = await this.giveOutCards();
@@ -168,8 +169,8 @@ export default class GameSetting extends Component {
           });
         }
       } else if (game.turn < 5) {
-        const allPlayersFolded =
-          game.move.filter((move) => move != "fold").length == 1;
+        const allPlayersFolded = //does all players who folded or all in
+          game.move.filter((move) => move != "fold" && move != "all in").length == 1;
         //^This line also works when the game.size is 1, thus ending the current round, and wait for new players.
         const allPlayersReady = !game.ready.includes(false);
 
@@ -220,16 +221,13 @@ export default class GameSetting extends Component {
           game.smallBlindLoc += 1;
           game.playerTurn = game.smallBlindLoc;
 
-          if (game.playerTurn == game.size) {
-            game.playerTurn = 0;
-          }
-
-          if (game.smallBlindLoc > game.size) {
-            game.smallBlindLoc = 1;
-            game.playerTurn = 1;
-          }
-          //game.turn = 0
-          //game.pot = 0
+        if (game.playerTurn == game.size) {
+          game.playerTurn = 0;
+        }
+        if (game.smallBlindLoc > game.size) {
+          game.smallBlindLoc = 1;
+          game.playerTurn = 1;
+        }
 
           // var user = firebase.auth().currentUser;
           // updates['/users/'+ user.uid +'/wins'] = userData.wins + 1;
