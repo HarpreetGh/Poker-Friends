@@ -46,6 +46,11 @@ export default class ForgotPassword extends Component {
                     <Text style={styles.sendButtonText}>Send</Text>
                 </TouchableOpacity>
 
+                <TouchableOpacity style={styles.buttonContainer}
+                onPress={() => this.props.navigation.navigate('LandingPage')}>
+                    <Text style={styles.sendButtonText}>Go Back</Text>
+                </TouchableOpacity>
+
             </KeyboardAvoidingView>
         );
     }

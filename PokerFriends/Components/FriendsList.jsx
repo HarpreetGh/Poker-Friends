@@ -320,6 +320,11 @@ export default class FriendsList extends Component {
                 />
               </View>
 
+              <TouchableOpacity style={styles.buttonContainer}
+              onPress={() => this.props.navigation.navigate('LandingPage')}>
+                  <Text style={styles.textStyle}>Go Back</Text>
+              </TouchableOpacity>
+
           </KeyboardAvoidingView>
         );
       }

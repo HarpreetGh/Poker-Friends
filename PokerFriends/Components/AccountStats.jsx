@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, ActivityIndicator, Image} from 'react-native'
+import {View, Text, StyleSheet, ActivityIndicator, Image, TouchableOpacity} from 'react-native'
 import Logo from '../Components/Logo'
 import firebase from 'firebase'
 
@@ -40,6 +40,11 @@ export default class AccountStats extends Component {
                     <View style = {styles.textContainer}><Text style = {styles.Stats}>Life Time Earnings: {this.state.user.chips_won} </Text></View>
                     <View style = {styles.textContainer}><Text style = {styles.Stats}>Life Time Losses: {this.state.user.chips_lost} </Text></View>
                 </View>
+                <TouchableOpacity style={styles.buttonContainer}
+                    onPress={() => this.props.navigation.navigate('LandingPage')}
+                >
+                    <Text style={styles.buttonText}>Go Back</Text>
+                </TouchableOpacity>
             </View> 
             );
         }
@@ -91,5 +96,18 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         justifyContent: 'center',
         alignContent: 'center'
-    }
+    },
+    buttonContainer:{
+        backgroundColor: '#27ae60',
+        paddingVertical: 20,
+        padding: 20,
+        borderRadius: 50,
+        width:"100%",
+        marginBottom: 20
+    },
+    buttonText: {
+        textAlign: 'center',
+        color: '#FFF',
+        fontWeight: '900'
+    },
 });

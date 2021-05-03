@@ -42,15 +42,10 @@ export default class AccountSettings extends Component {
                 <Text style={styles.registerButtonText}>Delete Account</Text>
             </TouchableOpacity>
 
-            
-
-            
-{/* 
             <TouchableOpacity style={styles.buttonContainer}
-              onPress={() => this.props.navigation.navigate('SetAvatar')}>
-                <Text style={styles.registerButtonText}>Set profile avatar</Text>
-            </TouchableOpacity> */}
-
+              onPress={() => this.props.navigation.navigate('LandingPage')}>
+                  <Text style={styles.registerButtonText}>Go Back</Text>
+              </TouchableOpacity>
 
         </KeyboardAvoidingView>
     );
