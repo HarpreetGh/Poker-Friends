@@ -484,7 +484,7 @@ export default class GameSetting extends Component {
             <View style = {{padding: 5}}></View>
             <TouchableOpacity
               style={styles.buttonInExit}
-              onPress={() => this.setModalVisible(!true)}
+              onPress={() => this.setModalVisible(true)}
             >
               <Text>EXIT</Text>
             </TouchableOpacity>
