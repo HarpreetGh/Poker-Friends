@@ -28,7 +28,6 @@ export default class GameSetting extends Component {
         new Animated.ValueXY({ x: 415, y: -75 }),
         new Animated.ValueXY({ x: 625, y: 0 }),
       ],
-
       animationBB_3P: [
         new Animated.ValueXY({ x: 0, y: 0 }),
         new Animated.ValueXY({ x: 185, y: 0 }),
@@ -39,7 +38,6 @@ export default class GameSetting extends Component {
         new Animated.ValueXY({ x: 225, y: -95 }),
         new Animated.ValueXY({ x: 415, y: -75 }),
       ],
-
       animationBB_2P: [
         new Animated.ValueXY({ x: 0, y: 0 }),
         new Animated.ValueXY({ x: -225, y: 75 }),
@@ -62,8 +60,6 @@ export default class GameSetting extends Component {
 
       newValueBB_2P: [{ x: -170, y: 100 }, { x: 0, y: 0 }],
       newValueSB_2P: [{ x: 180, y: -90 }, { x: 0, y: 0 }],
-      
-      
 
       playerCardAnimations: [
         new Animated.ValueXY({ x: 0, y: 0 }),
@@ -746,69 +742,52 @@ export default class GameSetting extends Component {
         </View>
       )
     }
-      // else{
-      //   const buyInAmount = this.props.game.buyIn * 0.1
-      //   return(
-      //     <View style={styles.bettingButtonsView}>
-      //       <TouchableOpacity style={[styles.bettingButtons, (myTurn)?{backgroundColor:"#ffeb91"}:styles.disabled]}
-      //         disabled={!myTurn} onPress={() => this.UpdateInitializer('buy in', buyInAmount)}
-      //       >
-      //         <Text>Buy In Big {buyInAmount}</Text>
-      //       </TouchableOpacity>
 
-      //       <TouchableOpacity style={[styles.bettingButtons, (myTurn)? styles.foldButt:styles.disabled]} 
-      //         disabled={!myTurn} onPress = {() => {
-      //           this.foldCard() 
-      //           this.UpdateInitializer('fold')
-      //         }}
-      //       >
-      //         <Text>Fold</Text>
-      //       </TouchableOpacity>
-      //     </View>
-      //   )
-      // }
-
-    // roundWinnerView(){
-    //   console.log("742 round winner view")
-    //   const { winnerVisible } = this.state;
-    //   var isVisible = true
-    //   return (
-    //     <Modal
-    //       animationType="slide"
-    //       transparent={true}
-    //       visible={winnerVisible}
-    //     >
-    //       <View style = {styles.centeredView}>
-    //         <View style = {styles.modalView}>
-    //           <Text style = {{padding: 0, fontWeight: 'bold'}}>{this.props.roundWinner} is the round winner!</Text>
-    //           <ActivityIndicator size='large' color="#0062ff"/>
-    //           <View style = {{padding: 5}}></View>
-    //           <TouchableOpacity
-    //             style={styles.buttonInExit}
-    //             onPress={() => this.setModalWinnerVisible(false)}
-    //           >
-    //             <Text>OK</Text>
-    //           </TouchableOpacity>
-    //         </View>
-    //       </View>
-    //     </Modal>
-    //    )
-    //   }
-
-    
-      defaultEmptyAvatar() {
-        return (
-          <View style = {{alignItems: 'center'}}>
-            <Image 
-              source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/pokerfriends-843ef.appspot.com/o/transparent.png?alt=media&token=30b3c6ed-592b-4802-a2ee-d9c846ab3a05' }}
-              style = {styles.avatarImage}/>
-            <View style={styles.textBackground}>
-              <Text style={styles.playerNames}>
-                Empty
-              </Text>
+    roundWinnerView(){
+      console.log("742 round winner view")
+      var isVisible = !this.props.game.ready[this.props.playerNum]
+      return (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isVisible}
+        >
+          <View style = {styles.centeredView}>
+            <View style = {styles.modalView}>
+              <Text style = {{padding: 0, fontWeight: 'bold'}}>
+                {this.props.game.players[this.props.game.roundWinner]} won with a {this.props.game.roundWinnerRank}!
+                </Text>
+              <ActivityIndicator size='large' color="#0062ff"/>
+              <View style = {{padding: 5}}></View>
+              <TouchableOpacity
+                style={styles.buttonInExit}
+                onPress={() => {
+                  isVisible = false
+                  this.UpdateInitializer('check')
+                }}
+              >
+                <Text>OK</Text>
+              </TouchableOpacity>
             </View>
-          </View>)
-      }
+          </View>
+        </Modal>
+      )
+    }
+    
+    defaultEmptyAvatar() {
+      return (
+        <View style = {{alignItems: 'center'}}>
+          <Image 
+            source={{ uri: 'https://firebasestorage.googleapis.com/v0/b/pokerfriends-843ef.appspot.com/o/transparent.png?alt=media&token=30b3c6ed-592b-4802-a2ee-d9c846ab3a05' }}
+            style = {styles.avatarImage}/>
+          <View style={styles.textBackground}>
+            <Text style={styles.playerNames}>
+              Empty
+            </Text>
+          </View>
+        </View>)
+    }
+
     render() { 
       //console.log(this.props.game.deck)
       
@@ -816,11 +795,9 @@ export default class GameSetting extends Component {
         <View style={styles.container}>
           {/*<StatusBar hidden/>*/}
 
-          {/* {this.props.game.turn == 5 && this.props.roundWinnerFound ? (
+          {this.props.game.turn == 5 && this.props.game.roundWinner > -1? (
            this.roundWinnerView()
-           ) : (<Text></Text>)} */}
-            
-          
+           ):(<Text></Text>)}
           
           {this.quitView()}
 
@@ -943,7 +920,12 @@ export default class GameSetting extends Component {
             </Animated.View>
           </View>
 
-          {this.actionsView()}
+          {this.props.game.turn < 5 ?(
+            this.actionsView()):
+            (<Text style={[styles.bettingButtonsView, styles.textStyle]}>
+              Waiting For Other Players
+            </Text>)
+          }
 
           <View style={styles.dealer}>
             <Image

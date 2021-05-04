@@ -124,7 +124,7 @@ export default class GameSetting extends Component {
   async gameTurnAction() {
     //check if all players are ready, by seeing if any player is not ready
     var game = { ...this.state.game };
-    //check if start of game turn.
+    const allPlayersReady = !game.ready.includes(false);
 
     if (this.state.host) {
       console.log("game.turn = ", game.turn);
@@ -152,7 +152,7 @@ export default class GameSetting extends Component {
           updates[matchPath + "/newPlayer"] = 0;
         } else if (game.size == 1 || 
           Math.min(...game.balance) < game.blindAmount) {
-          //don't move wait?
+          //waiting for users to leave/join
         } else {
           var cards = await this.giveOutCards();
           game.player_cards = cards[0];
@@ -172,7 +172,6 @@ export default class GameSetting extends Component {
         const allPlayersFolded = //does all players who folded or all in
           game.move.filter((move) => move != "fold" && move != "all in").length == 1;
         //^This line also works when the game.size is 1, thus ending the current round, and wait for new players.
-        const allPlayersReady = !game.ready.includes(false);
 
         if (allPlayersReady || allPlayersFolded) {
           if (allPlayersFolded) {
@@ -197,20 +196,19 @@ export default class GameSetting extends Component {
           updates[matchPath + "/ready"] = game.ready.fill(false);
           updates[matchPath + "/raisedVal"] = 0;
         }
-      } else if (game.turn == 5) {
-        game.size -= game.newPlayer;
-
-        // Figure out who won and give them pot
-        const roundWinner = await this.findRoundWinner(game);
-        console.log("Roundwinner is after function call: ", roundWinner);
-
-        this.setState({roundWinner: game.players[roundWinner], roundWinnerFound: true}, () => console.log("Round winner passed and found!"));
-        
-        
+      } 
+      else if (game.turn == 5) {
+        if(game.roundWinner == -1){
+          game.size -= game.newPlayer;
+          // Figure out who won and give them pot
+          var values = await this.findRoundWinner(game);
+          const roundWinner = values[0]
+          const roundWinnerRank = values[1]
+          console.log("Roundwinner is after function call: ", roundWinner);
+          
           game.balance[roundWinner] += game.pot;
           game.chipsWon[roundWinner] += game.pot;
           game.wins[roundWinner] += 1;
-          game.round++;
 
           for (var i = 0; i < game.size; i++) {
             if (i != roundWinner) {
@@ -218,35 +216,39 @@ export default class GameSetting extends Component {
             }
           }
 
+          updates[matchPath + "/roundWinnerRank"] = roundWinnerRank;
+          updates[matchPath + "/roundWinner"] = roundWinner;
+          updates[matchPath + "/balance"] = game.balance;
+          updates[matchPath + "/chipsWon"] = game.chipsWon;
+          updates[matchPath + "/wins"] = game.wins;
+          updates[matchPath + "/chipsLost"] = game.chipsLost;
+          updates[matchPath + "/pot"] = 0;
+        }
+        else if(allPlayersReady){
           game.smallBlindLoc += 1;
           game.playerTurn = game.smallBlindLoc;
+          if (game.playerTurn == game.size) {
+            game.playerTurn = 0;
+          }
+          if (game.smallBlindLoc > game.size) {
+            game.smallBlindLoc = 1;
+            game.playerTurn = 1;
+          }
 
-        if (game.playerTurn == game.size) {
-          game.playerTurn = 0;
-        }
-        if (game.smallBlindLoc > game.size) {
-          game.smallBlindLoc = 1;
-          game.playerTurn = 1;
-        }
+          game.round++;
 
-          // var user = firebase.auth().currentUser;
-          // updates['/users/'+ user.uid +'/wins'] = userData.wins + 1;
-
+          updates[matchPath + "/roundWinner"] = -1;
+          updates[matchPath + "/roundWinnerRank"] = "High Card";
           updates[matchPath + "/move"] = game.move.fill("check");
           updates[matchPath + "/playerTurn"] = game.playerTurn;
-          updates[matchPath + "/balance"] = game.balance;
           updates[matchPath + "/round"] = game.round;
-          updates[matchPath + "/wins"] = game.wins;
-          updates[matchPath + "/chipsWon"] = game.chipsWon;
-          updates[matchPath + "/chipsLost"] = game.chipsLost;
           updates[matchPath + "/chipsIn"] = game.chipsIn.fill(0);
-          updates[matchPath + "/pot"] = 0;
           updates[matchPath + "/raisedVal"] = 0;
           updates[matchPath + "/smallBlindLoc"] = game.smallBlindLoc;
           updates[matchPath + "/ready"] = game.ready.fill(false);
           updates[matchPath + "/turn"] = 0;
           updates[matchPath + "/board"] = "";
-          setTimeout(() => { console.log("Setting timeout for 2000ms")}, 200)
+        }
       }
       else { console.log("Something Wrong with GameTurnAction in GameController"); }
 
@@ -269,7 +271,6 @@ export default class GameSetting extends Component {
   async findRoundWinner(game) {
     // Assign ranks for players before sorting ranks in hand[] array
     // Loop through all players and assign them a rank
-    game.size -= game.newPlayer;
     for (var i = 0; i < game.size; i++) {
       var position = i;
       var rank = this.isRoyalFlush(game, position) //staight flush, flush, straight
@@ -300,7 +301,6 @@ export default class GameSetting extends Component {
     var highestHands = [handsNotFolded[0]]; // An array of hands with the same highest ranks
     for (var i = 1; i < handsNotFolded.length; i++) {
       if (highestRank == handsNotFolded[i].rank) {
-        console.log("RANK", handsNotFolded[i].rank)
         highestHands.push(handsNotFolded[i]); // Loop through to make an array of hands with same high ranks
       }
     }
@@ -318,8 +318,12 @@ export default class GameSetting extends Component {
       //game.player_cards is [{rank: 2, myCards: [Card, Card]}, {rank: 2, myCards: [Card, Card]}]
       //Card = {suit: 'heart', value: '3', image: 'somefilepath'}
     }
-    console.log("Round winner is: ", roundWinner);
-    return roundWinner;
+    
+    const ranks = 
+      ["Royal Flush", "Staight Flush", "Four of a Kind", "Full House", "Flush", 
+      "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card"]
+    
+    return [roundWinner, ranks[highestHands[0].rank - 1]];
   }
 
   async findHighestHand(highestHands) {
@@ -379,7 +383,6 @@ export default class GameSetting extends Component {
     console.log("rWHH or winner is at index: ", index);
     return index
   }
-
 
   // Rank 1
   isRoyalFlush(game, position) {
@@ -876,8 +879,6 @@ export default class GameSetting extends Component {
           updateGame={this.updateGame}
           userData={this.props.userData}
           newPlayer={this.state.newPlayer}
-          roundWinner = {this.state.roundWinner}
-          roundWinnerFound = {this.state.roundWinnerFound}
         />
       );
     } else {
