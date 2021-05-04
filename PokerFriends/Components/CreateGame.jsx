@@ -60,7 +60,6 @@ export default class CreateGame extends Component {
       deck: [''],
       move: [''],
       newPlayer: 0,
-      pause: true,
       turn: 0,
       player_cards: [{rank: 0, cards: ['']}],
       playerTurn: 0,
@@ -70,6 +69,8 @@ export default class CreateGame extends Component {
       raisedVal: 0,
       ready: [false],
       round: 1,
+      roundWinner: -1,
+      roundWinnerRank: -1,
       size: 1,
       wins: [0]
     });
