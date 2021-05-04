@@ -24,7 +24,7 @@ export default class GameSetting extends Component {
       ],
       animationSB_4P: [
         new Animated.ValueXY({ x: 0, y: 0 }),
-        new Animated.ValueXY({ x: 225, y: -75 }),
+        new Animated.ValueXY({ x: 225, y: -95 }),
         new Animated.ValueXY({ x: 415, y: -75 }),
         new Animated.ValueXY({ x: 625, y: 0 }),
       ],
@@ -36,7 +36,7 @@ export default class GameSetting extends Component {
       ],
       animationSB_3P: [
         new Animated.ValueXY({ x: 0, y: 0 }),
-        new Animated.ValueXY({ x: 225, y: -75 }),
+        new Animated.ValueXY({ x: 225, y: -95 }),
         new Animated.ValueXY({ x: 415, y: -75 }),
       ],
 
@@ -48,11 +48,11 @@ export default class GameSetting extends Component {
         new Animated.ValueXY({ x: 0, y: 0 }),
         new Animated.ValueXY({ x: 225, y: -75 }),
       ],
-      newValueBB_4P: [{ x: 185, y: 0 }, { x: 400, y: 80 }, { x: -225, y: 75 }, { x: 0, y: 0 }],
-      newValueSB_4P: [{ x: 225, y: -75 }, { x: 415, y: -75 }, { x: 625, y: 0 },{ x: 0, y: 0 }],
+      newValueBB_4P: [{ x: 325, y: 0 }, { x: 400, y: 95 }, { x: -190, y: 95 }, { x: 0, y: 0 }],
+      newValueSB_4P: [{ x: 180, y: -98 }, { x: 500, y: -95 }, { x: 625, y: 5 },{ x: 0, y: 0 }],
 
-      newValueBB_3P: [{ x: 185, y: 0 }, { x: -225, y: 75 }, { x: 0, y: 0 }],
-      newValueSB_3P: [{ x: 225, y: -75 }, { x: 415, y: -75 },{ x: 0, y: 0 }],
+      newValueBB_3P: [{ x: 325, y: 0 }, { x: -180, y: 95 }, { x: 0, y: 0 }],
+      newValueSB_3P: [{ x: 180, y: -98 }, { x: 500, y: -95 },{ x: 0, y: 0 }],
 
       //newValueBB_3P: [{ x: 185, y: 0 }, { x: 400, y: 80 },{ x: -225, y: 75 }, { x: 0, y: 0 }],
       //newValueSB_3P: [{ x: 225, y: -75 },{ x: 185, y: 0 }, { x: 415, y: -75 },{ x: 0, y: 0 }],
@@ -98,7 +98,7 @@ export default class GameSetting extends Component {
         { x: -270, y: -270 },
         { x: 60, y: -270 },
         { x: 30, y: -270 },
-        { x: 280, y: -10 },
+        { x: 300, y: -10 },
         { x: 250, y: -10 },
       ],
 
