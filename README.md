@@ -1,3 +1,17 @@
 # Poker-Friends
-Poker-Friends - a mobile poker texas hold 'em app, Please Reference the Wiki tab on GitHub
+
+Project Proposal
+Project: Online Muliplayer Poker Mobile Game
+Project Lead: Micah Mercado
+Project Team (Hard Hats) members:
+1. David Andrade
+2. Harpreet Ghag
+3. Micah Mercado
+4. Dyland Messenger
+
+Project Start Date: 02/2021
+Project Tentative completion date: 05/2021 
+ 
+Please reference the Wiki Tab for more information. 
+
 https://youtu.be/T5S3_SBrYSM
