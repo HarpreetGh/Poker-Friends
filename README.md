@@ -14,4 +14,4 @@ Project Tentative completion date: 05/2021
  
 Please reference the Wiki Tab for more information. 
 
-https://youtu.be/T5S3_SBrYSM
+Demonstration for California State University, Fresno's High Impact Practices Symposium https://youtu.be/T5S3_SBrYSM
