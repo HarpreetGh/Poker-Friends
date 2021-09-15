@@ -68,7 +68,7 @@ export default class App extends Component {
         .ref("/users/" + user.uid)
         .on("value", (snapshot) => {
           if (snapshot.val() != null) {
-            const data = snapshot.val().data;
+            var data = snapshot.val().data;
             const request = snapshot.val().request;
             this.setState({
               userData: data,
@@ -77,7 +77,7 @@ export default class App extends Component {
               ready: true,
             });
             var updates = {};
-            var newDate = new Date().getDay()
+            var newDate = new Date().getDay() //change this
             if(data.daily_login != newDate){
               //every new day you login you get more chips
               data.chips += 200;
@@ -87,14 +87,19 @@ export default class App extends Component {
               updates["/users/" + user.uid + "/data/daily_login"] = data.daily_login;
             }
             if (request.friend_confirmed.length > 1) {
-              var newFriends = data.friends.concat(
-                request.friend_confirmed.slice(1)
+              var newFriends = data.friends
+              newFriends.push(
+                ...request.friend_confirmed.slice(1)
               );
-              updates["/users/" + user.uid + "/request/friend_confirmed"] = [
-                "",
-              ];
+              console.log(newFriends)
+              updates["/users/" + user.uid + "/request/friend_confirmed"] = [""];
               updates["/users/" + user.uid + "/data/friends"] = newFriends;
               
+            }
+            if(request.friend_delete != null){
+              var newFriendList = data.friends.filter(friend => !request.friend_delete.includes(friend))
+              updates["/users/" + user.uid + "/request/friend_delete"] = null;
+              updates["/users/" + user.uid + "/data/friends"] = newFriendList;
             }
             if (Object.keys(updates).length > 0) {
               firebase.database().ref().update(updates);
@@ -102,7 +107,7 @@ export default class App extends Component {
           }
         });
     } else {
-      this.setState({ userData: { chips: 999 }, ready: true });
+      this.setState({ userData: { chips: 0 }, ready: true });
     }
   }
 

@@ -5,9 +5,9 @@ import firebase from 'firebase'
 import { useNavigation } from '@react-navigation/native'
 
 export default function ChangeAvatar() {
-  var user = firebase.auth().currentUser;
   const [image, setImage] = useState(null);
   const navigation = useNavigation()
+  
   const UpdatePhoto = async () =>{
     const blob = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -22,7 +22,6 @@ export default function ChangeAvatar() {
       xhr.send(null);
     });
 
-
     let user = firebase.auth().currentUser;
     let storageRef = firebase.storage().ref()
     let fileRef = storageRef.child(user.uid)
@@ -36,16 +35,15 @@ export default function ChangeAvatar() {
 
     fileRef.getDownloadURL()
       .then((photoUrl) => {
-        console.log(photoUrl)
+        let updates = {}
+        updates['/users/'+ user.uid +'/data/photoURL'] = "" + photoUrl;
+        firebase.database().ref().update(updates);
+        
         user.updateProfile({
           photoURL: "" + photoUrl
         })
+        
         navigation.navigate('LandingPage')
-      })
-      .then(()=> {
-        var updates = {}
-        updates['/users/'+ user.uid +'/data/photoURL'] = "" + photoUrl;
-        firebase.database().ref().update(updates);
       })
       .catch((error) => {
         console.log(error)
