@@ -28,9 +28,12 @@ export default class AccountStats extends Component {
         if(this.state.ready){
             return ( 
             <View style = {styles.container}>
-                <Logo/>
                 <View style = {styles.bubble}> 
-                    {/* <Image source ={{ uri: this.state.userPhoto }} style={{ width: 200, height: 200 }} /> */}
+                    
+                    <View style={{flexDirection: 'row' , justifyContent: 'center'}}>
+                        <Image source ={{ uri: this.state.userPhoto }} style = {styles.avatarImage} />
+                    </View>
+                    
                     <Text style = {styles.title}> {this.state.user.username}'s Stats</Text>
                     <View style = {styles.textContainer}><Text style = {styles.Stats}>Wins: {this.state.user.wins}</Text></View>
                     <View style = {styles.textContainer}><Text style = {styles.Stats}>Losses: {this.state.user.losses}</Text></View>
@@ -85,6 +88,14 @@ const styles = StyleSheet.create({
     },  
     textContainer: {
         width: '100%'
+    },
+    avatarImage: {
+      width: 150, 
+      height: 150, 
+      borderRadius: 100,
+      marginBottom: 10,
+      justifyContent: 'center',
+      alignContent: 'center'
     },
     bubble: {
         backgroundColor: '#27ae60',

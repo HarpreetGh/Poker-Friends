@@ -30,11 +30,11 @@ import AccountStats from "./Components/AccountStats";
 import ChangeAvatar from "./Components/Account-Settings/ChangeAvatar";
 import Leaderboard from "./Components/Leaderboard";
 
-LogBox.ignoreLogs(["Setting a timer for a long period of time"]);
-LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
-LogBox.ignoreLogs(['Each child in a list should have a unique']);
-LogBox.ignoreLogs(['Cannot update during an existing state transition'])
-LogBox.ignoreLogs(["Can't perform a React state update on an unmounted component." ])
+// LogBox.ignoreLogs(["Setting a timer for a long period of time"]);
+// LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
+// LogBox.ignoreLogs(['Each child in a list should have a unique']);
+// LogBox.ignoreLogs(['Cannot update during an existing state transition'])
+// LogBox.ignoreLogs(["Can't perform a React state update on an unmounted component." ])
 
 const Stack = createStackNavigator();
 
@@ -77,7 +77,7 @@ export default class App extends Component {
               ready: true,
             });
             var updates = {};
-            var newDate = new Date().getDay() //change this
+            var newDate = new Date().getDate() //change this
             if(data.daily_login != newDate){
               //every new day you login you get more chips
               data.chips += 200;

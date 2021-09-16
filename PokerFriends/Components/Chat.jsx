@@ -12,14 +12,14 @@ import {
     LogBox,
     } from "react-native";
 
-import * as firebase from 'firebase'
-import 'firebase/firestore'
+import firebase from 'firebase'
+//import 'firebase/firestore'
 
 
 //No more error about v
 //LogBox.ignoreLogs(['Setting a timer for a long period of time'])
 //LogBox.ignoreLogs(['VirtualizedLists should never be nested'])
-const db = firebase.firestore()
+var db = firebase.firestore()
 //const chatRef = db.collection('chat')// + this.props.matchName
 
 export default function Chat(matchInfo){

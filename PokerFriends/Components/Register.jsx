@@ -88,7 +88,6 @@ export default class Register extends Component {
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoCompleteType='email'
-                onSubmitEditing={() => this.passwordInput.focus()}
                 style={styles.input}
                 onChangeText={text => this.setState({email: text})}
                 value={this.state.email}

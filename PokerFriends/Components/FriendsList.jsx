@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, 
   TouchableOpacity, Touchable, Alert, ActivityIndicator, Modal, FlatList } from 'react-native';
-import Logo from './Logo';
 import firebase from 'firebase'
+import AccountStats from "./AccountStats";
 import { set } from 'react-native-reanimated';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
@@ -26,6 +26,7 @@ export default class FriendsList extends Component {
       confirmFriend:'',
 
       mangageFriendsVisible: false,
+      removeFriendsOn: false
     }
   }
 
@@ -34,7 +35,7 @@ export default class FriendsList extends Component {
     firebase.database().ref("/users/"+ user.uid + "/data/friends").on("value", (snapshot) => {
       var data = null
       data = snapshot.val().slice(1);
-      console.log("Friends updated", snapshot.val().slice(1)); 
+      console.log("Friends updated", data); 
       this.setState({ready: false, friends: data}, () => this.GetData());
     });
       //this.GetData()
@@ -46,13 +47,11 @@ export default class FriendsList extends Component {
   }
 
   GetData(){
-    var uid
-    var name
     var data = []
     if(this.state.friends.length > 0){
-      this.state.friends.forEach((fullName) => { 
-        uid = fullName.slice(fullName.indexOf('#')+1)
-        name = fullName.slice(0, fullName.indexOf('#'))
+      this.state.friends.forEach(async (fullName) => { 
+        var uid = fullName.slice(fullName.indexOf('#')+1)
+        var name = fullName.slice(0, fullName.indexOf('#'))
         console.log(name)
         firebase.database().ref('/users/'+ uid + '/data').once('value', (snapshot) => {
           data.push({key: name, ...snapshot.val()})
@@ -119,7 +118,7 @@ export default class FriendsList extends Component {
 
   SendFriendRequest(){
     this.setState({userAbleAdd: false})
-    this.state.foundUserRequest.friend_request.push(this.props.userData.username)
+    this.state.foundUserRequest.friend_request.push({username: this.props.userData.username, photoURL: this.props.userData.photoURL})
     var updates = {};
 
     const friendID = this.state.foundUserData.username.slice(this.state.foundUserData.username.indexOf('#')+1)
@@ -163,7 +162,13 @@ export default class FriendsList extends Component {
       >
         <View style = {styles.centeredView}>
           <View style = {styles.modalView}>
-            <Text style = {{padding: 0, fontWeight: 'bold'}}>{this.state.foundUserData.username}</Text>
+            <View style={{flexDirection: 'row' , justifyContent: 'center'}}>
+              <Image source={{ uri: this.state.foundUserData.photoURL }} style = {styles.avatarImage}/>
+            </View>
+
+            <Text style = {{padding: 0, fontWeight: 'bold'}}>
+              {this.state.foundUserData.username.slice(0, this.state.foundUserData.username.indexOf('#'))}
+            </Text>
 
             <View style = {{padding: 5}}></View>
             <TouchableOpacity
@@ -233,10 +238,7 @@ export default class FriendsList extends Component {
   }
   
   DisplayFriendRequest(){
-    var friendRequests = []
-    this.props.userRequest.friend_request.slice(1).forEach((fullName, index) => {
-      friendRequests.push({key:fullName})
-    });
+    var friendRequests = this.props.userRequest.friend_request.slice(1)
   
     return (
     <Modal
@@ -251,23 +253,27 @@ export default class FriendsList extends Component {
           ):(
           <FlatList style={{width:'100%'}}
             data={friendRequests}
-            keyExtractor={(item)=>item.key}
+            keyExtractor={(item)=>item.username}
             renderItem={({item})=>{
               return(
-                <View>
-                  <Text style={styles.textStyleDark}>{item.key}</Text>
+                <View style={{padding: 10}}>
+                  <View style={{flexDirection: 'row' , justifyContent: 'center'}}>
+                    <Image source={{ uri: item.photoURL}} style = {styles.avatarImage}/>
+                  </View>
+
+                  <Text style={styles.textStyleDark}> {item.username.slice(0, item.username.indexOf('#'))}</Text>
                   
                   <View style={{flexDirection: "row", justifyContent: "space-evenly"}}>
                     <TouchableOpacity
                       style={styles.buttonAccept}
-                      onPress={() => { this.RespondFriendRequest(item.key, true)} }
+                      onPress={() => { this.RespondFriendRequest(item.username, true)} }
                     >
                       <Text>Accept</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                       style={[styles.buttonDecline]}
-                      onPress={() => { this.RespondFriendRequest(item.key, false)} }
+                      onPress={() => { this.RespondFriendRequest(item.username, false)} }
                     >
                       <Text>Decline</Text>
                     </TouchableOpacity>
@@ -332,7 +338,7 @@ export default class FriendsList extends Component {
               <TouchableOpacity style={styles.buttonContainer}
                   onPress={() => this.setState({mangageFriendsVisible: !this.state.mangageFriendsVisible})}
                 >
-                  <Text style={styles.titleTextStyle}>Manage Friends</Text>
+                  <Text style={styles.titleButtonStyle}>Manage Friends</Text>
               </TouchableOpacity>
               
               {!this.state.mangageFriendsVisible? (
@@ -364,7 +370,7 @@ export default class FriendsList extends Component {
                   </TouchableOpacity>
 
                   <TouchableOpacity style={styles.buttonContainer}
-                    onPress={() => this.RemoveFriend()}
+                    onPress={() => this.setState({removeFriendsOn: !this.state.removeFriendsOn})}
                   >
                     <Text style={styles.textStyle}>Remove Friend</Text>
                   </TouchableOpacity>
@@ -387,7 +393,7 @@ export default class FriendsList extends Component {
                             style = {styles.avatarImage}/>
                         </View>
                         
-                        {true? (
+                        {this.state.removeFriendsOn? (
                           this.RemoveFriendButton(item.key, item.username)
                           ):(
                           <Text style={styles.titleTextStyle}>{item.key}</Text>
@@ -471,6 +477,12 @@ const styles = StyleSheet.create({
       fontSize: 20,
       marginBottom: 10
     },
+    titleButtonStyle: {
+      color: "white",
+      fontWeight: "bold",
+      textAlign: "center",
+      fontSize: 20
+    },
     buttonStyle: {
       borderRadius: 2,
       padding: 10,
@@ -526,7 +538,8 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignContent: 'center',
       width:"100%",
-      padding: 10
+      padding: 10,
+      marginBottom: 10
     },
     joinButton:{
       backgroundColor: '#000000',

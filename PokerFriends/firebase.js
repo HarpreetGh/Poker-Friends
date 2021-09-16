@@ -1,6 +1,6 @@
 
 //@refresh reset
-import * as firebase from 'firebase';
+import firebase from 'firebase';
 import 'firebase/firebase-auth'
 
 const firebaseConfig = {
@@ -12,6 +12,7 @@ const firebaseConfig = {
     messagingSenderId: "1077794174230",
     appId: "1:1077794174230:web:f05b745f8fba6d8f798c37"
   };
+  
 if(firebase.apps.length === 0){
   firebase.initializeApp(firebaseConfig);
   console.log('firebase.js triggered')

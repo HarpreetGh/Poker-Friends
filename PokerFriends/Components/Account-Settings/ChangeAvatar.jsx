@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import {Text, Image, View, Platform, SnapshotViewIOS, StyleSheet, TouchableOpacity } from 'react-native';
+import {Text, Image, View, Platform, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import firebase from 'firebase'
 import { useNavigation } from '@react-navigation/native'
 
 export default function ChangeAvatar() {
+  let user = firebase.auth().currentUser;
   const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(false)
+  const [oldImage, setOldImage] = useState(user.photoURL)
   const navigation = useNavigation()
   
   const UpdatePhoto = async () =>{
+    setLoading(true)
     const blob = await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.onload = function() {
@@ -65,7 +69,7 @@ export default function ChangeAvatar() {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
       quality: 1,
     });
 
@@ -98,8 +102,14 @@ export default function ChangeAvatar() {
         </View>
       }
 
-      
+      {loading && <View style={{paddingBottom: 10}}> 
+          <ActivityIndicator size="large" color="#FB6342"/> 
+        </View>}
 
+      <TouchableOpacity style={styles.buttonContainer}
+        onPress={() => navigation.navigate('AccountSettings')}>
+          <Text style={styles.buttonText}>Go Back</Text>
+      </TouchableOpacity>
     </View>
   );
 }

@@ -15,7 +15,7 @@ export default class Leaderboard extends Component {
   }
 
   componentDidMount(){
-    firebase.database().ref('/users/').orderByChild('data/' + this.state.lbStatistic).on('value', (snapshot) => {
+    firebase.database().ref('/users/').orderByChild('data/' + this.state.lbStatistic).limitToFirst(50).on('value', (snapshot) => {
       var data =  []
       snapshot.forEach((child) => {
         data.push({
@@ -32,7 +32,7 @@ export default class Leaderboard extends Component {
     })
   }
   componentDidUpdate(){
-    firebase.database().ref('/users/').orderByChild('data/' + this.state.lbStatistic).on('value', (snapshot) => {
+    firebase.database().ref('/users/').orderByChild('data/' + this.state.lbStatistic).limitToFirst(50).on('value', (snapshot) => {
       var data =  []
       snapshot.forEach((child) => {
         data.push({
