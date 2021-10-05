@@ -26,9 +26,8 @@ export default class Balance extends Component {
 const styles = StyleSheet.create({
   cornerView: {
     justifyContent: "flex-start",
-    alignSelf: 'flex-start',
-    left: 80,
-    top: 10
+    alignSelf: 'flex-start',  
+    paddingRight: 5
   },
   button: {
     borderRadius: 50,

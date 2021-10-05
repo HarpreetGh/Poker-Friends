@@ -52,11 +52,13 @@ export default class Register extends Component {
         chips_lost: 0,
         chips_won: 0,
         in_game: '',
+        newAlert: false,
         photoURL: 'https://firebasestorage.googleapis.com/v0/b/pokerfriends-843ef.appspot.com/o/default_player_image.jpg?alt=media&token=8353b7ac-d6f0-4c6c-a379-712cb8cb48de'
     });
 
     firebase.database().ref('users/' + user.uid +'/request').set({
       friend_request: [''],
+      friend_request_alert: false,
       friend_confirmed: ['']
     });
   }

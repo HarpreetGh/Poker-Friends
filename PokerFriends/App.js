@@ -80,21 +80,58 @@ export default class App extends Component {
             var newDate = new Date().getDate() //change this
             if(data.daily_login != newDate){
               //every new day you login you get more chips
+              var dailyAlert = "Daily Login Bonus Awarded. + 200 Chips"
               data.chips += 200;
               data.daily_login = newDate
+              
+              if(data.alerts == null){
+                data.alerts = [dailyAlert];
+              }
+              else{
+                data.alerts.push(dailyAlert)
+              }
 
               updates["/users/" + user.uid + "/data/chips"] = data.chips;
               updates["/users/" + user.uid + "/data/daily_login"] = data.daily_login;
+              updates["/users/" + user.uid + "/data/newAlert"] = true;
+              updates["/users/" + user.uid + "/data/alerts"] = data.alerts
+            }
+            if(request.friend_request_alert){
+              request.friend_request_alert = false;
+              var newRequestAlert = "You have new friend requests! Please Check the Friends Menu."
+              if(data.alerts == null){
+                data.alerts = [newRequestAlert];
+              }
+              else{
+                data.alerts.push(newRequestAlert)
+              }
+              updates["/users/" + user.uid + "/request/friend_request_alert"] = false;
+              updates["/users/" + user.uid + "/data/alerts"] = data.alerts
+              updates["/users/" + user.uid + "/data/newAlert"] = true;
+              
             }
             if (request.friend_confirmed.length > 1) {
+              
+              var newFriendsAlert = "You have new Friends: " +  
+                request.friend_confirmed.slice(1).map(x => x.slice(0, x.indexOf('#'))).join(', ')
+                + ".";
+              if(data.alerts == null){
+                data.alerts = [newFriendsAlert];
+              }
+              else{
+                data.alerts.push(newFriendsAlert)
+              }
+              updates["/users/" + user.uid + "/data/alerts"] = data.alerts
+              updates["/users/" + user.uid + "/data/newAlert"] = true;
+
               var newFriends = data.friends
               newFriends.push(
                 ...request.friend_confirmed.slice(1)
               );
               console.log(newFriends)
+
               updates["/users/" + user.uid + "/request/friend_confirmed"] = [""];
               updates["/users/" + user.uid + "/data/friends"] = newFriends;
-              
             }
             if(request.friend_delete != null){
               var newFriendList = data.friends.filter(friend => !request.friend_delete.includes(friend))

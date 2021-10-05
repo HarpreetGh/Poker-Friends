@@ -93,28 +93,31 @@ export default class JoinGame extends Component {
         <KeyboardAvoidingView 
           style={styles.container}
         >
-          <View style={styles.balance}>
-            <TouchableOpacity style={[styles.buttonContainer, {marginBottom: 0}]}
-            disabled={true}>
-                <Text style={[styles.textStyle, {marginBottom: 0}]}>Your Balance: {this.props.userData.chips}</Text>
-            </TouchableOpacity> 
-          </View>
+          <Logo/>
+          
+            
+            <View style={{flex:1.4, alignSelf:'center', justifyContent:'center', paddingBottom: 10}}>
+              <FlatList style={{width:'100%'}}
+                data={this.state.gameList}
+                keyExtractor={(item)=>item.key}
+                renderItem={({item})=>{
+                  return(
+                    <View style={styles.gameDisplay}>
+                      <Text style={[styles.textStyle, {fontSize: 25}]}>{item.key.slice(item.key.indexOf('_')+1, item.key.indexOf('-'))}</Text>
+                      <Text style={styles.textStyle}>Size: {item.size}                   Buy In: {item.buyIn}</Text>
+                      <TouchableOpacity style={styles.joinButton}
+                      onPress={() => this.joinGame(item.key)}>
+                        <Text style={styles.textStyle}>Join Game</Text>
+                      </TouchableOpacity>
+                    </View>)
+                }}/>     
+            </View>
 
-          <View style={{flex:1, alignSelf:'center', justifyContent:'center', paddingBottom: 10}}>
-            <FlatList style={{width:'100%'}}
-              data={this.state.gameList}
-              keyExtractor={(item)=>item.key}
-              renderItem={({item})=>{
-                return(
-                  <View style={styles.gameDisplay}>
-                    <Text style={[styles.textStyle, {fontSize: 25}]}>{item.key.slice(item.key.indexOf('_')+1, item.key.indexOf('-'))}</Text>
-                    <Text style={styles.textStyle}>Size: {item.size}                   Buy In: {item.buyIn}</Text>
-                    <TouchableOpacity style={styles.joinButton}
-                    onPress={() => this.joinGame(item.key)}>
-                      <Text style={styles.textStyle}>Join Game</Text>
-                    </TouchableOpacity>
-                  </View>)
-              }}/>     
+            <View style={styles.balance}>
+              <TouchableOpacity style={[styles.buttonContainer, {marginBottom: 0}]}
+              disabled={true}>
+                  <Text style={[styles.textStyle, {marginBottom: 0}]}>Your Balance: {this.props.userData.chips}</Text>
+              </TouchableOpacity> 
             </View>
 
             <TouchableOpacity style={styles.buttonContainer}

@@ -280,6 +280,9 @@ export default class GameSetting extends Component {
       else{
         game.player_cards[i].rank = this.isDubs(game, position)
       }
+      //make functions return the highest number of card that did rank
+      //ex: 8, 8 makes 2 pair isDubs returns rank 2 pair with 8
+      //ex: striaght with highest card
     }
     //hands is an array of players with game.players_cards[i].rank sorted by highest rank to lowest (1, 2, 3, 4, 5, 6, 7, 8, 9, 10 hand rankings in order)
     var hands = [...game.player_cards]
@@ -778,12 +781,25 @@ export default class GameSetting extends Component {
       const chipsLost =
         editGame.chipsLost[playernum] + editGame.chipsIn[playernum];
 
+      var indexOfType = userData.in_game.indexOf("_")+1
+      var indexOfId = userData.in_game.indexOf("-")
+      var gameName = userData.in_game.slice(indexOfType, indexOfId)
+      var leaveGameAlert = "Your chips have changed by " + (editGame.buyIn - quitBalance) + " after game " + gameName + "."
+      if(userData.alerts == null){
+        userData.alerts = [leaveGameAlert]
+      } 
+      else{
+        userData.alerts.push(leaveGameAlert)
+      }
+
       updates["/users/" + user.uid + "/data/wins"] = wins
       updates["/users/" + user.uid + "/data/games"] = games
       updates["/users/" + user.uid + "/data/chips_won"] =
         userData.chips_won + chipsWon;
       updates["/users/" + user.uid + "/data/chips_lost"] =
         userData.chips_lost + chipsLost;
+      updates["/users/" + user.uid + "/data/newAlert"] = true;
+      updates["/users/" + user.uid + "/data/alerts"] = userData.alerts
 
       if (editGame.size == 0) {
         //delete game

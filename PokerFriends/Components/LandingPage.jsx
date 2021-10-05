@@ -12,6 +12,7 @@ import ForgotPassword from './Account-Settings/ForgotPassword'
 import FriendsButton from './FriendsButton'
 import SettingsButton from './AccountSettings'
 import Balance from './Balance'
+import Notification from './Notification'
 
 
 
@@ -29,21 +30,40 @@ export default class LandingPage extends Component {
 
   SignedIn = () => {
       return(
-        <View>
+        <View style={{
+          width: '60%',
+          alignItems: 'center',
+          alignContent: 'center'
+        }}>
           {this.props.userData.in_game == ''? (
-            <TouchableOpacity 
-              style={styles.button}
-              onPress = {() => {
-                this.props.navigation.navigate('JoinGame');
-              }}
-            >
-              <Text style={styles.textStyle}>
-                Join Game
-              </Text>
-            </TouchableOpacity>
+            <View style={{
+              width: '100%',
+              alignItems: 'center',
+              alignContent: 'center'
+            }}>
+              <TouchableOpacity 
+                style={styles.button}
+                onPress = {() => {
+                  this.props.navigation.navigate('JoinGame');
+                }}
+              >
+                <Text style={styles.textStyle}>
+                  Join Game
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.button}
+                onPress = {() => {
+                  this.props.navigation.navigate('CreateGame'); 
+                }}
+              >
+                <Text style={styles.textStyle}>Create Game</Text>
+              </TouchableOpacity>
+            </View>
           ):(
             <TouchableOpacity 
-              style={styles.button}
+              style={[styles.button, {backgroundColor:"#c80c0d"}]}
               onPress = {() => {
                 this.props.navigation.navigate('GameController'); ///// 'GameSetting'
                 ScreenOrientation.lockAsync
@@ -56,14 +76,7 @@ export default class LandingPage extends Component {
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity 
-            style={styles.button}
-            onPress = {() => {
-              this.props.navigation.navigate('CreateGame'); 
-            }}
-          >
-            <Text style={styles.textStyle}>Create Game</Text>
-          </TouchableOpacity>
+          
 
           <TouchableOpacity 
             style={styles.button}
@@ -111,6 +124,7 @@ export default class LandingPage extends Component {
     </View>
     )
   }
+
   AccountStatistics = () => {
     return(
     <View >
@@ -121,14 +135,18 @@ export default class LandingPage extends Component {
     </View>
     )
   }
+
     render(){    
       return (
         <View style={styles.container}>
 
-          <View style={styles.flexContainer}>
-            {this.props.LoggedIn? (this.AccountSettings()):(<Text></Text>)}
+          <View style={styles.flexContainer2}>
+              {this.props.LoggedIn? (this.AccountSettings()):(<Text></Text>)}
 
-            <Balance chips={this.props.userData.chips}/>
+              <View style={{flexDirection:'row', }}>
+                {this.props.LoggedIn? (<Balance chips={this.props.userData.chips}/>):(<Text></Text>)}
+                {this.props.LoggedIn? (<Notification userData={this.props.userData}/>):(<Text></Text>)}
+              </View>
           </View>
           
           <Logo/>
@@ -137,10 +155,12 @@ export default class LandingPage extends Component {
 
           {this.props.LoggedIn? (this.AccountStatistics()):(<Text></Text>)}
 
+          {this.props.LoggedIn? (          
           <View style={styles.flexContainer}>
             <HelpButton/>
             <FriendsButton navigation = {this.props.navigation}/>
           </View>
+          ):(<Text></Text>)}
 
         </View>
       );
@@ -150,8 +170,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#2ecc71',
-    alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   textStyle:{
     alignItems: 'center',
@@ -175,6 +195,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#27ae60",
     top: '125%'
   },
+  flexContainer2:{
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: '90%',
+    top: 40
+  },
   flexContainer:{
     flexDirection: 'row',
     margin: 20,
@@ -184,8 +210,8 @@ const styles = StyleSheet.create({
   SettingcornerView: {
     justifyContent: "flex-start",
     alignSelf: 'flex-start',
-    right: 80,
-    top: 10
+    //right: 80,
+    //top: 10
   },
   Settingbutton: {
     borderRadius: 50,

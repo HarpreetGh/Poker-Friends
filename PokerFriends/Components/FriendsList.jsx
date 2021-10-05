@@ -124,6 +124,7 @@ export default class FriendsList extends Component {
     const friendID = this.state.foundUserData.username.slice(this.state.foundUserData.username.indexOf('#')+1)
     updates['/users/'+ friendID +'/request/friend_request'] = 
       this.state.foundUserRequest.friend_request
+    updates['/users/'+ friendID +'/request/friend_request_alert'] = true
     firebase.database().ref().update(updates);
   }
 
@@ -369,7 +370,7 @@ export default class FriendsList extends Component {
                     <Text style={styles.textStyle}>Friend Requests: {this.props.userRequest.friend_request.length - 1}</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={styles.buttonContainer}
+                  <TouchableOpacity style={[styles.buttonContainer, (this.state.removeFriendsOn)?{backgroundColor: '#c80c0d'}:{}]}
                     onPress={() => this.setState({removeFriendsOn: !this.state.removeFriendsOn})}
                   >
                     <Text style={styles.textStyle}>Remove Friend</Text>
@@ -400,13 +401,13 @@ export default class FriendsList extends Component {
                         )}
 
                         {inGame? (<View>
-                          <Text style={styles.textStyle}>Game: {gameName}</Text> 
+                          <Text style={[styles.textStyle, {marginBottom: 5}]}>Game: {gameName}</Text> 
                           <TouchableOpacity style={styles.joinButton}
                           onPress={() => this.joinGame(item.in_game)}>
                             <Text style={styles.joinTextStyle}>Join Game</Text>
                           </TouchableOpacity>
                         </View>
-                        ):(<Text style={styles.textStyle}> Not in a game.</Text>)}
+                        ):(<Text style={styles.textStyle}>Not in a game.</Text>)}
                       </View>
                     )
                   }}
@@ -548,6 +549,7 @@ const styles = StyleSheet.create({
       marginLeft: 5
     },
     joinTextStyle: {
+      padding: 5,
       color: "white",
       textAlign: "center"
     },
@@ -559,7 +561,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
     },
     removeFriendButton:{
-      backgroundColor: '#FB6342',
+      backgroundColor: '#c80c0d',
       paddingVertical: 20,
       padding: 20,
       borderRadius: 50,

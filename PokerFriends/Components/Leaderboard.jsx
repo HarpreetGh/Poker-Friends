@@ -23,7 +23,8 @@ export default class Leaderboard extends Component {
         chips: child.val().data.chips,
         chips_won: child.val().data.chips_won,
         chips_lost: child.val().data.chips_lost,
-        wins: child.val().data.wins
+        wins: child.val().data.wins,
+        photoURL: child.val().data.photoURL
       })
     })
     data.reverse()
@@ -87,6 +88,11 @@ export default class Leaderboard extends Component {
                   renderItem={({item})=>{
                     return(
                       <View style={styles.gameDisplay}>
+                        <View style={{flexDirection: 'row' , justifyContent: 'center'}}>
+                          <Image
+                            source={{ uri: item.photoURL }}
+                            style = {styles.avatarImage}/>
+                        </View>
                         <Text style={[styles.textStyle, {fontSize: 25}]}>{item.key.slice(0, item.key.indexOf('#'))}</Text>
                         <Text style={styles.textStyle}>Chips: {item.chips} Wins: {item.wins} </Text>
                         <Text style={styles.textStyle}>ChipsWon: {item.chips_won} ChipsLost: {item.chips_lost}</Text>
@@ -185,5 +191,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingTop: 50,
     paddingBottom: 25
-  }
+  },
+  avatarImage: {
+      width: 80, 
+      height: 80, 
+      borderRadius: 100,
+      marginBottom: 5,
+      justifyContent: 'center',
+    },
 })
