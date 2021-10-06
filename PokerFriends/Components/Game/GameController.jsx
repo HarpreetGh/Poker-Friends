@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import * as ScreenOrientation from "expo-screen-orientation";
 import firebase from "firebase";
+import _ from "lodash"
 
 import GameView from "./GameAnimation/GameSetting";
 import Deck from "../decks";
@@ -155,6 +156,7 @@ export default class GameSetting extends Component {
           //waiting for users to leave/join
         } else {
           var cards = await this.giveOutCards();
+          console.log(cards)
           game.player_cards = cards[0];
           game.deck = cards[1];
           game.turn++;
@@ -175,6 +177,14 @@ export default class GameSetting extends Component {
 
         if (allPlayersReady || allPlayersFolded) {
           if (allPlayersFolded) {
+            if(game.turn == 1){
+              updates[matchPath + "/board"] = game.deck 
+              updates[matchPath + "/deck"] = null
+            }
+            else if(game.turn < 4){
+              console.log(game.board.push(...game.deck))
+              updates[matchPath + "/board"] = game.board
+            }
             updates[matchPath + "/turn"] = 5;
           } else {
             if (game.turn < 4) {
@@ -185,7 +195,7 @@ export default class GameSetting extends Component {
                 //prep for turn 3 and 4
                 game.board.push(...game.deck.splice(0, 1));
               }
-
+              console.log(game.board)
               updates[matchPath + "/board"] = game.board;
               updates[matchPath + "/deck"] = game.deck;
             }
@@ -271,62 +281,97 @@ export default class GameSetting extends Component {
   async findRoundWinner(game) {
     // Assign ranks for players before sorting ranks in hand[] array
     // Loop through all players and assign them a rank
+    console.log(game.player_cards)
+    console.log(game.board)
+    const ranks = 
+      ["Royal Flush", "Staight Flush", "Four of a Kind", "Full House", "Flush", 
+      "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card", "Uncontested Round"]
+
+    var hands = [] //hands in play
+    
     for (var i = 0; i < game.size; i++) {
-      var position = i;
-      var rank = this.isRoyalFlush(game, position) //staight flush, flush, straight
-      if (rank > 0) {
-        game.player_cards[i].rank = rank;
-      }
-      else{
-        game.player_cards[i].rank = this.isDubs(game, position)
+      if (game.move[i] != "fold") {
+        var completeCards = [];
+        completeCards.push(...game.player_cards[i].myCards);
+        completeCards.push(...game.board);
+        var hand = _.cloneDeep(completeCards)
+        // Convert the array to numerical/int values to sort
+        for (var j = 0; j < hand.length; j++) {
+          if (hand[j].value == "J") {
+            hand[j].value = 11;
+          }
+          else if (hand[j].value == "Q") {
+            hand[j].value = 12;
+          }
+          else if (hand[j].value == "K") {
+            hand[j].value = 13;
+          }
+          else if (hand[j].value == "A") {
+            hand[j].value = 14;
+          }
+          else{
+          hand[j].value = parseInt(hand[j].value);
+          }
+        }
+
+        var rank1 = this.isRoyalFlush(hand) //straight flush, flush, straight
+        var rank2 = this.isDubs(hand) //duplicates such as Pair, Full House, 4 of Kind.
+        if (rank1[0] < rank2[0]) {
+          game.player_cards[i].rank = rank1;
+        }
+        else if (rank1[0] > rank2[0]){
+          game.player_cards[i].rank = rank2
+        }
+        else{
+          console.log(game.player_cards[i])
+          var high = game.player_cards[i].myCards
+          console.log("High Card", high)
+          high.sort(function (a, b) {return b - a});
+          game.player_cards[i].rank = [10, [high[0]]]
+        }
+        hands.push(game.player_cards[i])
       }
       //make functions return the highest number of card that did rank
       //ex: 8, 8 makes 2 pair isDubs returns rank 2 pair with 8
       //ex: striaght with highest card
     }
+    var roundWinner = 0;
+    if(hands.length == 1){ //if all but 1 player folded or is left.
+      roundWinner = game.player_cards.findIndex((element) => element == hands[0])
+      return [roundWinner, ranks[10]];
+    }
+
     //hands is an array of players with game.players_cards[i].rank sorted by highest rank to lowest (1, 2, 3, 4, 5, 6, 7, 8, 9, 10 hand rankings in order)
-    var hands = [...game.player_cards]
     hands.sort(function (a, b) {
-      return a.rank - b.rank;
-    }); //sorts from small to high
-
-    var handsNotFolded = []; // An array of hand rankings of players that have not folded
-    for (var i = 0; i < game.size; i++) {
-      // Loop through all players
-      if (game.move[i] != "fold") {
-        // If the player at position "i" has not folded they can move into the hNF array
-        handsNotFolded.push(hands[i]);
-      }
-      // else i++? Something should be here to fix if the first player or [0] index folds causing loop to crash/break
-    }
-
-    var highestRank = handsNotFolded[0].rank;
-    var highestHands = [handsNotFolded[0]]; // An array of hands with the same highest ranks
-    for (var i = 1; i < handsNotFolded.length; i++) {
-      if (highestRank == handsNotFolded[i].rank) {
-        highestHands.push(handsNotFolded[i]); // Loop through to make an array of hands with same high ranks
-      }
-    }
+      return a.rank[0] - b.rank[0];
+    }); //sorts from small to big
+    console.log(hands)
+    hands = hands.filter(hand => hand.rank[0] == hands[0].rank[0]); //filter out lesser ranked hands
 
     var roundWinner = 0;
-    var rW = 0;
-    if (highestHands.length == 1) {
-      roundWinner = game.player_cards.findIndex((element) => element == highestHands[0])
+    if (hands.length == 1) {
+      roundWinner = game.player_cards.findIndex((element) => element == hands[0])
     }
-    else if (highestHands.length > 1) {
-      rW = await this.findHighestHand(highestHands);
-      roundWinner = game.player_cards.findIndex((element) => element == highestHands[rW])
+    else if (hands.length > 1) {
+      //rW = await this.findHighestHand(hands);
+      console.log('comparison triggered', hands)
+      hands.sort(function (a, b) { return b.rank[1][0] - a.rank[1][0]; }); //sorts from big to small
+      hands = hands.filter(hand => hand.rank[1][0] == hands[0].rank[1][0]);
+      console.log(hands)
+      if(hands.length > 1 && hands[0].rank[1].length > 1){
+        console.log('comparison lv2 triggered')
+        hands.sort(function (a, b) { return b.rank[1][1] - a.rank[1][1]; }); //sorts from big to small
+        hands = hands.filter(hand => hand.rank[1][1] == hands[0].rank[1][1]);
+        console.log(hands)
+      }
+      roundWinner = game.player_cards.findIndex((element) => element == hands[0])
       //console.log("rW and roundWinner respectively: ", rW, roundWinner);
       //indexOfHighestRanks would be [0,3] or [1,2,3] or whatever amount of players have same # of cards
       //game.player_cards is [{rank: 2, myCards: [Card, Card]}, {rank: 2, myCards: [Card, Card]}]
       //Card = {suit: 'heart', value: '3', image: 'somefilepath'}
     }
     
-    const ranks = 
-      ["Royal Flush", "Staight Flush", "Four of a Kind", "Full House", "Flush", 
-      "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card"]
-    
-    return [roundWinner, ranks[highestHands[0].rank - 1]];
+    return [roundWinner, ranks[hands[0].rank[0] - 1]];
   }
 
   async findHighestHand(highestHands) {
@@ -388,119 +433,52 @@ export default class GameSetting extends Component {
   }
 
   // Rank 1
-  isRoyalFlush(game, position) {
-    var rank = this.isStraightFlush(game, position)
-    var straightFlushCheck = rank == 2
+  isRoyalFlush(hand) {
+    var rank = this.isStraightFlush(hand)
+    var straightFlushCheck = rank[0] == 2
     if(!straightFlushCheck){
       return rank 
     }
 
-    var completeCards = [];
-    completeCards.push(game.player_cards[position].myCards);
-    completeCards.push(game.board);
-    var hand = completeCards.flat();
-
-    // Sort the array by the values (selection sort)
-    for (var i = 0; i < hand.length; i++) {
-      var max = i;
-      for (var j = i + 1; j < hand.length; j++) {
-        if (hand[j] > hand[max]) {
-          max = j;
-        }
-      }
-      // Swap
-      if (max != i) {
-        var temp = hand[i];
-        hand[i] = hand[max];
-        hand[max] = temp;
-      }
-    }
-    var aceCheck = false;
-    var kingCheck = false;
-    var queenCheck = false;
-    var jackCheck = false;
-    var tenCheck = false;
-    var previousSuit = "";
-
-    // Because the array is sorted by the "value" of the rank/value (not necessarily Ace first), find the Ace and its suit to compare against the rest
-    for (var i = 0; i < hand.length; i++) {
-      if (hand[i].value == "A") {
-        var previousSuit = hand[i].suit;
-        aceCheck = true;
-      }
-    }
-    // Now check the rest of the hand for royal condition and if they are the same suit as the Ace
-    for (var i = 0; i < hand.length; i++) {
-      if (hand[i].value == "K" && hand[i].suit == previousSuit) {
-        kingCheck = true;
-      }
-      if (hand[i].value == "Q" && hand[i].suit == previousSuit) {
-        queenCheck = true;
-      }
-      if (hand[i].value == "J" && hand[i].suit == previousSuit) {
-        jackCheck = true;
-      }
-      if (hand[i].value == "10" && hand[i].suit == previousSuit) {
-        tenCheck = true;
-      }
-    }
-    var royalCheck = false;
-    if (aceCheck && kingCheck && queenCheck && jackCheck && tenCheck) {
-      royalCheck = true;
-    }
-
-    if (royalCheck && straightFlushCheck) {
+    //if the highest card in the StraightFlush is 'A' which is 14 then
+    //It has to be a Royal Flush
+    var straightHasA = rank[1][0] == 14 
+    if (straightHasA) {
       console.log(
         "Congratulations, Royal Flush!",
         royalCheck,
         straightFlushCheck
       );
-      return 1;
+      return [1, 14];
     }
     return rank;
   }
 
   // Rank 2 - Five cards in a row all suit
-  isStraightFlush(game, position) {
-    var Straight = this.isStraight(game, position) 
-    var Flush = this.isFlush(game, position)
-    if (Straight && Flush) {
+  isStraightFlush(hand) {
+    var Straight = this.isStraight(hand) 
+    var Flush = this.isFlush(hand)
+    if (Straight[0] && Flush[0]) {
       console.log("Straight and Flush");
-      return 2;
+      return [2, [Straight[1]]];
     }
-    else if(Flush){
+    else if(Flush[0]){
       console.log("Flush")
-      return 5;
+      return [5, [Flush[1]]];
     }
-    else if(Straight){
+    else if(Straight[0]){
       console.log("Straight")
-      return 6;
+      return [6, [Straight[1]]];
     }
     else{
-      return 0;
+      return [20]; //ranks are 1-10. 20 is for none found
     }
   }
 
   // Rank 5 - Five cards all same suit but not in numerical order
-  isFlush(game, position) {
-    var completeCards = [];
-    completeCards.push(game.player_cards[position].myCards);
-    completeCards.push(game.board);
-    var hand = completeCards.flat();
-
-    // Sort the hands array by the suits (selection sort)
-    for (var i = 0; i < hand.length; i++) {
-      var min = i;
-      for (var j = i + 1; j < hand.length; j++) {
-        if (hand[j].suit < hand[min].suit) {
-          min = j;
-        }
-      }
-      // Swap
-      var temp = hand[i];
-      hand[i] = hand[min];
-      hand[min] = temp;
-    }
+  isFlush(hand) {
+    hand.sort(function (a, b) {return a.suit - b.suit;}); //sorts from small to high
+    console.log(hand)
 
     var diamond = "♦";
     var diamondCounter = 0;
@@ -533,145 +511,125 @@ export default class GameSetting extends Component {
         clubCounter == 5
       ) {
         console.log("Flush found, returning true for isFlush()");
-        return true;
+
+        var suit
+        if(diamondCounter == 5) {suit = diamond}
+        if(heartCounter == 5) {suit = heart}
+        if(spadeCounter == 5) {suit = spade}
+        if(clubCounter == 5) {suit = club}
+        
+        // Convert the array to numerical/int values to sort
+        hand = [...hand.filter(card => card.suit == suit)]
+        hand.sort(function (a, b) {return b - a;});
+        return [true, [hand[0]]];
       }
     }
-    return false
+    return [false]
   }
 
   // Rank 6 - Five cards in numerical order, but not of same suit
-  isStraight(game, position) {
-    var completeCards = [];
-    completeCards.push(game.player_cards[position].myCards);
-    completeCards.push(game.board);
-    var hand = completeCards.flat();
-    var intHand = [];
-
-    // Convert the array to numerical/int values to sort
-    for (var i = 0; i < hand.length; i++) {
-      intHand[i] = parseInt(hand[i].value);
-      if (hand[i].value == "J") {
-        intHand[i] = 11;
-      }
-      if (hand[i].value == "Q") {
-        intHand[i] = 12;
-      }
-      if (hand[i].value == "K") {
-        intHand[i] = 13;
-      }
-      if (hand[i].value == "A") {
-        intHand[i] = 14;
-      }
-    }
-
-    // Sort the array by the values (selection sort)
-    for (var i = 0; i < intHand.length; i++) {
-      var max = i;
-      for (var j = i + 1; j < intHand.length; j++) {
-        if (intHand[j] > intHand[max]) {
-          max = j;
-        }
-      }
-      // Swap
-      if (max != i) {
-        var temp = intHand[i];
-        intHand[i] = intHand[max];
-        intHand[max] = temp;
-      }
-    }
-
+  isStraight(hand) {
     // Make an array removing duplicates (makes checking for straight easier)
-    var uniqueHand = [...new Set(intHand)];
+    var uniqueHand = []
+    hand.forEach((card,i) => uniqueHand[i] = card.value);
+    uniqueHand = [...new Set(uniqueHand)];
+    uniqueHand.sort(function (a, b) {return b - a;}); //sorts from high to small
+
     var counter = 0;
+    var max = 0;
     // Check for decreasing values (straight)
     if (uniqueHand.length >= 5) {
       // A straight can only be made with 5 cards so the unique hand needs at least 5 cards
-      for (var i = 1; i < uniqueHand.length; i++) {
+      for (var i = 0; i < uniqueHand.length-1; i++) {
         // Loop through unique hand
-        if (
-          counter >= 1 &&
-          counter < 4 &&
-          uniqueHand[i] - uniqueHand[i - 1] != -1
-        ) {
-          // Check for promising sequence
-          return false;
-        }
-        if (uniqueHand[i] - uniqueHand[i - 1] == -1) {
+       if(uniqueHand[i] - uniqueHand[i + 1] == 1){
+          if (counter == 0){ 
+            //since we are going in reverse order, 1st in straight is largest number
+            max = uniqueHand[i]
+          }
           counter++;
+          console.log('Counter', counter)
         } // Count how many times a sequence (e.g 14 13 or 9 8) is found
+        else {
+          counter = 0;
+          console.log('counter = 0')
+        }
         if (counter >= 4) {
           console.log("Straight");
-          return true;
+          return [true, [max]]
         }
       }
     }
-    return false;
+    return [false];
   }
   
-  isDubs(game, position){
-    var completeCards = [];
-    completeCards.push(game.player_cards[position].myCards);
-    completeCards.push(game.board);
-    var hand = completeCards.flat();
+  isDubs(hand){
+    hand.sort(function (a, b) {return b.value - a.value}); //sorts from highest to smallest
+    console.log(hand)
     //console.log("hand", hand)
     // Loop through hand array to see if 4 cards have the same value (4 of a kind) then return true if so
    //var totalCounter = [0, 0, 0, 0, 0, 0, 0]
      
     var excluded = []
     var count = []
+    var dubNum = []
     var counter = 1
     for (var i = 0; i < hand.length; i++) {
       counter = 1;
-      if(!excluded.includes(hand[i])){
+      if(!excluded.includes(i)){
         for (var j = i + 1; j < hand.length; j++) {
-          console.log("DUBS", hand[i].value, hand[j].value)
+          //console.log("DUBS", hand[i].value, hand[j].value)
           //console.log("Inner loop: ", "i is ", i, "j is ", j, "counter is ", counter)
           if (hand[i].value == hand[j].value){
             counter += 1
             excluded.push(j)
           }
         }
-        console.log("counter after", counter)
+        //console.log("counter after", counter)
         if(counter > 1){
           count.push(counter)
+          dubNum.push(hand[i].value)
         }
       }
     }
     var row3 = 0
     var row2 = 0
+    var row3Num = []
+    var row2Num = []
 
     for(var i = 0; i < count.length; i++){
       if (count[i] == 4) {
         console.log("4 of kind");
-        return 3
+        return [3, dubNum[i]]
       }
       else if(count[i] == 3){
         row3 += 1 
+        row3Num.push(dubNum[i])
       }
       else if(count[i] == 2){
         row2 += 1
+        row2Num.push(dubNum[i])
       }
     }
     
     if((row3 > 0 && row2 > 0) || row3 > 1 ){
-      console.log("Full House")
-      return 4
+      console.log("Full House", row3, row2)
+      return [4, [row3Num[0], row2Num[0]]]
     }
     else if(row3 > 0){
       console.log("3 of Kind")
-      return 7
+      return [7, [row3Num[0]]]
     }
     else if(row2 > 0){
       if(row2 > 1){
         console.log("2 pair")
-        return 8
+        return [8, [row2Num[0], row2Num[1]]]
       }
       console.log("pair")
-      return 9
+      return [9, [row2Num[0]]];
     }
     else{
-      console.log("High Card")
-      return 10
+      return [20]
     }
   }
 
@@ -846,7 +804,7 @@ export default class GameSetting extends Component {
     firebase.database().ref().update(updates);
   }
 
-  endGame() {
+  /*endGame() {
     //When game ends and there is a winner
     //maybe insert a if(size > 1) so doesn't count for solos.
     var endGame = this.state.game;
@@ -879,7 +837,7 @@ export default class GameSetting extends Component {
     }
 
     firebase.database().ref().update(updates);
-  }
+  }*/
 
   render() {
     if (this.state.ready) {
