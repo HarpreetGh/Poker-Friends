@@ -195,7 +195,6 @@ export default class GameSetting extends Component {
                 //prep for turn 3 and 4
                 game.board.push(...game.deck.splice(0, 1));
               }
-              console.log(game.board)
               updates[matchPath + "/board"] = game.board;
               updates[matchPath + "/deck"] = game.deck;
             }
@@ -216,6 +215,8 @@ export default class GameSetting extends Component {
           const roundWinnerRank = values[1]
           console.log("Roundwinner is after function call: ", roundWinner);
           
+          //put a for loop here for all round winners
+          //game.pot /roundWinner.length for the array of winners
           game.balance[roundWinner] += game.pot;
           game.chipsWon[roundWinner] += game.pot;
           game.wins[roundWinner] += 1;
@@ -281,8 +282,6 @@ export default class GameSetting extends Component {
   async findRoundWinner(game) {
     // Assign ranks for players before sorting ranks in hand[] array
     // Loop through all players and assign them a rank
-    console.log(game.player_cards)
-    console.log(game.board)
     const ranks = 
       ["Royal Flush", "Staight Flush", "Four of a Kind", "Full House", "Flush", 
       "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card", "Uncontested Round"]
@@ -292,27 +291,14 @@ export default class GameSetting extends Component {
     for (var i = 0; i < game.size; i++) {
       if (game.move[i] != "fold") {
         var completeCards = [];
+        //convert player cards to int values instead of strings, as well as sorting them
+        game.player_cards[i].myCards = this.cardToInt(game.player_cards[i].myCards)
+        game.player_cards[i].myCards.sort(function (a, b) { return b.value - a.value; })
+
         completeCards.push(...game.player_cards[i].myCards);
-        completeCards.push(...game.board);
+        completeCards.push(...this.cardToInt(game.board));
         var hand = _.cloneDeep(completeCards)
         // Convert the array to numerical/int values to sort
-        for (var j = 0; j < hand.length; j++) {
-          if (hand[j].value == "J") {
-            hand[j].value = 11;
-          }
-          else if (hand[j].value == "Q") {
-            hand[j].value = 12;
-          }
-          else if (hand[j].value == "K") {
-            hand[j].value = 13;
-          }
-          else if (hand[j].value == "A") {
-            hand[j].value = 14;
-          }
-          else{
-          hand[j].value = parseInt(hand[j].value);
-          }
-        }
 
         var rank1 = this.isRoyalFlush(hand) //straight flush, flush, straight
         var rank2 = this.isDubs(hand) //duplicates such as Pair, Full House, 4 of Kind.
@@ -326,8 +312,8 @@ export default class GameSetting extends Component {
           console.log(game.player_cards[i])
           var high = game.player_cards[i].myCards
           console.log("High Card", high)
-          high.sort(function (a, b) {return b - a});
-          game.player_cards[i].rank = [10, [high[0]]]
+          high.sort(function (a, b) {return b.value - a.value});
+          game.player_cards[i].rank = [10, [high[0].value, high[1].value]]
         }
         hands.push(game.player_cards[i])
       }
@@ -351,15 +337,30 @@ export default class GameSetting extends Component {
     }
     else if (hands.length > 1) {
       //rW = await this.findHighestHand(hands);
-      console.log('comparison triggered', hands)
+      console.log('rank comparison triggered', hands)
       hands.sort(function (a, b) { return b.rank[1][0] - a.rank[1][0]; }); //sorts from big to small
       hands = hands.filter(hand => hand.rank[1][0] == hands[0].rank[1][0]);
-      console.log(hands)
       if(hands.length > 1 && hands[0].rank[1].length > 1){
-        console.log('comparison lv2 triggered')
+        console.log('rank comparison lv2 triggered')
         hands.sort(function (a, b) { return b.rank[1][1] - a.rank[1][1]; }); //sorts from big to small
         hands = hands.filter(hand => hand.rank[1][1] == hands[0].rank[1][1]);
-        console.log(hands)
+
+      }
+      if(hands.length > 1){
+        //each players cards are already sorted largest to small
+        console.log('hand comparison triggered')
+        hands.sort(function (a, b) { return b.myCards[0].value - a.myCards[0].value; }); //sorts from big to small
+        hands = hands.filter(hand => hand.myCards[0].value == hands[0].myCards[0].value);
+
+        if(hands.length > 1){
+          console.log('hand comparison lv 2 triggered')
+          hands.sort(function (a, b) { return b.myCards[1].value - a.myCards[1].value; }); //sorts from big to small
+          hands = hands.filter(hand => hand.myCards[1].value == hands[0].myCards[1].value);
+  
+          if(hands.length > 1){
+            console.log('identical hands')
+          }
+        }
       }
       roundWinner = game.player_cards.findIndex((element) => element == hands[0])
       //indexOfHighestRanks would be [0,3] or [1,2,3] or whatever amount of players have same # of cards
@@ -370,62 +371,25 @@ export default class GameSetting extends Component {
     return [roundWinner, ranks[hands[0].rank[0] - 1]];
   }
 
-  async findHighestHand(highestHands) {
-    console.log("findHighestHand called...finding highest hand value...");
-
-    var allHands = [];
-    for (var i = 0; i < highestHands.length; i++) {
-      // Populate allHands with all the players cards
-      //console.log("highestHands 402 ",highestHands[i].myCards);
-      allHands.push(highestHands[i].myCards);
-      console.log("allHands[" + i.toString() + "]: ", allHands[i]);
-      //[ [[suit, value],[suit value]], [[suit, value],[suit value]] ]
-    } //[[j,9],[10,a]]
-    //console.log("allHands: ", allHands);
-
-    var aH = allHands.flat();
-    console.log("aH: ", aH);
-    var intAllHands = [];
-    for (var i = 0; i < aH.length; i++) {
-      intAllHands[i] = parseInt(aH[i].value);
-      if (aH[i].value == "J") {
-        intAllHands[i] = 11;
+  cardToInt(array){
+    for (var j = 0; j < array.length; j++) {
+      if (array[j].value == "J") {
+        array[j].value = 11;
       }
-      else if (aH[i].value == "Q") {
-        intAllHands[i] = 12;
+      else if (array[j].value == "Q") {
+        array[j].value = 12;
       }
-      else if (aH[i].value == "K") {
-        intAllHands[i] = 13;
+      else if (array[j].value == "K") {
+        array[j].value = 13;
       }
-      else if (aH[i].value == "A") {
-        intAllHands[i] = 14;
+      else if (array[j].value == "A") {
+        array[j].value = 14;
       }
-      console.log("intAllHands[" + i.toString() + "]: ", intAllHands);
-    }
-    console.log("intAllHands: ", intAllHands);
-
-    var valueOfHands = [];
-    for (var i = 0; i < intAllHands.length; i += 2) {
-      valueOfHands.push(intAllHands[i] + intAllHands[i + 1]);
-      console.log(
-        "valueOfHands[" + (i / 2).toString() + "]: ",
-        valueOfHands[i / 2]
-      );
-    }
-    console.log("valueOfHands: ", valueOfHands);
-
-    var max = 0;
-    var index = 0;
-    for (var i = 0; i < valueOfHands.length; i++) {
-      if (valueOfHands[i] > max) {
-        max = valueOfHands[i];
-        index = i;
-        console.log("max: ", max);
-        console.log("index and " + i.toString() + ": ", index, i);
+      else{
+      array[j].value = parseInt(array[j].value);
       }
     }
-    console.log("rWHH or winner is at index: ", index);
-    return index
+    return array
   }
 
   // Rank 1
@@ -721,10 +685,10 @@ export default class GameSetting extends Component {
       var leaveGameAlert 
       var change = (quitBalance - editGame.buyIn) //calculate how much you earned or lost in game
       if(change > 0){
-        leaveGameAlert = "You have gained: " + change + " after game " + gameName + "."
+        leaveGameAlert = "You have gained " + change + " chips after game " + gameName + "."
       }
       else if(change < 0){
-        leaveGameAlert = "You have lost: " + (change * -1) + " after game " + gameName + "."
+        leaveGameAlert = "You have lost " + (change * -1) + " chips after game " + gameName + "."
       }
       else{
         leaveGameAlert = "You broke even in your last game, " + gameName + "."
