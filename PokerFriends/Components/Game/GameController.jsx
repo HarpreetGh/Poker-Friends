@@ -342,10 +342,7 @@ export default class GameSetting extends Component {
     }
 
     //hands is an array of players with game.players_cards[i].rank sorted by highest rank to lowest (1, 2, 3, 4, 5, 6, 7, 8, 9, 10 hand rankings in order)
-    hands.sort(function (a, b) {
-      return a.rank[0] - b.rank[0];
-    }); //sorts from small to big
-    console.log(hands)
+    hands.sort(function (a, b) { return a.rank[0] - b.rank[0]; }); //sorts from small to big
     hands = hands.filter(hand => hand.rank[0] == hands[0].rank[0]); //filter out lesser ranked hands
 
     var roundWinner = 0;
@@ -365,7 +362,6 @@ export default class GameSetting extends Component {
         console.log(hands)
       }
       roundWinner = game.player_cards.findIndex((element) => element == hands[0])
-      //console.log("rW and roundWinner respectively: ", rW, roundWinner);
       //indexOfHighestRanks would be [0,3] or [1,2,3] or whatever amount of players have same # of cards
       //game.player_cards is [{rank: 2, myCards: [Card, Card]}, {rank: 2, myCards: [Card, Card]}]
       //Card = {suit: 'heart', value: '3', image: 'somefilepath'}
@@ -676,27 +672,6 @@ export default class GameSetting extends Component {
     }
   }
 
-  /* Experimental code
-  updateGame2(oldGameData, newGameData, matchType, fullMatchName){ 
-    var updates = {};
-    var matchLocation = '/games/'+ matchType + '/' + fullMatchName + '/'
-    const keys = Object.keys(oldGameData)
-    
-    for(var i = 0; i < keys.length; i++){
-      if(typeof(oldGameData[keys[i]]) == "object" &&
-        oldGameData[keys[i]].every((value) => value != newGameData[keys[i]])){
-        updates[matchLocation + keys[i]] = newGameData[keys[i]];
-      }
-    }
-
-    console.log('updateGame: ', updates)
-
-    if(Object.keys(updates).length > 0){
-      firebase.database().ref().update(updates);
-    }
-  }
-  */
-
   leaveGame(
     editGame,
     playernum,
@@ -742,7 +717,19 @@ export default class GameSetting extends Component {
       var indexOfType = userData.in_game.indexOf("_")+1
       var indexOfId = userData.in_game.indexOf("-")
       var gameName = userData.in_game.slice(indexOfType, indexOfId)
-      var leaveGameAlert = "Your chips have changed by " + (editGame.buyIn - quitBalance) + " after game " + gameName + "."
+
+      var leaveGameAlert 
+      var change = (quitBalance - editGame.buyIn) //calculate how much you earned or lost in game
+      if(change > 0){
+        leaveGameAlert = "You have gained: " + change + " after game " + gameName + "."
+      }
+      else if(change < 0){
+        leaveGameAlert = "You have lost: " + (change * -1) + " after game " + gameName + "."
+      }
+      else{
+        leaveGameAlert = "You broke even in your last game, " + gameName + "."
+      }
+      
       if(userData.alerts == null){
         userData.alerts = [leaveGameAlert]
       } 
@@ -803,41 +790,6 @@ export default class GameSetting extends Component {
       .off();
     firebase.database().ref().update(updates);
   }
-
-  /*endGame() {
-    //When game ends and there is a winner
-    //maybe insert a if(size > 1) so doesn't count for solos.
-    var endGame = this.state.game;
-    const playernum = this.state.playerNum;
-
-    const endBalance = endGame.balance[playernum];
-    const chipsWon = editGame.chipsWon[playernum];
-    const chipsLost =
-      editGame.chipsLost[playernum] + editGame.chipsIn[playernum];
-
-    var updates = {};
-    var matchLocation =
-      "/games/" + this.state.matchType + "/" + this.state.fullMatchName;
-
-    updates[matchLocation] = null;
-    if (this.state.matchType == "public") {
-      updates["/games/list/" + this.state.fullMatchName] = null;
-    }
-
-    var user = firebase.auth().currentUser;
-    updates["/users/" + user.uid + "/in_game"] = "";
-    updates["/users/" + user.uid + "/chips"] =
-      this.props.userData.chips + endBalance;
-    updates["/users/" + user.uid + "/games"] = this.props.userData.games + 1;
-    updates["/users/" + user.uid + "/chips_won"] = chipsWon;
-    updates["/users/" + user.uid + "/chips_lost"] = chipsLost;
-
-    if (endGame.balance[playernum] > 0) {
-      updates["/users/" + user.uid + "/wins"] = this.props.userData.wins + 1;
-    }
-
-    firebase.database().ref().update(updates);
-  }*/
 
   render() {
     if (this.state.ready) {

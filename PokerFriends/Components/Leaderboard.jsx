@@ -187,6 +187,7 @@ const styles = StyleSheet.create({
     width:'100%'
   },
   statButtonsContainer: {
+    width: "90%",
     flexDirection: 'row',
     justifyContent: 'center',
     paddingTop: 50,

@@ -4,7 +4,9 @@ import { StyleSheet, Text, View, Image, KeyboardAvoidingView } from 'react-nativ
 export default class Logo extends Component {
     render(){
         return (
-            <KeyboardAvoidingView style={styles.logoContainer}>
+            <KeyboardAvoidingView style={styles.logoContainer}  
+              //behavior={Platform.OS === "ios" ? "padding" : "height"}
+            >
             <Image 
               style={styles.logo} 
               source={require('../assets/placeholderLOGO.png')} />

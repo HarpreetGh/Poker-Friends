@@ -11,7 +11,7 @@ export default class LoginForm extends Component {
     }
   }
   Login() {
-    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+    firebase.auth().signInWithEmailAndPassword(this.state.email.trim(), this.state.password.trim())
     .then(() =>{
       this.props.navigation.navigate('LandingPage')
     })
@@ -25,6 +25,7 @@ export default class LoginForm extends Component {
   render(){
     return(
     <KeyboardAvoidingView 
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
       behavior = 'padding'
     >

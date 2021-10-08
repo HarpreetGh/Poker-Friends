@@ -37,7 +37,8 @@ export default class ChangeUsername extends Component {
 
     render(){
         return (
-            <KeyboardAvoidingView 
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
               style={styles.container} 
               >
                 <Logo />

@@ -16,13 +16,13 @@ export default class Register extends Component {
   }
 
   async SignUp(){
-    firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
+    firebase.auth().createUserWithEmailAndPassword(this.state.email.trim(), this.state.password.trim())
       .then((userCredential) =>{
         var user = firebase.auth().currentUser;
           if (user) {
-            this.InitializeUserInDB(user, this.state.username+"#"+user.uid)
+            this.InitializeUserInDB(user, this.state.username.trim()+"#"+user.uid)
             user.updateProfile({
-              displayName: this.state.username,
+              displayName: this.state.username.trim(),
               photoURL: 'https://firebasestorage.googleapis.com/v0/b/pokerfriends-843ef.appspot.com/o/default_player_image.jpg?alt=media&token=8353b7ac-d6f0-4c6c-a379-712cb8cb48de'
             })
               .then(() => {
@@ -65,7 +65,8 @@ export default class Register extends Component {
 
   render(){
     return (
-        <KeyboardAvoidingView 
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"} 
           style={styles.container}
           >
             <Logo />

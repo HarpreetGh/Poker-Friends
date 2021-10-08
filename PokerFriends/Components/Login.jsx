@@ -10,7 +10,9 @@ export default class Login extends Component {
 
   render(){
     return (
-      <KeyboardAvoidingView style={styles.container}>
+      <KeyboardAvoidingView style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
 
         <Logo />
 

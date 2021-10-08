@@ -13,6 +13,7 @@ import FriendsButton from './FriendsButton'
 import SettingsButton from './AccountSettings'
 import Balance from './Balance'
 import Notification from './Notification'
+import Logout from './Logout'
 
 
 
@@ -30,11 +31,7 @@ export default class LandingPage extends Component {
 
   SignedIn = () => {
       return(
-        <View style={{
-          width: '60%',
-          alignItems: 'center',
-          alignContent: 'center'
-        }}>
+        <View style={styles.SignedView}>
           {this.props.userData.in_game == ''? (
             <View style={{
               width: '100%',
@@ -76,8 +73,6 @@ export default class LandingPage extends Component {
             </TouchableOpacity>
           )}
 
-          
-
           <TouchableOpacity 
             style={styles.button}
             onPress = {() => {
@@ -88,7 +83,7 @@ export default class LandingPage extends Component {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.button} 
-            onPress = {() => LogOut()}>
+            onPress = {() => this.setModalVisible(true)}>
                 <Text style={styles.textStyle}>Log Out</Text>
           </TouchableOpacity>
           
@@ -98,7 +93,7 @@ export default class LandingPage extends Component {
 
   SignedOut = () => {
     return(
-      <View>
+      <View style={styles.SignedView}>
 
         <TouchableOpacity style={styles.button} 
           onPress = {() => this.props.navigation.navigate('Register')}>
@@ -223,5 +218,10 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     textAlign: "center"
+  },
+  SignedView: {
+    width: '60%',
+    alignItems: 'center',
+    alignContent: 'center'
   }
 });

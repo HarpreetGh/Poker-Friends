@@ -6,6 +6,7 @@ import { Text, StyleSheet, View, TouchableOpacity,
          } from 'react-native';
 import Slider from '@react-native-community/slider';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
 
 import Chat from '../../Chat'
 import Deck from '../../decks'
@@ -406,6 +407,7 @@ export default class GameSetting extends Component {
       const { modalVisible } = this.state;
       return (
         <Modal
+          supportedOrientations={['landscape']}
           animationType="slide"
           transparent={true}
           visible={modalVisible} 
@@ -464,12 +466,12 @@ export default class GameSetting extends Component {
     }
 
     waitingView(){
-      var isVisible = true
       return (
       <Modal
+        supportedOrientations={['landscape']}
         animationType="slide"
         transparent={true}
-        visible={isVisible}
+        visible={!this.state.modalVisible}
       >
         <View style = {styles.centeredView}>
           <View style = {styles.modalView}>
@@ -480,7 +482,7 @@ export default class GameSetting extends Component {
             <View style = {{padding: 5}}></View>
             <TouchableOpacity
               style={styles.buttonInExit}
-              onPress={() => this.setModalVisible(true)}
+              onPress={() => {this.setModalVisible(true)}}
             >
               <Text>EXIT</Text>
             </TouchableOpacity>
@@ -563,6 +565,7 @@ export default class GameSetting extends Component {
       const {raiseVisible} = this.state;
       return (
       <Modal
+        supportedOrientations={['landscape']}
         animationType="slide"
         transparent={true}
         visible={raiseVisible}
@@ -748,6 +751,7 @@ export default class GameSetting extends Component {
       var isVisible = !this.props.game.ready[this.props.playerNum]
       return (
         <Modal
+          supportedOrientations={['landscape']}
           animationType="slide"
           transparent={true}
           visible={isVisible}
@@ -773,7 +777,53 @@ export default class GameSetting extends Component {
         </Modal>
       )
     }
+
+    timerView(){
+      var myTurn = this.props.game.playerTurn == this.props.playerNum
+      var isPlaying = 0 < this.props.game.turn && this.props.game.turn < 5
+      return(
+      <View style={styles.timer}>
+        <CountdownCircleTimer
+          key={this.props.game.playerTurn}
+          isPlaying={isPlaying}
+          size={60}
+          strokeWidth = {8}
+          duration={45}
+          onComplete={() => (myTurn)? this.timedOut():([false])}
+          colors={[
+            ['#004777', 0.4],
+            ['#F7B801', 0.4],
+            ['#A30000', 0.2],
+          ]}
+        >
+          {({ remainingTime, animatedColor }) => (
+            <Animated.Text style={{ color: animatedColor, fontSize: 20 }}>
+              {remainingTime}
+            </Animated.Text>
+          )}
+        </CountdownCircleTimer>
+        
+        <View style={[styles.timerTextBackground]}>
+          {0 == this.props.game.turn || this.props.game.turn == 5?(
+            <Text style={styles.playerNames}>
+              Waiting For Other Players
+            </Text>
+            ):(
+            <Text style={styles.playerNames}>
+              {this.props.game.players[this.props.game.playerTurn]}'s Turn 
+            </Text>
+            )
+          }
+        </View>
+      </View>
+      )
+    }
     
+    timedOut(){
+      this.foldCard() 
+      this.UpdateInitializer('fold')
+    }
+
     defaultEmptyAvatar() {
       return (
         <View style = {{alignItems: 'center'}}>
@@ -922,17 +972,12 @@ export default class GameSetting extends Component {
 
           {this.props.game.turn < 5 ?(
             this.actionsView()):
-            (<Text style={[styles.bettingButtonsView, styles.textStyle]}>
-              Waiting For Other Players
+            (<Text>
             </Text>)
           }
 
-          <View style={styles.dealer}>
-            <Image
-              style={styles.dealer}
-              source={require("../../../assets/cards.png")}
-            />
-          </View>
+          
+          {this.timerView()}
 
           <View style={styles.chat}>
             <Chat
@@ -1038,6 +1083,7 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 2,
     backgroundColor: "#b2bec3",
+    marginVertical: 5
   },
   button: {
     borderRadius: 2,
@@ -1054,19 +1100,34 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: 'bold',
   },
-  dealer: {
-    width: 125, 
-    height:125,
+  timer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignContent: 'center',
     resizeMode: 'contain',
-    bottom: '-5%',
-    left: '35%',
+    top: '85%',
+    right: '40%',
+    left: '45%',
     position: 'absolute'
+  },
+   timerTextBackground:{
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+    backgroundColor:"#ff9f1a",
+    borderRadius: 50,
+    marginLeft: 5,
+    //paddingHorizontal: 10,
+    paddingLeft: 10,
   },
   textStyle:{
     color: '#FFFFFF',
     fontWeight: 'bold',
+    flexDirection: 'row',
     justifyContent: "center",
     alignItems: "center",
+    alignContent: 'center'
   },
   playerNames:{
     color: 'white',

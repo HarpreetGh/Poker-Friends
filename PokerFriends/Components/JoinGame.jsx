@@ -1,11 +1,9 @@
 import React, { Component, useState } from 'react'
-import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, FlatList, List, ListItem, Touchable, Alert, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, FlatList} from 'react-native';
 import Slider from '@react-native-community/slider';
 import Logo from './Logo';
 import firebase from 'firebase'
 import * as ScreenOrientation from 'expo-screen-orientation';
-
-import Balance from './Balance'
 
 
 
@@ -17,43 +15,31 @@ export default class JoinGame extends Component {
       gameList: []
     }
   }
-  /*
-  getGames(){
-    var games = firebase.database().ref('games/public').orderByChild('$')
-    games.on('value', (snapshot) => {
-      const data = snapshot.val();
-      updateStarCount(postElement, data);
-    });
-  }
-  */
 
   componentDidMount(){
     firebase.database().ref('/games/list/').orderByChild('size').endAt(3).on('value', (snapshot) => {
-          var data =  []
-          snapshot.forEach((child) => {
-            data.push({
-              key: child.key,
-              buyIn:child.val().buyIn,
-              size: child.val().size
-            })
-          })
-          this.setState({gameList: data})
+      var data =  []
+      snapshot.forEach((child) => {
+        data.push({
+          key: child.key,
+          buyIn:child.val().buyIn,
+          size: child.val().size
+        })
+      })
+      this.setState({gameList: data})
     })
-   }
+  }
 
-   componentWillUnmount(){
+  componentWillUnmount(){
     //stops checking for updates on list
     firebase.database().ref('/games/list/').off()
   }
-
 
   async joinGame(matchName){
     var user = firebase.auth().currentUser;
     const username = user.displayName
     const matchPath =  '/games/' + 'public' + '/' + matchName;
     const matchListPath = '/games/list/' + matchName;
-
-    
     
     firebase.database().ref(matchPath).once('value', (snapshot) => {
       console.log('game data recieved')
@@ -96,19 +82,24 @@ export default class JoinGame extends Component {
           <View style={styles.balance}>
             <TouchableOpacity style={[styles.buttonContainer, {marginBottom: 0}]}
             disabled={true}>
-                <Text style={[styles.textStyle, {marginBottom: 0}]}>Your Balance: {this.props.userData.chips}</Text>
+                <Text style={styles.sortTextStyle}>Your Balance: {this.props.userData.chips}</Text>
             </TouchableOpacity> 
           </View>
 
           <View style={{flex:1, alignSelf:'center', justifyContent:'center', paddingBottom: 10}}>
-            <FlatList style={{width:'100%'}}
+            <FlatList style={{width:'90%'}}
+              horizontal={false}
+              numColumns={2}
               data={this.state.gameList}
               keyExtractor={(item)=>item.key}
               renderItem={({item})=>{
                 return(
                   <View style={styles.gameDisplay}>
-                    <Text style={[styles.textStyle, {fontSize: 25}]}>{item.key.slice(item.key.indexOf('_')+1, item.key.indexOf('-'))}</Text>
-                    <Text style={styles.textStyle}>Size: {item.size}                   Buy In: {item.buyIn}</Text>
+                    <Text style={[styles.textStyle, {fontSize: 20}]}>{item.key.slice(item.key.indexOf('_')+1, item.key.indexOf('-'))}</Text>
+                    <View style={{flexDirection:'row', justifyContent: 'space-between'}}>
+                      <Text style={styles.textStyle}>Size: {item.size}</Text>
+                      <Text style={styles.textStyle}> Buy In: {item.buyIn}</Text>
+                    </View>
                     <TouchableOpacity style={styles.joinButton}
                     onPress={() => this.joinGame(item.key)}>
                       <Text style={styles.textStyle}>Join Game</Text>
@@ -142,9 +133,9 @@ const styles = StyleSheet.create({
   gameDisplay:{
     backgroundColor: '#27ae60',
     borderRadius: 50,
-    width:"100%",
-    padding: 20,
-    marginBottom: 20,
+    width:"45%",
+    padding: 15,
+    margin: 10
   },
   joinButton:{
     backgroundColor: '#000000',
@@ -160,6 +151,11 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     width:"100%",
     marginBottom: 20
+  },
+  sortTextStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
   },
   registerButtonText: {
     textAlign: 'center',

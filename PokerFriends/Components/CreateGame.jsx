@@ -43,7 +43,7 @@ export default class CreateGame extends Component {
     }  
     this.props.userData.chips -= buyIn 
     var d = new Date
-    var matchName = type + '_' + this.state.name +"-"+ d.getTime();
+    var matchName = type + '_' + this.state.name.trim() +"-"+ d.getTime();
     var updates = {};
     updates['/users/'+ user.uid +'/data/in_game'] = matchName;
     updates['/users/'+ user.uid +'/data/chips'] = this.props.userData.chips
@@ -89,6 +89,7 @@ export default class CreateGame extends Component {
   render(){
     return (
         <KeyboardAvoidingView 
+          //behavior={Platform.OS === "ios" ? "padding" : "height"} 
           style={styles.container}
           >
             <Logo />
@@ -96,6 +97,7 @@ export default class CreateGame extends Component {
 
             <TextInput
                 placeholder="Lobby Name"
+                maxLength={20}
                 placeholderTextColor="rgba(255, 255, 255, 0.75)"
                 returnKeyType="next"
                 autoCapitalize="none"
@@ -120,18 +122,6 @@ export default class CreateGame extends Component {
                 maximumTrackTintColor="#000000"
               />
               {/* //https://github.com/callstack/react-native-slider */}
-
-            {/* <TextInput
-                placeholder="Buy In"
-                placeholderTextColor="rgba(255, 255, 255, 0.75)"
-                returnKeyType="next"
-                autoCapitalize="none"
-                autoCorrect={false}
-                keyboardType='number-pad'
-                style={styles.input}
-                onChangeText={text => this.setState({buyIn: text})}
-                value={this.state.buyIn}
-            /> */}
 
             <TouchableOpacity style={styles.buttonContainer}
               onPress={() => {

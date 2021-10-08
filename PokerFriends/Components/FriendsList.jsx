@@ -73,7 +73,7 @@ export default class FriendsList extends Component {
       console.log('Already friends with user')
     }
     else{*/
-    var searchEmail = this.state.searchEmail
+    var searchEmail = this.state.searchEmail.trim()
     this.setState({searchEmail: ''})
 
     firebase.database().ref('/users').orderByChild("/data/email").equalTo(searchEmail).limitToFirst(1).once('value', (snapshot) => {
@@ -331,7 +331,8 @@ export default class FriendsList extends Component {
     render(){
       if(this.state.ready){
         return (
-          <KeyboardAvoidingView 
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"} 
             style={styles.container} 
             >
               {(this.state.foundModalVisible)? (this.DisplayFoundUser()):(<Text></Text>)}
@@ -381,6 +382,8 @@ export default class FriendsList extends Component {
               <View style={{flex:1, alignContent:'center', justifyContent:'center', paddingBottom: 10}}>
                 <Text style={styles.titleTextStyle}>Friends:</Text>
                 <FlatList
+                  horizontal={false}
+                  numColumns={2}
                   data={this.state.friendData}
                   keyExtractor={(item)=>item.key}
                   renderItem={({item})=>{
@@ -538,9 +541,9 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       justifyContent: 'center',
       alignContent: 'center',
-      width:"100%",
+      width:"45%",
       padding: 10,
-      marginBottom: 10
+      margin: 10
     },
     joinButton:{
       backgroundColor: '#000000',
