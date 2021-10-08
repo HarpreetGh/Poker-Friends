@@ -1,9 +1,11 @@
 import React, { Component, useState } from 'react'
-import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, FlatList} from 'react-native';
+import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, FlatList, Switch } from 'react-native';
 import Slider from '@react-native-community/slider';
 import Logo from './Logo';
 import firebase from 'firebase'
 import * as ScreenOrientation from 'expo-screen-orientation';
+
+import Balance from './Balance'
 
 
 
@@ -12,7 +14,11 @@ export default class JoinGame extends Component {
     super(props)
     this.state = {
       name: '',
-      gameList: []
+      gameList: [],
+      sortBy: 'size',
+
+      reverse: false,
+      upDown: ["Descending", "Ascending"]
     }
   }
 
@@ -26,7 +32,7 @@ export default class JoinGame extends Component {
           size: child.val().size
         })
       })
-      this.setState({gameList: data})
+      this.SortData(data)
     })
   }
 
@@ -35,11 +41,38 @@ export default class JoinGame extends Component {
     firebase.database().ref('/games/list/').off()
   }
 
+  SortData(data){
+    var sort = this.state.sortBy
+    if(this.state.reverse){
+      data.sort(function (a, b) {return a[sort] - b[sort]});
+    }
+    else{
+      data.sort(function (a, b) {return b[sort] - a[sort]});
+    }
+    var data2 = data.filter(game => game.buyIn <= this.props.userData.chips) 
+
+    this.setState({gameList: data2})
+  }
+
+  newSortData(sort){
+    this.setState({sortBy: sort}, () => this.SortData(this.state.gameList))
+  }
+
+  ReverseData = () => {
+    this.setState({
+      reverse: !this.state.reverse,
+      gameList: this.state.gameList.reverse()
+    })
+  }
+
+
   async joinGame(matchName){
     var user = firebase.auth().currentUser;
     const username = user.displayName
     const matchPath =  '/games/' + 'public' + '/' + matchName;
     const matchListPath = '/games/list/' + matchName;
+
+    
     
     firebase.database().ref(matchPath).once('value', (snapshot) => {
       console.log('game data recieved')
@@ -86,6 +119,32 @@ export default class JoinGame extends Component {
             </TouchableOpacity> 
           </View>
 
+          <View style={styles.sortContainer}>
+            <TouchableOpacity style={styles.sortButton}
+              onPress={() => this.newSortData('size')}
+            >
+              <Text style={styles.sortTextStyle}>Size</Text>
+            </TouchableOpacity>
+
+           <TouchableOpacity style={styles.sortButton}
+              onPress={() => this.newSortData('buyIn')}
+            >    
+              <Text style={styles.sortTextStyle}>Buy In</Text>
+            </TouchableOpacity>
+
+            
+            <View style={styles.switchContainer}>
+              <Text style={styles.sortTextStyle}> {this.state.upDown[Number(this.state.reverse)]}</Text>
+              <Switch
+                trackColor={{ false: "#767577", true: "#81b0ff" }}
+                thumbColor={this.state.reverse ? "#f5dd4b" : "#f4f3f4"}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={this.ReverseData}
+                value={this.state.reverse}
+              /> 
+            </View>
+          </View>
+
           <View style={{flex:1, alignSelf:'center', justifyContent:'center', paddingBottom: 10}}>
             <FlatList style={{width:'90%'}}
               horizontal={false}
@@ -108,9 +167,9 @@ export default class JoinGame extends Component {
               }}/>     
             </View>
 
-            <TouchableOpacity style={styles.buttonContainer}
+            <TouchableOpacity style={[styles.buttonContainer, {width: '90%'}]}
             onPress={() => this.props.navigation.navigate('LandingPage')}>
-                <Text style={styles.registerButtonText}>Go Back</Text>
+                <Text style={styles.sortTextStyle}>Go Back</Text>
             </TouchableOpacity>
         </KeyboardAvoidingView>
     );
@@ -152,10 +211,33 @@ const styles = StyleSheet.create({
     width:"100%",
     marginBottom: 20
   },
+  sortContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    alignContent: 'center',
+    width: '100%',
+    marginBottom: 20
+  },
+  sortButton: {
+    backgroundColor: '#27ae60',
+    padding: 15,
+    borderRadius: 50,
+    width: '25%'
+  },
   sortTextStyle: {
     color: "white",
     fontWeight: "bold",
     textAlign: "center"
+  },
+  switchContainer:{
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#27ae60',
+    padding: 10,
+    borderRadius: 50,
   },
   registerButtonText: {
     textAlign: 'center',
