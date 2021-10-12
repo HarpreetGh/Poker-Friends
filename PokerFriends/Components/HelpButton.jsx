@@ -88,8 +88,9 @@ export default class HelpButton extends Component {
           </View>
           </ScrollView>
         </Modal>
+
         <TouchableOpacity
-          style={[styles.button, styles.buttonOpen]}
+          style={[styles.button, styles.buttonOpen, {paddingHorizontal: 20}]}
           onPress={() => this.setModalVisible(true)}
         >
           <Text style={styles.textStyle}>Rules</Text>
@@ -103,9 +104,7 @@ const styles = StyleSheet.create({
  
   cornerView: {
     justifyContent: "flex-end",
-    alignSelf: 'flex-end',
-    right: 80,
-    bottom: 10
+    alignSelf: 'flex-end'
   },
   buttonTextView: {
     flex: 1,

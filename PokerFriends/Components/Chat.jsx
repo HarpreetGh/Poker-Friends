@@ -1,5 +1,6 @@
 //@refresh reset
 import React, { useState, useEffect, useCallback } from 'react';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { GiftedChat } from 'react-native-gifted-chat'
 import {
     Alert, 
@@ -10,6 +11,8 @@ import {
     View, 
     TouchableOpacity,
     LogBox,
+    KeyboardAvoidingView,
+    SafeAreaView
     } from "react-native";
 
 import firebase from 'firebase'
@@ -63,17 +66,15 @@ const appendMessages = useCallback(
 
 
 return (
-  <View >
-    <Modal
-      animationType="slide"
-      transparent={false}
-      visible={modalVisible}
-      onRequestClose={() => {
-        Alert.alert("Modal has been closed.");
-        setModalVisible(!modalVisible);
-      }}
-    >
-          <Text style = {{fontWeight:'bold', marginTop:-10, fontSize: 30, marginBottom: 25, textAlign:'center' }} >
+  <View>
+    <View>
+      <Modal
+        supportedOrientations={['landscape', 'portrait']}
+        animationType="slide"
+        transparent={false}
+        visible={modalVisible}
+      >     
+          <Text style = {{fontWeight:'bold', paddingTop: 30, fontSize: 30, marginBottom: 25, textAlign:'center' }} >
             Chat room
           </Text> 
         
@@ -83,20 +84,22 @@ return (
               user = {userInChat}
               onSend = {handleSend}
               placeholder = {'Type'}
-
+              //keyboardShouldPersistTaps = 'never'
+              //bottomOffset={10}
             />
-         
+          
           <Pressable
-            style={[styles.button, styles.buttonClose]}
-            onPress={() => setModalVisible(!modalVisible)}>
-            <Text style={styles.textStyle}>EXIT</Text>
+            style={[styles.button, styles.buttonClose, {marginBottom: 20, width:'90%', marginLeft: 'auto', marginRight: 'auto'}]}
+            onPress={() => {setModalVisible(false); ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)}}>
+            <Text style={styles.exitTextStyle}>EXIT</Text>
           </Pressable>
-      
-      
-    </Modal>
+        
+      </Modal>
+    </View>
+
     <TouchableOpacity
       style={[styles.button, styles.buttonOpen]}
-      onPress={() => setModalVisible(!modalVisible)}
+      onPress={() => {setModalVisible(true); ScreenOrientation.unlockAsync()}}
     >
       <Text style={styles.textStyle}>CHAT</Text>
     </TouchableOpacity>
@@ -106,48 +109,57 @@ return (
 
 
 const styles = StyleSheet.create({
-
-buttonTextView: {
-flex: 1,
-justifyContent: "center",
-alignItems: "center",
-marginTop: 22
-},
-modalView: {
-margin: 20,
-backgroundColor: "white",
-borderRadius: 20,
-padding: 35,
-alignItems: "center",
-shadowColor: "#000",
-shadowOffset: {
-  width: 0,
-  height: 2
-},
-shadowOpacity: 0.25,
-shadowRadius: 4,
-elevation: 5
-},
-button: {
-borderRadius: 50,
-padding: 10,
-elevation: 2
-},
-buttonOpen: {
-backgroundColor: "#27ae60",
-},
-buttonClose: {
-backgroundColor: "#2196F3",
-marginTop:20
-},
-
-modalText: {
-marginBottom: 35,
-marginLeft: -50,
-marginRight: -50,
-textAlign: "left",
-fontSize: 20
-}
+  buttonTextView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  button: {
+    borderRadius: 50,
+    padding: 10
+  },
+  buttonOpen: {
+    backgroundColor: "#27ae60",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+    marginTop:20
+  },
+  modalText: {
+    marginBottom: 35,
+    marginLeft: -50,
+    marginRight: -50,
+    textAlign: "left",
+    fontSize: 20
+  },
+  textStyle:{
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    flexDirection: 'row',
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: 'center'
+    },
+  exitTextStyle:{
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  }
 });
 
 

@@ -1,110 +1,135 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, KeyboardAvoidingView, 
-  Pressable, TouchableOpacity,} from 'react-native';
+import { StyleSheet, Text, View, Image, KeyboardAvoidingView, SafeAreaView, 
+  Pressable, TouchableOpacity, Alert, StatusBar} from 'react-native';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 import HelpButton from './HelpButton'
 import Logo from './Logo'
-import Login from './Login'
-import Register from './Register'
 import firebase from 'firebase'
-import ForgotPassword from './Account-Settings/ForgotPassword'
-import FriendsButton from './FriendsButton'
-import SettingsButton from './AccountSettings'
 import Balance from './Balance'
 import Notification from './Notification'
 import Logout from './Logout'
 
 
-
-const LogOut = () => {
-  firebase.auth().signOut()
-  .then(() => {
-  // Sign-out successful.
-  }).catch((error) => {
-    console.log(error)
-    // An error happened.
-  });
-}
-
 export default class LandingPage extends Component {
 
+  LogOut = () => {
+    if(this.props.userData.in_game == ''){
+      firebase.auth().signOut()
+      .then(() => {
+      // Sign-out successful.
+      }).catch((error) => {
+        console.log(error)
+        // An error happened.
+      });
+    }
+    else{
+      Alert.alert("Cannot Logout",
+      "You are currently in a game! Please leave this game, to Logout."
+      )
+    }
+  } 
+  
   SignedIn = () => {
       return(
-        <View style={styles.SignedView}>
-          {this.props.userData.in_game == ''? (
-            <View style={{
-              width: '100%',
-              alignItems: 'center',
-              alignContent: 'center'
-            }}>
-              <TouchableOpacity 
-                style={styles.button}
-                onPress = {() => {
-                  this.props.navigation.navigate('JoinGame');
-                }}
-              >
-                <Text style={styles.textStyle}>
-                  Join Game
-                </Text>
-              </TouchableOpacity>
+        <SafeAreaView style={styles.container}>
+          <View style={styles.topRow}>
+            {this.AccountSettings()}
 
+            <View style={{flexDirection:'row', }}>
+              <Balance chips={this.props.userData.chips}/>
+              <Notification userData={this.props.userData}/>
+            </View> 
+          </View>
+          
+          <Logo/>
+
+          <View style={styles.SignedView}>
+            {this.props.userData.in_game == ''? (
+              <View style={{
+                width: '100%',
+                alignItems: 'center',
+                alignContent: 'center'
+              }}>
+                <TouchableOpacity 
+                  style={styles.button}
+                  onPress = {() => {
+                    this.props.navigation.navigate('JoinGame');
+                  }}
+                >
+                  <Text style={styles.textStyle}>Join Game</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  style={styles.button}
+                  onPress = {() => {
+                    this.props.navigation.navigate('CreateGame'); 
+                  }}
+                >
+                  <Text style={styles.textStyle}>Create Game</Text>
+                </TouchableOpacity>
+              </View>
+            ):(
               <TouchableOpacity 
-                style={styles.button}
+                style={[styles.button, {backgroundColor:"#c80c0d"}]}
                 onPress = {() => {
-                  this.props.navigation.navigate('CreateGame'); 
+                  this.props.navigation.navigate('GameController'); ///// 'GameSetting'
+                  ScreenOrientation.lockAsync
+                  (ScreenOrientation.OrientationLock.LANDSCAPE);
                 }}
               >
-                <Text style={styles.textStyle}>Create Game</Text>
+                <Text style={styles.textStyle}>Continue Game</Text>
               </TouchableOpacity>
-            </View>
-          ):(
+            )}
+
             <TouchableOpacity 
-              style={[styles.button, {backgroundColor:"#c80c0d"}]}
+              style={styles.button}
               onPress = {() => {
-                this.props.navigation.navigate('GameController'); ///// 'GameSetting'
-                ScreenOrientation.lockAsync
-                (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
+                this.props.navigation.navigate('Leaderboard'); 
               }}
             >
-              <Text style={styles.textStyle}>
-                Continue Game {/*({this.props.userData.in_game.slice(this.props.userData.in_game.indexOf('_')+1, this.props.userData.in_game.indexOf('-'))}) */}
-              </Text>
+              <Text style={styles.textStyle}>Leaderboard</Text>
             </TouchableOpacity>
-          )}
 
-          <TouchableOpacity 
-            style={styles.button}
-            onPress = {() => {
-              this.props.navigation.navigate('Leaderboard'); 
-            }}
-          >
-            <Text style={styles.textStyle}>Leaderboard</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.button} 
+              onPress = {() => this.LogOut()}
+            >
+              <Text style={styles.textStyle}>Log Out</Text>
+            </TouchableOpacity>
+            
+          </View>
 
-          <TouchableOpacity style={styles.button} 
-            onPress = {() => this.setModalVisible(true)}>
-                <Text style={styles.textStyle}>Log Out</Text>
-          </TouchableOpacity>
-          
-        </View>
+          <View style={styles.bottomRow}>
+
+            <HelpButton/>
+
+            {this.AccountStatistics()}
+
+            {this.FriendsButton()}
+
+          </View>
+        </SafeAreaView>
       )
   }
 
   SignedOut = () => {
     return(
-      <View style={styles.SignedView}>
+      <View style={styles.container}>
+        <Logo/>
 
-        <TouchableOpacity style={styles.button} 
-          onPress = {() => this.props.navigation.navigate('Register')}>
-              <Text style={styles.textStyle}>Sign Up</Text>
-        </TouchableOpacity>
+        <View style={[styles.SignedView, {flex: 0.33}]}>
 
-        <TouchableOpacity style={styles.button} 
-          onPress = {() => this.props.navigation.navigate('Login')}>
-              <Text style={styles.textStyle}>Login</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.button} 
+            onPress = {() => this.props.navigation.navigate('Register')}>
+                <Text style={styles.textStyle}>Sign Up</Text>
+          </TouchableOpacity>
 
+          <TouchableOpacity style={styles.button} 
+            onPress = {() => this.props.navigation.navigate('Login')}>
+                <Text style={styles.textStyle}>Login</Text>
+          </TouchableOpacity>
+
+        </View>
       </View>
     )
   }
@@ -131,34 +156,22 @@ export default class LandingPage extends Component {
     )
   }
 
+  FriendsButton = () => {
+    return(
+    <TouchableOpacity style={styles.Settingbutton} 
+      onPress = {() => this.props.navigation.navigate('FriendsList')}>
+      <Text style={styles.textStyle}>Friends</Text>
+    </TouchableOpacity>
+    )
+  }
+
     render(){    
-      return (
-        <View style={styles.container}>
-
-          <View style={styles.flexContainer2}>
-              {this.props.LoggedIn? (this.AccountSettings()):(<Text></Text>)}
-
-              <View style={{flexDirection:'row', }}>
-                {this.props.LoggedIn? (<Balance chips={this.props.userData.chips}/>):(<Text></Text>)}
-                {this.props.LoggedIn? (<Notification userData={this.props.userData}/>):(<Text></Text>)}
-              </View>
-          </View>
-          
-          <Logo/>
-
-          {this.props.LoggedIn? (this.SignedIn()):(this.SignedOut())}
-
-          {this.props.LoggedIn? (this.AccountStatistics()):(<Text></Text>)}
-
-          {this.props.LoggedIn? (          
-          <View style={styles.flexContainer}>
-            <HelpButton/>
-            <FriendsButton navigation = {this.props.navigation}/>
-          </View>
-          ):(<Text></Text>)}
-
-        </View>
-      );
+      if (this.props.LoggedIn){
+        return(this.SignedIn())
+      }
+      else {
+        return(this.SignedOut())
+      }
     }
 }
 const styles = StyleSheet.create({
@@ -184,29 +197,25 @@ const styles = StyleSheet.create({
   },
   accountStatsButton: {
     borderRadius: 50,
-    marginRight: 10,
     padding: 10,
     elevation: 2,
     backgroundColor: "#27ae60",
-    top: '125%'
   },
-  flexContainer2:{
+  topRow:{
     flexDirection: "row",
     justifyContent: "space-between",
     width: '90%',
-    top: 40
+    marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
   },
-  flexContainer:{
+  bottomRow:{
     flexDirection: 'row',
-    margin: 20,
-    width: 'auto',
-    height: 'auto'
+    justifyContent: "space-between",
+    width: '90%',
+    marginVertical: 20
   },
   SettingcornerView: {
     justifyContent: "flex-start",
-    alignSelf: 'flex-start',
-    //right: 80,
-    //top: 10
+    alignSelf: 'flex-start'
   },
   Settingbutton: {
     borderRadius: 50,

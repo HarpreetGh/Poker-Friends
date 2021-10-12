@@ -128,7 +128,7 @@ export default class CreateGame extends Component {
                 if(this.createGame('public')){
                   this.props.navigation.navigate('GameController')
                   ScreenOrientation.lockAsync
-                  (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT)  
+                  (ScreenOrientation.OrientationLock.LANDSCAPE)  
                 }
               }}>
                 <Text style={styles.registerButtonText}>Create Public Game</Text>
@@ -139,7 +139,7 @@ export default class CreateGame extends Component {
                 if(this.createGame('private')){
                   this.props.navigation.navigate('GameController')
                   ScreenOrientation.lockAsync
-                  (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT)  
+                  (ScreenOrientation.OrientationLock.LANDSCAPE)  
                 }
               }}>
                 <Text style={styles.registerButtonText}>Create Private Game</Text>

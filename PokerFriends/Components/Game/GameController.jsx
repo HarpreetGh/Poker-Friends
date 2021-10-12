@@ -673,10 +673,13 @@ export default class GameSetting extends Component {
     } 
     else {
       const wins = editGame.wins[playernum] + userData.wins
-      const games = userData.games + editGame.round
       const chipsWon = editGame.chipsWon[playernum];
       const chipsLost =
         editGame.chipsLost[playernum] + editGame.chipsIn[playernum];
+      var games = userData.games + editGame.round
+      if(editGame.turn == 0){
+        games = games - 1
+      }
 
       var indexOfType = userData.in_game.indexOf("_")+1
       var indexOfId = userData.in_game.indexOf("-")

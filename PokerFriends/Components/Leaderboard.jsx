@@ -81,7 +81,7 @@ export default class Leaderboard extends Component {
                     <Text style={styles.statButtonText}>Total Chips Lost</Text>
                 </TouchableOpacity>
               </View>
-              <View style={{flex:1, alignSelf:'center', justifyContent:'center', paddingBottom: 10}}>
+              <View style={{flex:1, alignSelf:'center', justifyContent:'center', paddingBottom: 10, width: '75%'}}>
                 <FlatList style={{width:'100%'}}
                   data={this.state.gameList}
                   keyExtractor={(item)=>item.key}
@@ -94,8 +94,16 @@ export default class Leaderboard extends Component {
                             style = {styles.avatarImage}/>
                         </View>
                         <Text style={[styles.textStyle, {fontSize: 25}]}>{item.key.slice(0, item.key.indexOf('#'))}</Text>
-                        <Text style={styles.textStyle}>Chips: {item.chips} Wins: {item.wins} </Text>
-                        <Text style={styles.textStyle}>ChipsWon: {item.chips_won} ChipsLost: {item.chips_lost}</Text>
+
+                        <View style={[{flexDirection: 'row', justifyContent: 'space-evenly'}]}>
+                          <Text style={styles.textStyle}>Chips: {item.chips}</Text>
+                          <Text style={styles.textStyle}> Wins: {item.wins}</Text>
+                        </View>
+                        
+                        <View style={[{flexDirection: 'row', justifyContent: 'space-evenly'}]}>
+                          <Text style={styles.textStyle}>Chips Won: {item.chips_won}</Text>
+                          <Text style={styles.textStyle}>Chips Lost: {item.chips_lost}</Text>
+                        </View>
                       </View>)
                   }}/>     
               </View>
@@ -165,16 +173,17 @@ const styles = StyleSheet.create({
     fontWeight: '900'
   },
   statButtonText: {
+    color: "white",
     textAlign: 'center',
-    color: '#000',
-    fontWeight: '900'
+    fontWeight: 'bold'
   },
   statButton: {
-    backgroundColor: '#89CFF0',
-    paddingVertical: 20,
-    padding: 5,
+    backgroundColor: "#27ae60",
+    padding: 10,
     borderRadius: 50,
-    marginLeft: 4
+    marginHorizontal: 5,
+    marginBottom: 10,
+    width: '40%'
   },
   input: {
     height:40,
@@ -189,9 +198,10 @@ const styles = StyleSheet.create({
   statButtonsContainer: {
     width: "90%",
     flexDirection: 'row',
-    justifyContent: 'center',
-    paddingTop: 50,
-    paddingBottom: 25
+    flexWrap: 'wrap',
+    justifyContent: 'space-evenly',
+    marginTop: 30,
+    marginBottom: 15
   },
   avatarImage: {
       width: 80, 

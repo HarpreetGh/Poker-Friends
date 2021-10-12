@@ -19,32 +19,32 @@ export default class AccountSettings extends Component {
           
             <TouchableOpacity style={styles.buttonContainer}
               onPress={() => this.props.navigation.navigate('ForgotPassword')}>
-                <Text style={styles.registerButtonText}>Password Reset</Text>
+                <Text style={styles.textStyle}>Password Reset</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.buttonContainer}
               onPress={() => this.props.navigation.navigate('ChangeUsername')}>
-                <Text style={styles.registerButtonText}>Change Username</Text>
+                <Text style={styles.textStyle}>Change Username</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.buttonContainer}
             onPress={() => this.props.navigation.navigate('ChangeEmail')}>
-                <Text style={styles.registerButtonText}>Change Email</Text>
+                <Text style={styles.textStyle}>Change Email</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.buttonContainer}
               onPress={() => this.props.navigation.navigate('ChangeAvatar')}>
-                <Text style={styles.registerButtonText}>Change Avatar</Text>
+                <Text style={styles.textStyle}>Change Avatar</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.buttonContainer}
               onPress={() => this.props.navigation.navigate('DeleteAccount')}>
-                <Text style={styles.registerButtonText}>Delete Account</Text>
+                <Text style={styles.textStyle}>Delete Account</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.buttonContainer}
               onPress={() => this.props.navigation.navigate('LandingPage')}>
-                  <Text style={styles.registerButtonText}>Go Back</Text>
+                  <Text style={styles.textStyle}>Go Back</Text>
               </TouchableOpacity>
 
         </KeyboardAvoidingView>
@@ -54,7 +54,6 @@ export default class AccountSettings extends Component {
 
 const styles = StyleSheet.create({
   textStyle: {
-    marginBottom: 10,
     color: "white",
     fontWeight: "bold",
     textAlign: "center"
@@ -83,19 +82,14 @@ const styles = StyleSheet.create({
       width:"100%",
       marginBottom: 20
     },
-    registerButtonText: {
-      textAlign: 'center',
-      color: '#FFF',
-      fontWeight: '900'
-    },
     input: {
-    height:40,
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
-    marginBottom: 20,
-    color: '#FFF',
-    paddingHorizontal: 20,
-    paddingEnd: 10,
-    borderRadius: 50,
-    width:'100%'
-  },
+      height:40,
+      backgroundColor: 'rgba(255, 255, 255, 0.25)',
+      marginBottom: 20,
+      color: '#FFF',
+      paddingHorizontal: 20,
+      paddingEnd: 10,
+      borderRadius: 50,
+      width:'100%'
+    },
 })

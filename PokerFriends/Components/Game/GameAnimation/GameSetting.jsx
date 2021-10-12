@@ -99,7 +99,8 @@ export default class GameSetting extends Component {
         { x: 250, y: -10 },
       ],
 
-      modalVisible: false,
+      quitVisible: false,
+      waitVisible: false,
       raiseVisible: false,
       //winnerVisible: false,
       //fiveCardsFin: 0,
@@ -216,7 +217,7 @@ export default class GameSetting extends Component {
     }
   
     setModalVisible = (visible) => {
-      this.setState({ modalVisible: visible });
+      this.setState({ quitVisible: visible });
     }
     setRaiseVisible = (visible) => {
       this.setState({ raiseVisible: visible });
@@ -404,13 +405,13 @@ export default class GameSetting extends Component {
     }
 
     quitView(){
-      const { modalVisible } = this.state;
+      const { quitVisible } = this.state;
       return (
         <Modal
           supportedOrientations={['landscape']}
           animationType="slide"
           transparent={true}
-          visible={modalVisible} 
+          visible={quitVisible} 
         >
           <View style = {styles.centeredView}>
             <View style = {styles.modalView}>
@@ -420,7 +421,7 @@ export default class GameSetting extends Component {
               <TouchableOpacity
                 style={styles.buttonInExit}
                 onPress={() => {
-                  this.setModalVisible(!modalVisible)
+                  this.setModalVisible(!quitVisible)
                 }}
                 >
                   <Text style={ styles.exitStyle }>NO</Text>
@@ -431,7 +432,7 @@ export default class GameSetting extends Component {
                 onPress={() => {
                   this.props.navigation.navigate('LandingPage')
                   ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-                  this.setModalVisible(!modalVisible)
+                  this.setModalVisible(!quitVisible)
                 }}
               >
                 <Text style={ styles.exitStyle }>Go to Main Menu</Text>
@@ -440,7 +441,7 @@ export default class GameSetting extends Component {
               <TouchableOpacity
                 style={styles.buttonInExit}
                 onPress={() => {
-                  this.setModalVisible(!modalVisible)
+                  this.setModalVisible(!quitVisible)
                   this.leaveGame()
                 }}
               >
@@ -471,7 +472,7 @@ export default class GameSetting extends Component {
         supportedOrientations={['landscape']}
         animationType="slide"
         transparent={true}
-        visible={!this.state.modalVisible}
+        visible={!this.state.quitVisible}
       >
         <View style = {styles.centeredView}>
           <View style = {styles.modalView}>
@@ -843,8 +844,6 @@ export default class GameSetting extends Component {
       
       return (
         <View style={styles.container}>
-          {/*<StatusBar hidden/>*/}
-
           {this.props.game.turn == 5 && this.props.game.roundWinner > -1? (
            this.roundWinnerView()
            ):(<Text></Text>)}
@@ -854,7 +853,7 @@ export default class GameSetting extends Component {
           {this.props.game.size == 1 ? (
             this.waitingView()
           ) : (
-            <View>
+            <View> 
               <TouchableOpacity
                 style={[styles.button, styles.buttonOpen]}
                 onPress={() => this.setModalVisible(true)}
@@ -1036,13 +1035,9 @@ const styles = StyleSheet.create({
     borderRadius: 100, 
     marginBottom: -10
   },
-  exitButton2: {
-    alignSelf:'center',
-    flex: 1
-    //width: 'auto',
-  },
   container: {
     flex: 1,
+    //paddingTop: 10,
     backgroundColor: '#2ecc71',
     flexDirection: 'row',
     justifyContent: 'flex-start',
@@ -1105,21 +1100,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
     resizeMode: 'contain',
-    top: '85%',
+    top: '83%',
     right: '40%',
     left: '45%',
+    width: '25%',
     position: 'absolute'
   },
    timerTextBackground:{
     flexDirection: 'column',
+    flexWrap: 'wrap',
     justifyContent: 'center',
     alignContent: 'center',
     alignItems: 'center',
     backgroundColor:"#ff9f1a",
     borderRadius: 50,
     marginLeft: 5,
-    //paddingHorizontal: 10,
+    maxHeight: 50,
+    width: '80%',
     paddingLeft: 10,
+    marginTop: 10
   },
   textStyle:{
     color: '#FFFFFF',
@@ -1166,7 +1165,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     borderColor: 'black',
     top: "35%",
-    left: "1%",
+    left: "4%",
     alignContent: "center",
     paddingBottom: 15
   },
@@ -1209,8 +1208,9 @@ const styles = StyleSheet.create({
   },
   chipView:{
     position: 'absolute',
+    width: 50,
     right: "1%",
-    bottom: "0%"
+    bottom: "2%"
   },
   tableView: {
     width: 466,
@@ -1223,13 +1223,13 @@ const styles = StyleSheet.create({
   },
   chat:{
     position:'absolute',
-    bottom: "0%",
+    bottom: "2%",
     right: "13%"
   },
   bettingButtonsView:{
     position: 'absolute',
-    bottom: "0%",
-    left: "0%",
+    bottom: "2%",
+    left: "2%",
     flexDirection: 'row',
   },
   bettingButtons:{

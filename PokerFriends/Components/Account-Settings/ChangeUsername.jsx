@@ -78,13 +78,14 @@ const styles = StyleSheet.create({
       justifyContent: 'center'
     },
     input: {
-        height: 40,
-        backgroundColor: 'rgba(255, 255, 255, 0.25)',
-        marginBottom: 20,
-        color: '#FFF',
-        paddingHorizontal: 20,
-        paddingEnd: 10,
-        borderRadius: 50
+      height: 40,
+      backgroundColor: 'rgba(255, 255, 255, 0.25)',
+      marginBottom: 20,
+      color: '#FFF',
+      paddingHorizontal: 20,
+      paddingEnd: 10,
+      borderRadius: 50,
+      width:"100%",
     },
     buttonContainer:{
       backgroundColor: '#27ae60',

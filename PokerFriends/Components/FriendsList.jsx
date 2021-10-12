@@ -233,7 +233,7 @@ export default class FriendsList extends Component {
       firebase.database().ref().update(updates);
       this.props.navigation.navigate('GameController')
       ScreenOrientation.lockAsync
-      (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT)
+      (ScreenOrientation.OrientationLock.LANDSCAPE)
     })
 
   }
@@ -379,7 +379,7 @@ export default class FriendsList extends Component {
                 </View>
               )}
 
-              <View style={{flex:1, alignContent:'center', justifyContent:'center', paddingBottom: 10}}>
+              <View style={{flex:1, alignContent:'center', justifyContent:'center', paddingBottom: 10, width: '100%'}}>
                 <Text style={styles.titleTextStyle}>Friends:</Text>
                 <FlatList
                   horizontal={false}
@@ -541,7 +541,7 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       justifyContent: 'center',
       alignContent: 'center',
-      width:"45%",
+      width: "45%",
       padding: 10,
       margin: 10
     },

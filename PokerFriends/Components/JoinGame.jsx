@@ -102,7 +102,7 @@ export default class JoinGame extends Component {
       firebase.database().ref().update(updates);
       this.props.navigation.navigate('GameController')
       ScreenOrientation.lockAsync
-      (ScreenOrientation.OrientationLock.LANDSCAPE_LEFT)
+      (ScreenOrientation.OrientationLock.LANDSCAPE)
     })
 
   }
@@ -134,7 +134,7 @@ export default class JoinGame extends Component {
 
             
             <View style={styles.switchContainer}>
-              <Text style={styles.sortTextStyle}> {this.state.upDown[Number(this.state.reverse)]}</Text>
+              <Text style={[styles.sortTextStyle, {marginRight: 5}]}> {this.state.upDown[Number(this.state.reverse)]}</Text>
               <Switch
                 trackColor={{ false: "#767577", true: "#81b0ff" }}
                 thumbColor={this.state.reverse ? "#f5dd4b" : "#f4f3f4"}

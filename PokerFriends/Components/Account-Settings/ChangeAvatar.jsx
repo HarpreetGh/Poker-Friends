@@ -81,7 +81,7 @@ export default function ChangeAvatar() {
   };
 
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#2ecc71' }}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#2ecc71', width:"100%", }}>
       <Text style={styles.title}>Original Avatar</Text>
       <Image  source ={{ uri: user.photoURL }} style={{ width: 200, height: 200, marginBottom: 20, borderRadius: 100}} />
 
@@ -115,55 +115,55 @@ export default function ChangeAvatar() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#2ecc71',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    title: {
-        fontSize: 25,
-        fontWeight: 'bold',
-        color: 'white',
-        justifyContent: 'center',
-        alignContent: 'center',
-        textAlign: 'center',
-    },
-    Stats: {
-        borderRadius: 50,
-        margin: 10,
-        elevation: 2,
-        backgroundColor: "#7befb2",
-        color: 'black',
-        fontWeight: 'bold',
-        textAlign: 'center',
-        padding: 10
-    },  
-    textContainer: {
-        width: '100%'
-    },
-    bubble: {
-        backgroundColor: '#27ae60',
-        paddingVertical: 20,
-        paddingHorizontal: 20,
-        borderRadius: 50,
-        width: '80%',
-        marginBottom: 30,
-        textAlign: 'center',
-        justifyContent: 'center',
-        alignContent: 'center'
-    },
-    buttonContainer:{
-        backgroundColor: '#27ae60',
-        paddingVertical: 20,
-        padding: 20,
-        borderRadius: 50,
-        width:"100%",
-        marginBottom: 20
-    },
-    buttonText: {
-        textAlign: 'center',
-        color: '#FFF',
-        fontWeight: '900'
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#2ecc71',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  title: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: 'white',
+    justifyContent: 'center',
+    alignContent: 'center',
+    textAlign: 'center',
+  },
+  Stats: {
+    borderRadius: 50,
+    margin: 10,
+    elevation: 2,
+    backgroundColor: "#7befb2",
+    color: 'black',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    padding: 10
+  },  
+  textContainer: {
+    width: '100%'
+  },
+  bubble: {
+    backgroundColor: '#27ae60',
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderRadius: 50,
+    width: '80%',
+    marginBottom: 30,
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignContent: 'center'
+  },
+  buttonContainer:{
+    backgroundColor: '#27ae60',
+    paddingVertical: 20,
+    padding: 20,
+    borderRadius: 50,
+    width:"90%",
+    marginBottom: 20
+  },
+  buttonText: {
+    textAlign: 'center',
+    color: '#FFF',
+    fontWeight: '900'
+  },
 });

@@ -18,7 +18,7 @@ export default class AccountStats extends Component {
         var temp = {...this.props.userData}
         temp.username = user.displayName
         temp['losses'] = temp.games - temp.wins
-        temp['winRatio'] = (temp.wins/temp.games).toFixed(3) * 100 
+        temp['winRatio'] = ((temp.wins/temp.games).toFixed(3)) * 100 
         this.setState({
             userPhoto: user.photoURL, 
             user: temp, ready: true})
@@ -99,21 +99,20 @@ const styles = StyleSheet.create({
     },
     bubble: {
         backgroundColor: '#27ae60',
-        paddingVertical: 20,
-        paddingHorizontal: 20,
+        padding: 20,
         borderRadius: 50,
         width: '80%',
         marginBottom: 30,
         textAlign: 'center',
         justifyContent: 'center',
-        alignContent: 'center'
+        alignContent: 'center',
     },
     buttonContainer:{
         backgroundColor: '#27ae60',
         paddingVertical: 20,
         padding: 20,
         borderRadius: 50,
-        width:"100%",
+        width:"80%",
         marginBottom: 20
     },
     buttonText: {

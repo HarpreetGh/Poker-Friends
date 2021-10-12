@@ -65,10 +65,10 @@ export default class Register extends Component {
 
   render(){
     return (
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"} 
-          style={styles.container}
-          >
+        <KeyboardAvoidingView style={styles.container}
+          behavior={Platform.OS === "ios" ? "position" : "height"}
+          contentContainerStyle={[styles.container, {marginBottom: -30}]}
+        >
             <Logo />
 
             <TextInput
@@ -111,6 +111,10 @@ export default class Register extends Component {
                 <Text style={styles.registerButtonText}>Register</Text>
             </TouchableOpacity>
 
+            <TouchableOpacity style={styles.buttonContainer} onPress = {() => this.props.navigation.navigate('LandingPage')}>
+                <Text style={styles.registerButtonText}>Go Back</Text>
+            </TouchableOpacity>
+
         </KeyboardAvoidingView>
     );
   }
@@ -120,6 +124,7 @@ const styles = StyleSheet.create({
     container: {
       padding: 20,
       flex: 1,
+      width: '100%',
       backgroundColor: '#2ecc71',
       alignItems: 'center',
       justifyContent: 'center'
@@ -134,8 +139,7 @@ const styles = StyleSheet.create({
     },
     registerButtonText: {
       textAlign: 'center',
-      color: '#FFF',
-      fontWeight: '900'
+      color: '#FFF'
     },
     input: {
     height:40,
