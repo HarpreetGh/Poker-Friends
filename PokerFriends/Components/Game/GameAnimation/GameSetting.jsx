@@ -100,7 +100,6 @@ export default class GameSetting extends Component {
       ],
 
       quitVisible: false,
-      waitVisible: false,
       raiseVisible: false,
       //winnerVisible: false,
       //fiveCardsFin: 0,
@@ -405,13 +404,13 @@ export default class GameSetting extends Component {
     }
 
     quitView(){
-      const { quitVisible } = this.state;
+      //const { quitVisible } = this.state;
       return (
         <Modal
           supportedOrientations={['landscape']}
           animationType="slide"
           transparent={true}
-          visible={quitVisible} 
+          visible={this.state.quitVisible} 
         >
           <View style = {styles.centeredView}>
             <View style = {styles.modalView}>
@@ -421,7 +420,7 @@ export default class GameSetting extends Component {
               <TouchableOpacity
                 style={styles.buttonInExit}
                 onPress={() => {
-                  this.setModalVisible(!quitVisible)
+                  this.setModalVisible(!this.state.quitVisible)
                 }}
                 >
                   <Text style={ styles.exitStyle }>NO</Text>
@@ -430,9 +429,10 @@ export default class GameSetting extends Component {
               <TouchableOpacity
                 style={styles.buttonInExit}
                 onPress={() => {
+                  this.setModalVisible(!(this.state.quitVisible))
                   this.props.navigation.navigate('LandingPage')
                   ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
-                  this.setModalVisible(!quitVisible)
+                  
                 }}
               >
                 <Text style={ styles.exitStyle }>Go to Main Menu</Text>
@@ -441,7 +441,7 @@ export default class GameSetting extends Component {
               <TouchableOpacity
                 style={styles.buttonInExit}
                 onPress={() => {
-                  this.setModalVisible(!quitVisible)
+                  this.setModalVisible(!this.state.quitVisible)
                   this.leaveGame()
                 }}
               >
@@ -463,33 +463,6 @@ export default class GameSetting extends Component {
         this.props.matchType+'_'+this.props.matchName,
         this.props.userData,
         this.props.newPlayer
-      )
-    }
-
-    waitingView(){
-      return (
-      <Modal
-        supportedOrientations={['landscape']}
-        animationType="slide"
-        transparent={true}
-        visible={!this.state.quitVisible}
-      >
-        <View style = {styles.centeredView}>
-          <View style = {styles.modalView}>
-            <Text style = {{padding: 0, fontWeight: 'bold'}}>Waiting for more Players</Text>
-
-             <ActivityIndicator size='large' color="#0062ff"/>
-            
-            <View style = {{padding: 5}}></View>
-            <TouchableOpacity
-              style={styles.buttonInExit}
-              onPress={() => {this.setModalVisible(true)}}
-            >
-              <Text>EXIT</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
       )
     }
 
@@ -850,18 +823,15 @@ export default class GameSetting extends Component {
           
           {this.quitView()}
 
-          {this.props.game.size == 1 ? (
-            this.waitingView()
-          ) : (
-            <View> 
-              <TouchableOpacity
-                style={[styles.button, styles.buttonOpen]}
-                onPress={() => this.setModalVisible(true)}
-              >
-                <Text style={styles.textStyle}>EXIT</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+          
+          <View> 
+            <TouchableOpacity
+              style={[styles.button, styles.buttonOpen]}
+              onPress={() => this.setModalVisible(true)}
+            >
+              <Text style={styles.textStyle}>EXIT</Text>
+            </TouchableOpacity>
+          </View>
 
           <View style={styles.player1View}>
               <View style = {{alignItems: 'center'}}>
@@ -975,7 +945,19 @@ export default class GameSetting extends Component {
             </Text>)
           }
 
-          
+          <View>
+            {this.props.myCards.map((card, i) =>
+              this.cardDeal(card.suit, card.value, i + this.props.playerNum * 2)
+            )}
+            {1 < this.props.game.turn && this.props.game.turn < 5 ? (
+              this.props.game.board.map((card, i) =>
+                this.flopTurnRiver(card.suit, card.value, i)
+              )
+            ) : (
+              <Text></Text>
+            )}
+          </View>
+
           {this.timerView()}
 
           <View style={styles.chat}>
@@ -1007,18 +989,7 @@ export default class GameSetting extends Component {
             </Animated.View>
           </View> */}
 
-          <View>
-            {this.props.myCards.map((card, i) =>
-              this.cardDeal(card.suit, card.value, i + this.props.playerNum * 2)
-            )}
-            {1 < this.props.game.turn && this.props.game.turn < 5 ? (
-              this.props.game.board.map((card, i) =>
-                this.flopTurnRiver(card.suit, card.value, i)
-              )
-            ) : (
-              <Text></Text>
-            )}
-          </View>
+          
           {/* {this.flop(this.props.game.deck.shift(),2,3)}
                               {this.turn(1)}
                               {this.river(1)} */}

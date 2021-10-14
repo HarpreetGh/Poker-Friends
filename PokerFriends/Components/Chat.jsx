@@ -7,12 +7,15 @@ import {
     Modal, 
     StyleSheet, 
     Text, 
-    Pressable, 
+    Pressable,
+    TouchableWithoutFeedback,
     View, 
     TouchableOpacity,
     LogBox,
     KeyboardAvoidingView,
-    SafeAreaView
+    Keyboard,
+    SafeAreaView,
+    StatusBar
     } from "react-native";
 
 import firebase from 'firebase'
@@ -67,42 +70,57 @@ const appendMessages = useCallback(
 
 return (
   <View>
-    <View>
       <Modal
         supportedOrientations={['landscape', 'portrait']}
         animationType="slide"
         transparent={false}
         visible={modalVisible}
-      >     
-          <Text style = {{fontWeight:'bold', paddingTop: 30, fontSize: 30, marginBottom: 25, textAlign:'center' }} >
-            Chat room
-          </Text> 
-        
+      >
+        <SafeAreaView style={{
+          //marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+          flex:1 
+        }}>
+          <KeyboardAvoidingView
+            style={{flex: 1}}
+            behavior={Platform.OS === "ios" ? "padding" : "height"} 
+          > 
+            <TouchableWithoutFeedback
+              style={{maxHeight: 100, height: 100}}
+              onPress={() => { Keyboard.dismiss()}}
+            >
+              <Text style = {{fontWeight:'bold', fontSize: 30, marginBottom: 10, textAlign:'center'}} >
+                Chat room
+              </Text>
+            </TouchableWithoutFeedback>
+
             <GiftedChat
               messages = {messages}
               renderUsernameOnMessage = {true}
               user = {userInChat}
               onSend = {handleSend}
               placeholder = {'Type'}
-              //keyboardShouldPersistTaps = 'never'
+              isKeyboardInternallyHandled={false}
               //bottomOffset={10}
             />
-          
-          <Pressable
-            style={[styles.button, styles.buttonClose, {marginBottom: 20, width:'90%', marginLeft: 'auto', marginRight: 'auto'}]}
-            onPress={() => {setModalVisible(false); ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)}}>
-            <Text style={styles.exitTextStyle}>EXIT</Text>
-          </Pressable>
-        
+            
+            <Pressable
+              style={[styles.button, styles.buttonClose, {
+                marginBottom: Platform.OS === "android" ? 20 : 5,
+                width:'90%', marginLeft: 'auto', marginRight: 'auto'}]}
+              onPress={() => {setModalVisible(false); ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)}}>
+              <Text style={styles.exitTextStyle}>EXIT</Text>
+            </Pressable>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
       </Modal>
-    </View>
+    
 
-    <TouchableOpacity
+    <Pressable
       style={[styles.button, styles.buttonOpen]}
       onPress={() => {setModalVisible(true); ScreenOrientation.unlockAsync()}}
     >
       <Text style={styles.textStyle}>CHAT</Text>
-    </TouchableOpacity>
+    </Pressable>
   </View>
 );
 }

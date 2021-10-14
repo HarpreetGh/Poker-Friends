@@ -76,8 +76,10 @@ export default class CardDealing extends Component {
                             paddingVertical: 15,
                             paddingHorizontal: 15,
                             backgroundColor:"white",}}>
-
-                            <Text>{this.props.suit}</Text>
+                            
+                            <Text style={{color: this.props.suit == '♥' || this.props.suit == '♦'? 
+                                'red': 'black'}}
+                            >{this.props.suit}</Text>
                             <Text>{this.props.value}</Text>
                             
                         </View>

@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: '90%',
-    marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
+    marginTop: Platform.OS === "android" ? StatusBar.currentHeight+5 : 0
   },
   bottomRow:{
     flexDirection: 'row',

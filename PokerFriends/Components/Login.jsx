@@ -57,7 +57,11 @@ export default class Login extends Component {
           value={this.state.password}
         />
 
-        <TouchableOpacity onPress = {() => this.props.navigation.navigate('ForgotPassword')} >
+        <TouchableOpacity onPress = {() => {
+          Keyboard.dismiss()
+          setTimeout(() => {  this.props.navigation.navigate('ForgotPassword'); }, 10);
+          
+          }} >
           <Text style={styles.forgotPassword}>Forgot Password?</Text>
         </TouchableOpacity>
 

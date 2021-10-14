@@ -49,6 +49,9 @@ export default class GameSetting extends Component {
   componentDidMount() {
     this.getData();
   }
+  componentWillUnmount(){
+    this.setState({ready: false})
+  }
 
   async getData() {
     const fullMatchName = this.props.userData.in_game;

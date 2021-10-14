@@ -89,7 +89,7 @@ export default class CreateGame extends Component {
   render(){
     return (
         <KeyboardAvoidingView 
-          //behavior={Platform.OS === "ios" ? "padding" : "height"} 
+          behavior={Platform.OS === "ios" ? "padding" : "height"} 
           style={styles.container}
           >
             <Logo />
