@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, SafeAreaView, 
   Pressable, TouchableOpacity, Alert, StatusBar} from 'react-native';
+import { StatusBar as StatusBarExpo, setStatusBarHidden } from 'expo-status-bar';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 import HelpButton from './HelpButton'
@@ -33,6 +34,7 @@ export default class LandingPage extends Component {
   SignedIn = () => {
       return(
         <SafeAreaView style={styles.container}>
+          <StatusBarExpo style="light"/>
           <View style={styles.topRow}>
             {this.AccountSettings()}
 
@@ -73,6 +75,7 @@ export default class LandingPage extends Component {
               <TouchableOpacity 
                 style={[styles.button, {backgroundColor:"#c80c0d"}]}
                 onPress = {() => {
+                  setStatusBarHidden(true, 'slide');
                   this.props.navigation.navigate('GameController'); ///// 'GameSetting'
                   ScreenOrientation.lockAsync
                   (ScreenOrientation.OrientationLock.LANDSCAPE);

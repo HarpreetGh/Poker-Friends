@@ -1,4 +1,4 @@
-import React, { Component} from 'react';
+import React, {Component} from 'react';
 import { Text, StyleSheet, View, TouchableOpacity,
          StatusBar, Image, Modal, TextInput,
          BackHandler, Alert, Animated, Dimensions,
@@ -6,9 +6,9 @@ import { Text, StyleSheet, View, TouchableOpacity,
          } from 'react-native';
 import Slider from '@react-native-community/slider';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import { StatusBar as StatusBarExpo, setStatusBarHidden } from 'expo-status-bar';
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
-
-import Chat from '../../Chat'
+import Chat from '../../Chat' 
 import Deck from '../../decks'
 import CardDealing from './cardDealing'
 
@@ -20,7 +20,7 @@ export default class GameSetting extends Component {
       animationBB_4P: [
         new Animated.ValueXY({ x: 0, y: 0 }),
         new Animated.ValueXY({ x: 185, y: 0 }),
-        new Animated.ValueXY({ x: 400, y: 80 }),
+        new Animated.ValueXY({ x: 450, y: 80 }),
         new Animated.ValueXY({ x: -225, y: 75 }),
       ],
       animationSB_4P: [
@@ -45,22 +45,16 @@ export default class GameSetting extends Component {
       ],
       animationSB_2P: [
         new Animated.ValueXY({ x: 0, y: 0 }),
-        new Animated.ValueXY({ x: 225, y: -75 }),
+        new Animated.ValueXY({ x: 230, y: -75 }),
       ],
-      newValueBB_4P: [{ x: 325, y: 0 }, { x: 400, y: 95 }, { x: -190, y: 95 }, { x: 0, y: 0 }],
-      newValueSB_4P: [{ x: 180, y: -98 }, { x: 500, y: -95 }, { x: 625, y: 5 },{ x: 0, y: 0 }],
+      newValueBB_4P: [{ x: 375, y: 0 }, { x: 430, y: 115 }, { x: -190, y: 110 }, { x: 0, y: 0 }],
+      newValueSB_4P: [{ x: 180, y: -98 }, { x: 550, y: -95 }, { x: 580, y: -10 },{ x: 0, y: 0 }],
 
       newValueBB_3P: [{ x: 325, y: 0 }, { x: -180, y: 95 }, { x: 0, y: 0 }],
-      newValueSB_3P: [{ x: 180, y: -98 }, { x: 500, y: -95 },{ x: 0, y: 0 }],
-
-      //newValueBB_3P: [{ x: 185, y: 0 }, { x: 400, y: 80 },{ x: -225, y: 75 }, { x: 0, y: 0 }],
-      //newValueSB_3P: [{ x: 225, y: -75 },{ x: 185, y: 0 }, { x: 415, y: -75 },{ x: 0, y: 0 }],
-
-      //newValueBB_3P: [{ x: 185, y: 0 }, { x: 400, y: 80 },{ x: -225, y: 75 }, { x: 0, y: 0 }],
-      //newValueSB_3P: [{ x: 225, y: -75 },{ x: 185, y: 0 }, { x: 415, y: -75 },{ x: 0, y: 0 }],
+      newValueSB_3P: [{ x: 180, y: -98 }, { x: 450, y: -95 },{ x: 0, y: 0 }],
 
       newValueBB_2P: [{ x: -170, y: 100 }, { x: 0, y: 0 }],
-      newValueSB_2P: [{ x: 180, y: -90 }, { x: 0, y: 0 }],
+      newValueSB_2P: [{ x: 130, y: -90 }, { x: 0, y: 0 }],
 
       playerCardAnimations: [
         new Animated.ValueXY({ x: 0, y: 0 }),
@@ -81,22 +75,22 @@ export default class GameSetting extends Component {
         new Animated.ValueXY({ x: 0, y: 0 }),
       ],
       tableCardsMove: [
-        { x: -158, y: -150 },
-        { x: -88, y: -150 },
-        { x: -19, y: -150 },
-        { x: 49, y: -150 },
-        { x: 123, y: -150 },
+        { x: -157, y: -140 },
+        { x: -87, y: -140 },
+        { x: -18, y: -140 },
+        { x: 50, y: -140 },
+        { x: 125, y: -140 },
       ],
 
       playerNewValues: [
         { x: -350, y: -10 },
-        { x: -320, y: -10 },
-        { x: -300, y: -270 },
-        { x: -270, y: -270 },
-        { x: 60, y: -270 },
-        { x: 30, y: -270 },
-        { x: 300, y: -10 },
-        { x: 250, y: -10 },
+        { x: -300, y: -10 },
+        { x: -320, y: -240 },
+        { x: -270, y: -240 },
+        { x: 100, y: -240 },
+        { x: 50, y: -240 },
+        { x: 280, y: -10 },
+        { x: 330, y: -10 },
       ],
 
       quitVisible: false,
@@ -112,33 +106,10 @@ export default class GameSetting extends Component {
       gamePot: 0,
       raiseAmount: 10,
 
-      // USE THIS STUFF
-      // this.props.matchName,
-      // this.props.matchType,
-      // this.props.game,
-      // this.props.myCards,
-
-      example_matchName: "public/match",
-      example_game: {
-        balance: [0, 0, 0, 0],
-        board: ["♣2", "♦5", "♥10"],
-        deck: ["♠A", "♣J"],
-        move: ["raise", "call", "fold", "call"],
-        players: ["Abe#45", "Bob#89", "Alice#90", "Janet#02"],
-        pot: 40,
-        ready: [true, false, true, false],
-        size: 4,
-        player_cards: [
-          { rank: 9, card: ["♠7", "♥9"] },
-          { rank: 2, card: ["♣3", "♦3"] },
-          { rank: 7, card: ["♥2", "♦8"] },
-          { rank: 5, card: ["♠6", "♦5"] },
-        ],
-        pause: false,
-        turn: 3,
-        round: 2,
-      },
-      example_myCards: [],
+      player1Loc: null,
+      player2Loc: null,
+      player3Loc: null,
+      player4Loc: null
     };
   }
   //Use state variable called round 1 = flop 2 = turn 3 = river
@@ -233,6 +204,7 @@ export default class GameSetting extends Component {
           style: "cancel"
         },
         { text: "YES", onPress: () => {
+        setStatusBarHidden(false, 'slide');
         this.props.navigation.navigate('LandingPage'),  
         ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP); } }
       ]);
@@ -268,7 +240,7 @@ export default class GameSetting extends Component {
                   borderRadius: 25,
                   backgroundColor: "black",
                   justifyContent: "center",
-                  top: "150%",
+                  top: "350%",
                   right: "1700%",
                 }}
               >
@@ -325,7 +297,7 @@ export default class GameSetting extends Component {
                   backgroundColor: "black",
                   justifyContent: "center",
                   top: "100%",
-                  right: "1700%",
+                  right: "2100%",
                 }}
               >
                 {this.moveBB(index)}
@@ -344,8 +316,8 @@ export default class GameSetting extends Component {
                   borderRadius: 25,
                   backgroundColor: "white",
                   justifyContent: "center",
-                  top: "390%",
-                  right: "2400%",
+                  top: "500%",
+                  right: "2800%",
                 }}
               >
                 {this.moveSB(index)}
@@ -369,7 +341,9 @@ export default class GameSetting extends Component {
                 paddingHorizontal: 20,
                 backgroundColor:"white",}}
             >
-              <Text>{suit}</Text>
+              <Text style={{color: suit == '♥' || 
+                suit == '♦'? 'red': 'black'}}
+              >{suit}</Text>
               <Text>{value}</Text>
               {this.moveTableCards(i)}
             </View>
@@ -430,6 +404,7 @@ export default class GameSetting extends Component {
                 style={styles.buttonInExit}
                 onPress={() => {
                   this.setModalVisible(!(this.state.quitVisible))
+                  setStatusBarHidden(false, 'slide');
                   this.props.navigation.navigate('LandingPage')
                   ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
                   
@@ -454,6 +429,7 @@ export default class GameSetting extends Component {
     }
 
     leaveGame(){
+      setStatusBarHidden(false, 'slide');
       this.props.navigation.navigate('LandingPage')
       ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
       
@@ -617,8 +593,8 @@ export default class GameSetting extends Component {
       }
 
       if(myTurn){
-        if(this.props.game.move[this.props.playerNum] == 'fold'|| 
-        this.props.game.move[this.props.playerNum] == 'all in' ){ //if you fold
+        if(this.props.game.move[this.props.playerNum] === 'fold'|| 
+        this.props.game.move[this.props.playerNum] === 'all in' ){ //if you fold
           myTurn = false
           callAmount = 0
           this.UpdateInitializer(this.props.game.move[this.props.playerNum], callAmount)
@@ -721,7 +697,6 @@ export default class GameSetting extends Component {
     }
 
     roundWinnerView(){
-      console.log("742 round winner view")
       var isVisible = !this.props.game.ready[this.props.playerNum]
       return (
         <Modal
@@ -733,7 +708,7 @@ export default class GameSetting extends Component {
           <View style = {styles.centeredView}>
             <View style = {styles.modalView}>
               <Text style = {{padding: 0, fontWeight: 'bold'}}>
-                {this.props.game.players[this.props.game.roundWinner]} won with a {this.props.game.roundWinnerRank}!
+                {this.props.game.roundWinner} won with a {this.props.game.roundWinnerRank}!
                 </Text>
               <ActivityIndicator size='large' color="#0062ff"/>
               <View style = {{padding: 5}}></View>
@@ -741,7 +716,9 @@ export default class GameSetting extends Component {
                 style={styles.buttonInExit}
                 onPress={() => {
                   isVisible = false
-                  this.UpdateInitializer('check')
+                  if(this.props.game.size-this.props.game.newPlayer > this.props.playerNum){
+                    this.UpdateInitializer('check')
+                  }
                 }}
               >
                 <Text>OK</Text>
@@ -779,9 +756,8 @@ export default class GameSetting extends Component {
         
         <View style={[styles.timerTextBackground]}>
           {0 == this.props.game.turn || this.props.game.turn == 5?(
-            <Text style={styles.playerNames}>
-              Waiting For Other Players
-            </Text>
+            <Text style={[styles.playerNames, {marginLeft: 20}]}
+            >Waiting For Other Players</Text>
             ):(
             <Text style={styles.playerNames}>
               {this.props.game.players[this.props.game.playerTurn]}'s Turn 
@@ -816,15 +792,18 @@ export default class GameSetting extends Component {
       //console.log(this.props.game.deck)
       
       return (
+        
         <View style={styles.container}>
-          {this.props.game.turn == 5 && this.props.game.roundWinner > -1? (
+          {this.props.game.turn == 5 && this.props.game.roundWinner != -1? (
            this.roundWinnerView()
            ):(<Text></Text>)}
           
           {this.quitView()}
-
           
-          <View> 
+          <View style={{
+            left: '4%',
+            top: '1%'
+          }}> 
             <TouchableOpacity
               style={[styles.button, styles.buttonOpen]}
               onPress={() => this.setModalVisible(true)}
@@ -858,7 +837,7 @@ export default class GameSetting extends Component {
                     <View style={styles.textBackground}> 
                       <Text style={styles.playerNames}>
                         {this.props.game.players[1]}</Text>
-                  </View>
+                    </View>
                 </View>
               ) : (
                 this.defaultEmptyAvatar()
@@ -946,13 +925,13 @@ export default class GameSetting extends Component {
           }
 
           <View>
-            {this.props.myCards.map((card, i) =>
-              this.cardDeal(card.suit, card.value, i + this.props.playerNum * 2)
-            )}
+            {!(0 == this.props.game.turn || this.props.game.turn == 5) &&
+              this.props.myCards.map((card, i) =>
+                this.cardDeal(card.suit, card.value, i + this.props.playerNum * 2))}
+
             {1 < this.props.game.turn && this.props.game.turn < 5 ? (
               this.props.game.board.map((card, i) =>
-                this.flopTurnRiver(card.suit, card.value, i)
-              )
+                this.flopTurnRiver(card.suit, card.value, i))
             ) : (
               <Text></Text>
             )}
@@ -968,14 +947,16 @@ export default class GameSetting extends Component {
           </View>
 
           <View style={styles.chipView}>
-            <Image
-              style={{
-                width: 40,
-                height: 40,
-                resizeMode: "contain",
-              }}
-              source={require("../../../assets/chipAmount.png")}
-            />
+            <View style={{flexDirection: 'row' , justifyContent: 'center'}}>
+              <Image
+                style={{
+                  width: 40,
+                  height: 40,
+                  resizeMode: "contain",
+                }}
+                source={require("../../../assets/chipAmount.png")}
+              />
+            </View>
             <Text style={{ fontSize: 20, fontWeight: "bold", color: "white" }}>
               {this.props.game.balance[this.props.playerNum]}
             </Text>
@@ -1072,8 +1053,8 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     resizeMode: 'contain',
     top: '83%',
-    right: '40%',
-    left: '45%',
+    //top: Platform.OS === "android" ? '83%' : '81%',
+    right: '37%',
     width: '25%',
     position: 'absolute'
   },
@@ -1088,7 +1069,6 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     maxHeight: 50,
     width: '80%',
-    paddingLeft: 10,
     marginTop: 10
   },
   textStyle:{
@@ -1135,35 +1115,35 @@ const styles = StyleSheet.create({
     position: 'absolute',
     borderRadius: 2,
     borderColor: 'black',
-    top: "35%",
-    left: "4%",
+    top: "37%",
+    left: "6%",
     alignContent: "center",
     paddingBottom: 15
   },
   player2View: {
     borderRadius: 2,
     borderColor: 'black',
-    top: "0%",
-    left:"30%",
+    top: "1.5%",
+    left:"40%",
   },
   player3View: {
     borderRadius: 2,
     borderColor: "black",
-    right: '25%',
-    bottom: '0%'
+    top: "1.5%",
+    right: '20%',
   },
   player4View: {
     position:'absolute',
     borderRadius: 2,
     borderColor: 'black',
-    top: "35%",
+    top: "37%",
     right: "5%",
     alignContent: "center"
   },
   potView:{
     position: 'absolute',
-    top: "5%",
-    right: "5%"
+    top: "4%",
+    right: "2%"
   },
   pot:{
     borderRadius: 2,
@@ -1171,7 +1151,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 10,
     paddingHorizontal: 0,
-    right: '300%'
   },
   chipAmount: {
     top: '500%',
@@ -1180,17 +1159,21 @@ const styles = StyleSheet.create({
   chipView:{
     position: 'absolute',
     width: 50,
-    right: "1%",
-    bottom: "2%"
+    right: "2%",
+    bottom: "2%",
+    alignContent: 'center',
+    alignItems: 'center'
   },
   tableView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    alignContent: 'center',
     width: 466,
     height: 400,
     resizeMode: 'contain',
-    bottom: '0%',
-    right: '0%',
-    left: '0%',
-    marginLeft: 5
+    top: '1%',
+    marginLeft: '7%'
   },
   chat:{
     position:'absolute',

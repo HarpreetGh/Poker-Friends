@@ -215,23 +215,27 @@ export default class GameSetting extends Component {
           // Figure out who won and give them pot
           var values = await this.findRoundWinner(game);
           const roundWinner = values[0]
+          var roundWinnerLength = roundWinner.length
+          var roundWinnerNames = roundWinner.map(x => game.players[x]).join(' and ');
           const roundWinnerRank = values[1]
           console.log("Roundwinner is after function call: ", roundWinner);
           
           //put a for loop here for all round winners
           //game.pot /roundWinner.length for the array of winners
-          game.balance[roundWinner] += game.pot;
-          game.chipsWon[roundWinner] += game.pot;
-          game.wins[roundWinner] += 1;
+          for(var k = 0; k < roundWinnerLength; k++){
+            game.balance[roundWinner[k]] += (game.pot/roundWinnerLength)
+            game.chipsWon[roundWinner[k]] += (game.pot/roundWinnerLength)
+            game.wins[roundWinner[k]] += 1;
+          }
 
-          for (var i = 0; i < game.size; i++) {
-            if (i != roundWinner) {
+          for (var i = 0; i < game.players.length; i++) {
+            if (!roundWinner.includes(game.players[i])) {
               game.chipsLost[i] += game.chipsIn[i];
             }
           }
 
           updates[matchPath + "/roundWinnerRank"] = roundWinnerRank;
-          updates[matchPath + "/roundWinner"] = roundWinner;
+          updates[matchPath + "/roundWinner"] = roundWinnerNames
           updates[matchPath + "/balance"] = game.balance;
           updates[matchPath + "/chipsWon"] = game.chipsWon;
           updates[matchPath + "/wins"] = game.wins;
@@ -290,6 +294,10 @@ export default class GameSetting extends Component {
       "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card", "Uncontested Round"]
 
     var hands = [] //hands in play
+
+    if(game.size-game.newPlayers == 1){
+      return [[game.player[0]], ranks[10]]
+    }
     
     for (var i = 0; i < game.size; i++) {
       if (game.move[i] != "fold") {
@@ -327,7 +335,7 @@ export default class GameSetting extends Component {
     var roundWinner = 0;
     if(hands.length == 1){ //if all but 1 player folded or is left.
       roundWinner = game.player_cards.findIndex((element) => element == hands[0])
-      return [roundWinner, ranks[10]];
+      return [[roundWinner], ranks[10]];
     }
 
     //hands is an array of players with game.players_cards[i].rank sorted by highest rank to lowest (1, 2, 3, 4, 5, 6, 7, 8, 9, 10 hand rankings in order)
@@ -339,39 +347,45 @@ export default class GameSetting extends Component {
       roundWinner = game.player_cards.findIndex((element) => element == hands[0])
     }
     else if (hands.length > 1) {
-      //rW = await this.findHighestHand(hands);
+      //compare the highest card in the players 5 cards rank
       console.log('rank comparison triggered', hands)
       hands.sort(function (a, b) { return b.rank[1][0] - a.rank[1][0]; }); //sorts from big to small
       hands = hands.filter(hand => hand.rank[1][0] == hands[0].rank[1][0]);
       if(hands.length > 1 && hands[0].rank[1].length > 1){
+        //compare the 2nd card of a 2 pair or full house
         console.log('rank comparison lv2 triggered')
         hands.sort(function (a, b) { return b.rank[1][1] - a.rank[1][1]; }); //sorts from big to small
         hands = hands.filter(hand => hand.rank[1][1] == hands[0].rank[1][1]);
 
       }
       if(hands.length > 1){
-        //each players cards are already sorted largest to small
+        //each players cards largest card compared
         console.log('hand comparison triggered')
         hands.sort(function (a, b) { return b.myCards[0].value - a.myCards[0].value; }); //sorts from big to small
         hands = hands.filter(hand => hand.myCards[0].value == hands[0].myCards[0].value);
 
         if(hands.length > 1){
+          //each players cards 2nd card compared
           console.log('hand comparison lv 2 triggered')
           hands.sort(function (a, b) { return b.myCards[1].value - a.myCards[1].value; }); //sorts from big to small
           hands = hands.filter(hand => hand.myCards[1].value == hands[0].myCards[1].value);
   
-          if(hands.length > 1){
+          if(hands.length > 1){ //Split pot because of Identical hands
             console.log('identical hands')
+            var roundWinnerArr = []
+            hands.forEach(hand => //find index of every winning hand 
+              roundWinnerArr.push( //push into array with all winners
+                game.player_cards.findIndex((element) => element == hand)
+              )
+            );
+            return [roundWinnerArr, ranks[hands[0].rank[0] - 1]];
           }
         }
       }
       roundWinner = game.player_cards.findIndex((element) => element == hands[0])
-      //indexOfHighestRanks would be [0,3] or [1,2,3] or whatever amount of players have same # of cards
-      //game.player_cards is [{rank: 2, myCards: [Card, Card]}, {rank: 2, myCards: [Card, Card]}]
-      //Card = {suit: 'heart', value: '3', image: 'somefilepath'}
     }
     
-    return [roundWinner, ranks[hands[0].rank[0] - 1]];
+    return [[roundWinner], ranks[hands[0].rank[0] - 1]];
   }
 
   cardToInt(array){
@@ -395,7 +409,7 @@ export default class GameSetting extends Component {
     return array
   }
 
-  // Rank 1
+  // Rank 1 -> 2,5,6
   isRoyalFlush(hand) {
     var rank = this.isStraightFlush(hand)
     var straightFlushCheck = rank[0] == 2
@@ -526,12 +540,12 @@ export default class GameSetting extends Component {
     return [false];
   }
   
-  isDubs(hand){
+  isDubs(hand){ //Rank 3,4,7,8,9
     hand.sort(function (a, b) {return b.value - a.value}); //sorts from highest to smallest
     console.log(hand)
     //console.log("hand", hand)
-    // Loop through hand array to see if 4 cards have the same value (4 of a kind) then return true if so
-   //var totalCounter = [0, 0, 0, 0, 0, 0, 0]
+    //Loop through hand array to see if 4 cards have the same value (4 of a kind) then return true if so
+    //var totalCounter = [0, 0, 0, 0, 0, 0, 0]
      
     var excluded = []
     var count = []
@@ -541,14 +555,11 @@ export default class GameSetting extends Component {
       counter = 1;
       if(!excluded.includes(i)){
         for (var j = i + 1; j < hand.length; j++) {
-          //console.log("DUBS", hand[i].value, hand[j].value)
-          //console.log("Inner loop: ", "i is ", i, "j is ", j, "counter is ", counter)
           if (hand[i].value == hand[j].value){
             counter += 1
             excluded.push(j)
           }
         }
-        //console.log("counter after", counter)
         if(counter > 1){
           count.push(counter)
           dubNum.push(hand[i].value)
@@ -561,7 +572,7 @@ export default class GameSetting extends Component {
     var row2Num = []
 
     for(var i = 0; i < count.length; i++){
-      if (count[i] == 4) {
+      if (count[i] == 4) { //Rank 3
         console.log("4 of kind");
         return [3, dubNum[i]]
       }
@@ -576,19 +587,19 @@ export default class GameSetting extends Component {
     }
     
     if((row3 > 0 && row2 > 0) || row3 > 1 ){
-      console.log("Full House", row3, row2)
+      console.log("Full House", row3, row2) //Rank 4
       return [4, [row3Num[0], row2Num[0]]]
     }
-    else if(row3 > 0){
+    else if(row3 > 0){ //Rank 7
       console.log("3 of Kind")
       return [7, [row3Num[0]]]
     }
-    else if(row2 > 0){
+    else if(row2 > 0){ //Rank 8
       if(row2 > 1){
         console.log("2 pair")
         return [8, [row2Num[0], row2Num[1]]]
       }
-      console.log("pair")
+      console.log("pair") //Rank 9
       return [9, [row2Num[0]]];
     }
     else{

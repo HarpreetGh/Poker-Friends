@@ -4,6 +4,7 @@ import Slider from '@react-native-community/slider';
 import Logo from './Logo';
 import firebase from 'firebase'
 import * as ScreenOrientation from 'expo-screen-orientation';
+import {setStatusBarHidden } from 'expo-status-bar';
 
 import Balance from './Balance'
 
@@ -100,6 +101,7 @@ export default class JoinGame extends Component {
       updates['/games/list/' + matchName + '/size'] = data.size
 
       firebase.database().ref().update(updates);
+      setStatusBarHidden(true, 'slide');
       this.props.navigation.navigate('GameController')
       ScreenOrientation.lockAsync
       (ScreenOrientation.OrientationLock.LANDSCAPE)

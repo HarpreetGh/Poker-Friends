@@ -4,6 +4,7 @@ import Slider from '@react-native-community/slider';
 import Logo from './Logo';
 import firebase from 'firebase'
 import * as ScreenOrientation from 'expo-screen-orientation';
+import {setStatusBarHidden } from 'expo-status-bar';
 
 export default class CreateGame extends Component {
   constructor(props){
@@ -126,6 +127,7 @@ export default class CreateGame extends Component {
             <TouchableOpacity style={styles.buttonContainer}
               onPress={() => {
                 if(this.createGame('public')){
+                  setStatusBarHidden(true, 'slide');
                   this.props.navigation.navigate('GameController')
                   ScreenOrientation.lockAsync
                   (ScreenOrientation.OrientationLock.LANDSCAPE)  
@@ -137,6 +139,7 @@ export default class CreateGame extends Component {
             <TouchableOpacity style={styles.buttonContainer}
               onPress={() => {
                 if(this.createGame('private')){
+                  setStatusBarHidden(true, 'slide');
                   this.props.navigation.navigate('GameController')
                   ScreenOrientation.lockAsync
                   (ScreenOrientation.OrientationLock.LANDSCAPE)  

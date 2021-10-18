@@ -94,7 +94,7 @@ export default function ChangeAvatar() {
           <Text style={styles.title}>New Avatar</Text> 
           <Image source={{ uri: image }} style={{ width: 200, height: 200, marginTop: 20, borderRadius: 100 }} />
 
-          <View style = {{marginTop: 10}}>
+          <View style = {{marginTop: 10, marginRight: 'auto', marginLeft: 'auto'}}>
             <TouchableOpacity style={styles.buttonContainer} onPress={UpdatePhoto}>
               <Text style={styles.buttonText}>Confirm Avatar</Text>
             </TouchableOpacity>

@@ -5,6 +5,7 @@ import firebase from 'firebase'
 import AccountStats from "./AccountStats";
 import { set } from 'react-native-reanimated';
 import * as ScreenOrientation from 'expo-screen-orientation';
+import {setStatusBarHidden } from 'expo-status-bar';
 
 export default class FriendsList extends Component {
   constructor(props){
@@ -231,6 +232,7 @@ export default class FriendsList extends Component {
       updates['/games/list/' + matchName + '/size'] = data.size
 
       firebase.database().ref().update(updates);
+      setStatusBarHidden(true, 'slide');
       this.props.navigation.navigate('GameController')
       ScreenOrientation.lockAsync
       (ScreenOrientation.OrientationLock.LANDSCAPE)
