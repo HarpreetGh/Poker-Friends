@@ -18,7 +18,7 @@ export default class AccountStats extends Component {
         var temp = {...this.props.userData}
         temp.username = user.displayName
         temp['losses'] = temp.games - temp.wins
-        temp['winRatio'] = ((temp.wins/temp.games).toFixed(3)) * 100 
+        temp['winRatio'] = ((temp.wins/temp.games) * 100).toFixed(2)
         this.setState({
             userPhoto: user.photoURL, 
             user: temp, ready: true})

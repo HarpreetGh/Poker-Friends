@@ -28,7 +28,6 @@ export default class HelpButton extends Component {
           transparent={true}
           visible={modalVisible}
           onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
             this.setModalVisible(!modalVisible);
           }}
         >

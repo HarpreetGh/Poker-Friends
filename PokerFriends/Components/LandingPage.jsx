@@ -118,6 +118,8 @@ export default class LandingPage extends Component {
   SignedOut = () => {
     return(
       <View style={styles.container}>
+        <StatusBarExpo style="light"/>
+        
         <Logo/>
 
         <View style={[styles.SignedView, {flex: 0.33}]}>
