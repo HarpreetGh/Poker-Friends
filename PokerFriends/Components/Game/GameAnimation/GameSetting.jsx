@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { Text, StyleSheet, View, TouchableOpacity,
          StatusBar, Image, Modal, TextInput,
          BackHandler, Alert, Animated, Dimensions,
-         ActivityIndicator
+         ActivityIndicator, SafeAreaView
          } from 'react-native';
 import Slider from '@react-native-community/slider';
 import * as ScreenOrientation from 'expo-screen-orientation';
@@ -50,11 +50,11 @@ export default class GameSetting extends Component {
       newValueBB_4P: [{ x: 375, y: 0 }, { x: 430, y: 115 }, { x: -190, y: 110 }, { x: 0, y: 0 }],
       newValueSB_4P: [{ x: 180, y: -98 }, { x: 550, y: -95 }, { x: 580, y: -10 },{ x: 0, y: 0 }],
 
-      newValueBB_3P: [{ x: 325, y: 0 }, { x: -180, y: 95 }, { x: 0, y: 0 }],
-      newValueSB_3P: [{ x: 180, y: -98 }, { x: 450, y: -95 },{ x: 0, y: 0 }],
+      newValueBB_3P: [{ x: 400, y: 20 }, { x: -180, y: 95 }, { x: -130, y: 0 }],
+      newValueSB_3P: [{ x: 10, y: -98 }, { x: 575, y: -95 },{ x: 0, y: 0 }],
 
-      newValueBB_2P: [{ x: -170, y: 100 }, { x: 0, y: 0 }],
-      newValueSB_2P: [{ x: 130, y: -90 }, { x: 0, y: 0 }],
+      newValueBB_2P: [{ x: -170, y: 110 }, { x: -160, y: 0 }],
+      newValueSB_2P: [{ x: 30, y: -90 }, { x: 0, y: 0 }],
 
       playerCardAnimations: [
         new Animated.ValueXY({ x: 0, y: 0 }),
@@ -75,41 +75,32 @@ export default class GameSetting extends Component {
         new Animated.ValueXY({ x: 0, y: 0 }),
       ],
       tableCardsMove: [
-        { x: -157, y: -140 },
-        { x: -87, y: -140 },
-        { x: -18, y: -140 },
-        { x: 50, y: -140 },
-        { x: 125, y: -140 },
+        { x: -184, y: -280 },
+        { x: -108, y: -280 },
+        { x: -34, y: -280 },
+        { x: 39, y: -280 },
+        { x: 118, y: -280 },
       ],
 
       playerNewValues: [
-        { x: -350, y: -10 },
-        { x: -300, y: -10 },
-        { x: -320, y: -240 },
-        { x: -270, y: -240 },
-        { x: 100, y: -240 },
-        { x: 50, y: -240 },
+        { x: -350, y: 5 },
+        { x: -300, y: 5 },
+        { x: -130, y: -240 },
+        { x: -80, y: -240 },
+        { x: 75, y: -240 },
+        { x: 125, y: -240 },
         { x: 280, y: -10 },
         { x: 330, y: -10 },
       ],
 
       quitVisible: false,
       raiseVisible: false,
-      //winnerVisible: false,
-      //fiveCardsFin: 0,
 
       valueFoldCard: new Animated.ValueXY({ x: 25, y: 25 }),
       fadeAnimation: [new Animated.Value(0), new Animated.Value(0),
                       new Animated.Value(0), new Animated.Value(0)], 
 
-      playerCardsGiven: 1,
-      gamePot: 0,
       raiseAmount: 10,
-
-      player1Loc: null,
-      player2Loc: null,
-      player3Loc: null,
-      player4Loc: null
     };
   }
   //Use state variable called round 1 = flop 2 = turn 3 = river
@@ -175,7 +166,7 @@ export default class GameSetting extends Component {
         toValue: 1,
         duration: 4000,
         useNativeDriver: false,
-      }).start(() => this.fadeOut());
+      }).start();
     }
 
     fadeOut(num) {
@@ -331,7 +322,7 @@ export default class GameSetting extends Component {
 
     flopTurnRiver(suit,value, i){
       return (
-        <View style = {{right: 328, top: 310}}>
+        <View>
           <Animated.View style = {this.state.tableCardsStart[i].getLayout()}>
             <View style = {
               {position:'absolute',
@@ -774,6 +765,22 @@ export default class GameSetting extends Component {
       this.UpdateInitializer('fold')
     }
 
+    playerMoveView(num){
+      return(
+        <Animated.View
+          style={[{opacity: this.fadeIn(num)}]}
+        >
+          <Text style={styles.textStyle}>
+            {this.props.game.move[num] == 'raise' || this.props.game.move[num] == 'call'? (
+              this.props.game.move[num] + ' ' + this.props.game.raisedVal
+            ):(
+              this.props.game.move[num]
+            )}
+          </Text>
+        </Animated.View>
+      )
+    }
+
     defaultEmptyAvatar() {
       return (
         <View style = {{alignItems: 'center'}}>
@@ -813,19 +820,16 @@ export default class GameSetting extends Component {
           </View>
 
           <View style={styles.player1View}>
-              <View style = {{alignItems: 'center'}}>
-                <Image 
-                  source={{ uri: this.props.game.playerAvatar[0] }}
-                  style={styles.avatarImage}/>
-                <View style={styles.textBackground}>
-                  <Text style={styles.playerNames}> {this.props.game.players[0]} </Text>
-                </View>
+            <View style = {{alignItems: 'center'}}>
+              <Image 
+                source={{ uri: this.props.game.playerAvatar[0] }}
+                style={styles.avatarImage}/>
+              <View style={styles.textBackground}>
+                <Text style={styles.playerNames}> {this.props.game.players[0]} </Text>
+              </View>
+
+              {this.props.game.ready[0] && this.playerMoveView(0)}
             </View>
-            <Animated.View
-              style={[styles.pBet, { opacity: this.state.fadeAnimation[0] }]}
-            >
-              <Text>testing</Text>
-            </Animated.View>
           </View>
 
           <View style={styles.player2View}>
@@ -838,23 +842,24 @@ export default class GameSetting extends Component {
                       <Text style={styles.playerNames}>
                         {this.props.game.players[1]}</Text>
                     </View>
+                    {this.props.game.ready[1] && this.playerMoveView(1)}
                 </View>
               ) : (
                 this.defaultEmptyAvatar()
               )}
-            
-
-            <Animated.View
-              style={[styles.pBet, { opacity: this.state.fadeAnimation[1] }]}
-            >
-              <Text>testing</Text>
-            </Animated.View>
           </View>
+          
+          <View style={styles.tableView}>
+            <Image
+              style={styles.tableImage}
+              source={require("../../../assets/pokertable.png")}
+            />
 
-          <Image
-            style={styles.tableView}
-            source={require("../../../assets/pokertable.png")}
-          />
+            {1 < this.props.game.turn && this.props.game.turn < 5 &&
+              this.props.game.board.map((card, i) =>
+                this.flopTurnRiver(card.suit, card.value, i))}
+
+          </View>
 
           <View style={styles.player3View}>
               {this.props.game.size > 2 ? (
@@ -867,16 +872,11 @@ export default class GameSetting extends Component {
                       {this.props.game.players[2]}
                     </Text>
                   </View>
+                  {this.props.game.ready[2] && this.playerMoveView(2)}
                 </View>
               ) : (
                 this.defaultEmptyAvatar()
               )}
-          
-            <Animated.View
-              style={[styles.pBet, { opacity: this.state.fadeAnimation[2] }]}
-            >
-              <Text>testing</Text>
-            </Animated.View>
           </View>
 
           <View style={styles.potView}>
@@ -895,27 +895,21 @@ export default class GameSetting extends Component {
           </View>
 
           <View style={styles.player4View}>
-              {this.props.game.size > 3 ? (
-                <View style = {{alignItems: 'center'}}>
-                  <Image 
-                  source={{ uri: this.props.game.playerAvatar[3] }}
-                  style = {styles.avatarImage}/>
-                  <View style={styles.textBackground}>
-                    <Text style={styles.playerNames}>
-                      {this.props.game.players[3]}
-                    </Text>
-                  </View>
+            {this.props.game.size > 3 ? (
+              <View style = {{alignItems: 'center'}}>
+                <Image 
+                source={{ uri: this.props.game.playerAvatar[3] }}
+                style = {styles.avatarImage}/>
+                <View style={styles.textBackground}>
+                  <Text style={styles.playerNames}>
+                    {this.props.game.players[3]}
+                  </Text>
                 </View>
-              ) : (
-                this.defaultEmptyAvatar()
-              )}
-            
-
-            <Animated.View
-              style={[styles.pBet, { opacity: this.state.fadeAnimation[3] }]}
-            >
-              <Text>testing</Text>
-            </Animated.View>
+                {this.props.game.ready[3] && this.playerMoveView(3)}
+              </View>
+            ) : (
+              this.defaultEmptyAvatar()
+            )}
           </View>
 
           {this.props.game.turn < 5 ?(
@@ -928,13 +922,6 @@ export default class GameSetting extends Component {
             {!(0 == this.props.game.turn || this.props.game.turn == 5) &&
               this.props.myCards.map((card, i) =>
                 this.cardDeal(card.suit, card.value, i + this.props.playerNum * 2))}
-
-            {1 < this.props.game.turn && this.props.game.turn < 5 ? (
-              this.props.game.board.map((card, i) =>
-                this.flopTurnRiver(card.suit, card.value, i))
-            ) : (
-              <Text></Text>
-            )}
           </View>
 
           {this.timerView()}
@@ -962,18 +949,7 @@ export default class GameSetting extends Component {
             </Text>
           </View>
 
-          {this.props.game.turn == 1 ? this.transitionBlinds() : <Text></Text>}
-
-          {/* <View style = {styles.foldContainer}>
-            <Animated.View style = {[styles.foldCard, this.state.valueFoldCard.getLayout()]}>
-              <Image style = {styles.cardImage} source = {require("../../../assets/deckOfCards/PNG/♥J.png")}/>
-            </Animated.View>
-          </View> */}
-
-          
-          {/* {this.flop(this.props.game.deck.shift(),2,3)}
-                              {this.turn(1)}
-                              {this.river(1)} */}
+          {this.props.game.turn == 1 && this.transitionBlinds()}
         </View>
       );
     }
@@ -989,7 +965,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    //paddingTop: 10,
     backgroundColor: '#2ecc71',
     flexDirection: 'row',
     justifyContent: 'flex-start',
@@ -1011,14 +986,6 @@ const styles = StyleSheet.create({
     elevation: 2,
     backgroundColor: "#b2bec3",
     marginTop: 5
-  },
-  button: {
-    borderRadius: 2,
-    padding: 10,
-    elevation: 2,
-    backgroundColor: "#b2bec3",
-    top: "3%",
-    left: "20%"
   },
   exitStyle: {
     fontWeight: 'bold',
@@ -1052,8 +1019,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
     resizeMode: 'contain',
-    top: '83%',
-    //top: Platform.OS === "android" ? '83%' : '81%',
+    //top: '83%',
+    top: Platform.OS === "android" ? '83%' : '81%',
     right: '37%',
     width: '25%',
     position: 'absolute'
@@ -1107,10 +1074,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     borderRadius: 50
   },
-  pBet: {
-    bottom: "0%",
-    left: "25%",
-  },
   player1View: {
     position: 'absolute',
     borderRadius: 2,
@@ -1123,14 +1086,14 @@ const styles = StyleSheet.create({
   player2View: {
     borderRadius: 2,
     borderColor: 'black',
-    top: "1.5%",
-    left:"40%",
+    top: "0.5%",
+    left:"28%",
   },
   player3View: {
     borderRadius: 2,
     borderColor: "black",
-    top: "1.5%",
-    right: '20%',
+    top: "0.5%",
+    right: '12%',
   },
   player4View: {
     position:'absolute',
@@ -1142,7 +1105,7 @@ const styles = StyleSheet.create({
   },
   potView:{
     position: 'absolute',
-    top: "4%",
+    top: "0%",
     right: "2%"
   },
   pot:{
@@ -1167,13 +1130,18 @@ const styles = StyleSheet.create({
   tableView: {
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'center',
-    alignContent: 'center',
-    width: 466,
-    height: 400,
+    top: '2%',
+    left: '5%',
+    position: 'relative',
+    width: '60%',
+    //marginLeft: StatusBar.currentHeight,
+    marginLeft: Platform.OS === "android" ? StatusBar.currentHeight : 30,
+  },
+  tableImage: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',  
     resizeMode: 'contain',
-    top: '1%',
-    marginLeft: '7%'
   },
   chat:{
     position:'absolute',

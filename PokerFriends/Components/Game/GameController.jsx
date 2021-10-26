@@ -228,7 +228,7 @@ export default class GameSetting extends Component {
             game.wins[roundWinner[k]] += 1;
           }
 
-          for (var i = 0; i < game.players.length; i++) {
+          for (var i = 0; i < (game.players.length-game.newPlayer); i++) {
             if (!roundWinner.includes(game.players[i])) {
               game.chipsLost[i] += game.chipsIn[i];
             }
