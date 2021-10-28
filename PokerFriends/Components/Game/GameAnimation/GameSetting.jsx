@@ -16,6 +16,15 @@ import CardDealing from './cardDealing'
 export default class GameSetting extends Component {
   constructor(props){
     super(props)
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)
+      
+    var dimensions = Dimensions.get('screen')
+    if(dimensions.height > dimensions.width){
+      var temp = dimensions.height
+      dimensions.height = dimensions.width
+      dimensions.width = temp
+    }
+
     this.state = {
       animationBB_4P: [
         new Animated.ValueXY({ x: 0, y: 0 }),
@@ -101,10 +110,45 @@ export default class GameSetting extends Component {
                       new Animated.Value(0), new Animated.Value(0)], 
 
       raiseAmount: 10,
+      screen: dimensions
     };
   }
-  //Use state variable called round 1 = flop 2 = turn 3 = river
-      
+  
+    componentDidMount() {
+      this.backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        this.backAction
+      );
+      //this.setState({width: Dimensions.get('window').width})
+    }
+  
+    componentWillUnmount() {
+      this.backHandler.remove();
+    }
+
+    backAction = () => {
+      Alert.alert("Hold on!", "Are you sure you want to go back?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel"
+        },
+        { text: "YES", onPress: () => {
+        setStatusBarHidden(false, 'slide');
+        this.props.navigation.navigate('LandingPage'),  
+        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP); } }
+      ]);
+      return true;
+    };
+
+    setModalVisible = (visible) => {
+      this.setState({ quitVisible: visible });
+    }
+    setRaiseVisible = (visible) => {
+      this.setState({ raiseVisible: visible });
+    }
+
+    //Use state variable called round 1 = flop 2 = turn 3 = river
     foldCard() {
       Animated.timing(this.state.valueFoldCard, {
         toValue: {x: -515, y: 375},
@@ -114,23 +158,41 @@ export default class GameSetting extends Component {
     }
     
     moveBB(player) {
+      var screen = this.state.screen
+      var xOS = Platform.OS === "android" ? (StatusBar.currentHeight) : (screen.width*0.035)
+      var newValueBB_4P = [{ x: 375, y: 0 }, { x: 430, y: 115 }, { x: -190, y: 110 }, { x: 0, y: 0 }]
+      var newValueBB_3P = [{ x: 400, y: 20 }, { x: -180, y: 95 }, { x: -130, y: 0 }]
+
+      //parseFloat(styles.player2View.top) / 10.0;
+      var newValueBB_2P = [{ 
+        x: (screen.width*parseFloat(styles.player1View.left) / 100.0)+140+xOS, 
+        y: screen.height*(parseFloat(styles.player1View.top) / 100.0)
+      }, 
+      {x:(screen.width*parseFloat(styles.player2View.left) / 100.0)+xOS, 
+        y: (screen.height*parseFloat(styles.player2View.top) / 100.0)}]
+
+
+      console.log(screen)
+      console.log(newValueBB_2P)
+      //var newValueBB_2P = [{ x: 220, y: 0 }, { x: 220, y: 300 }]
+
       if(this.props.game.size == 4){
         Animated.timing(this.state.animationBB_4P[player], {
-          toValue: this.state.newValueBB_4P[player],
+          toValue: newValueBB_4P[player],
           duration: 1000,
           useNativeDriver: false
         }).start();
       }
       else if(this.props.game.size == 3) {
         Animated.timing(this.state.animationBB_3P[player], {
-          toValue: this.state.newValueBB_3P[player],
+          toValue: newValueBB_3P[player],
           duration: 1000,
           useNativeDriver: false
         }).start();
       }
       else{
         Animated.timing(this.state.animationBB_2P[player], {
-          toValue: this.state.newValueBB_2P[player],
+          toValue: newValueBB_2P[player],
           duration: 1000,
           useNativeDriver: false
         }).start();
@@ -138,23 +200,35 @@ export default class GameSetting extends Component {
     }
 
     moveSB(player) {
+      var screen = this.state.screen
+      var xOS = Platform.OS === "android" ? (StatusBar.currentHeight) : (screen.width*0.035)
+      
+      var newValueSB_4P = [{ x: 180, y: -98 }, { x: 550, y: -95 }, { x: 580, y: -10 },{ x: 0, y: 0 }]
+      var newValueSB_3P = [{ x: 10, y: -98 }, { x: 575, y: -95 },{ x: 0, y: 0 }]
+      var newValueSB_2P = [{ 
+        x:(screen.width*parseFloat(styles.player2View.left) / 100.0)+xOS, 
+        y: (screen.height*parseFloat(styles.player2View.top) / 100.0)}, 
+
+        {x: (screen.width*parseFloat(styles.player1View.left) / 100.0)+140+xOS, 
+        y: screen.height*(parseFloat(styles.player1View.top) / 100.0)}]
+
       if(this.props.game.size == 4){
         Animated.timing(this.state.animationSB_4P[player], {
-          toValue: this.state.newValueSB_4P[player],
+          toValue: newValueSB_4P[player],
           duration: 1000,
           useNativeDriver: false
         }).start();
       }
       else if(this.props.game.size == 3) {
         Animated.timing(this.state.animationSB_3P[player], {
-          toValue: this.state.newValueSB_3P[player],
+          toValue: newValueSB_3P[player],
           duration: 1000,
           useNativeDriver: false
         }).start();
       }
       else{
         Animated.timing(this.state.animationSB_2P[player], {
-          toValue: this.state.newValueSB_2P[player],
+          toValue: newValueSB_2P[player],
           duration: 1000,
           useNativeDriver: false
         }).start();
@@ -176,48 +250,10 @@ export default class GameSetting extends Component {
         useNativeDriver: false,
       }).start();
     }
-  
-    setModalVisible = (visible) => {
-      this.setState({ quitVisible: visible });
-    }
-    setRaiseVisible = (visible) => {
-      this.setState({ raiseVisible: visible });
-    }
-    // setModalWinnerVisible = (visible) => {
-    //   this.setState({ winnerVisible: visible});
-    // }
-
-    backAction = () => {
-      Alert.alert("Hold on!", "Are you sure you want to go back?", [
-        {
-          text: "Cancel",
-          onPress: () => null,
-          style: "cancel"
-        },
-        { text: "YES", onPress: () => {
-        setStatusBarHidden(false, 'slide');
-        this.props.navigation.navigate('LandingPage'),  
-        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP); } }
-      ]);
-      return true;
-    };
-  
-    componentDidMount() {
-      this.backHandler = BackHandler.addEventListener(
-        "hardwareBackPress",
-        this.backAction
-      );
-      //this.setState({width: Dimensions.get('window').width})
-    }
-  
-    componentWillUnmount() {
-      this.backHandler.remove();
-    }
 
     transitionBlinds(){
       //This first if statement should only be done in the
       //beginning of each game(New Lobby)
-
       var fiveCardsFin = this.props.game.smallBlindLoc;
       console.log("FIVE CARD FIN IS ", fiveCardsFin);
       if (fiveCardsFin == 0) {
@@ -307,8 +343,8 @@ export default class GameSetting extends Component {
                   borderRadius: 25,
                   backgroundColor: "white",
                   justifyContent: "center",
-                  top: "500%",
-                  right: "2800%",
+                  top: "100%",
+                  right: "2100%",
                 }}
               >
                 {this.moveSB(index)}
@@ -321,6 +357,7 @@ export default class GameSetting extends Component {
     }
 
     flopTurnRiver(suit,value, i){
+      var screen = this.state.screen
       return (
         <View>
           <Animated.View style = {this.state.tableCardsStart[i].getLayout()}>
@@ -328,8 +365,8 @@ export default class GameSetting extends Component {
               {position:'absolute',
                 borderRadius: 2,
                 alignItems: 'center',
-                paddingVertical: 20,
-                paddingHorizontal: 20,
+                paddingVertical: screen.height * 0.075,
+                paddingHorizontal: screen.width * 0.03,
                 backgroundColor:"white",}}
             >
               <Text style={{color: suit == '♥' || 
@@ -344,15 +381,47 @@ export default class GameSetting extends Component {
     }
 
     moveTableCards(card){
+      var screen = this.state.screen
+      /* 
+      Android
+      var xBase = (StatusBar.currentHeight*2)-(screen.width*0.60)/2
+      var yBase = (screen.height/1.4) * -1
+      var xMod = (screen.width*0.1 - ((StatusBar.currentHeight*2)*0.1))+1 
+      */
+      /* 
+      iPhone
+      var xBase = (screen.width*0.035*2)-(screen.width*0.60)/2
+      var yBase = (screen.height/1.35) * -1
+      var xMod = (screen.width*0.1 - ((screen.width*0.035)*0.1)) 
+      */
+      var xOS = (Platform.OS === "android" ? (StatusBar.currentHeight) : (screen.width*0.035)) * 2
+      var xBase = (xOS)-(screen.width*0.60)/2
+      var yBase = (screen.height/(1.325 + (Platform.OS === "android" ? 0.075 : 0))) * -1
+      var xMod = (screen.width*0.1) - (Platform.OS === "android" ?(xOS):(xOS/2))*0.1
+
+      //StatusBar no work on iphobne
+      //var xBase = (55)-(screen.width*0.60)/2
+      //var xMod = (screen.width*0.1 - (0))
+      
+      var tableCardsMove= [
+        { x: 0+xBase, y: yBase},
+        { x: (1*xMod)+xBase, y: yBase},
+        { x: (2*xMod)+xBase, y: yBase},
+        { x: (3*xMod)+xBase, y: yBase},
+        { x: (4*xMod)+xBase, y: yBase},
+      ]
+
+      //console.log(StatusBar.currentHeight, screen)
+      //console.log(window)
       Animated.timing(this.state.tableCardsStart[card], {
-        toValue: this.state.tableCardsMove[card],
+        toValue: tableCardsMove[card],
         duration: 1000,
         useNativeDriver: false
       }).start();
     }
 
     cardDeal(suit,value,i) {
-      return (<View style = {{right: '390%', top: '75%'}}>
+      return (<View>
         <Animated.View style = {this.state.playerCardAnimations[i].getLayout()}>
           <CardDealing suit={suit} value={value}>{this.movePlayerCards(i)}</CardDealing>
         </Animated.View>
@@ -361,8 +430,30 @@ export default class GameSetting extends Component {
     }
 
     movePlayerCards(card) {
+      var screen = this.state.screen
+      var xBase = (StatusBar.currentHeight*2)-(screen.width*0.60)/2
+      //var yBase =
+      var xMod = (screen.width*0.1 - ((StatusBar.currentHeight*2)*0.1))+1
+      //console.log(styles.player2View.top) == '1%'
+      var result = parseFloat(styles.player2View.top) / 10.0;
+      var playerNewValues= [
+        { x: -(screen.width/2)*(0.75-parseFloat(styles.player1View.left) / 100.0), 
+          y: screen.height*(1.09-parseFloat(styles.player1View.top) / 100.0)},
+        { x: -(screen.width/2)*(0.75-parseFloat(styles.player1View.left) / 100.0) +50,  
+          y: screen.height*(1.09-parseFloat(styles.player1View.top) / 100.0)},
+
+        { x: -(screen.width/2)*(parseFloat(styles.player2View.left) / 100.0), 
+          y: screen.height*(parseFloat(styles.player2View.top) / 10.0)},
+        { x: -(screen.width/2)*(parseFloat(styles.player2View.left) / 100.0) + 50,  
+          y: screen.height*(parseFloat(styles.player2View.top) / 10.0)},
+
+        { x: 75, y: -240 },
+        { x: 125, y: -240 },
+        { x: 280, y: -10 },
+        { x: 330, y: -10 }]
+
       Animated.timing(this.state.playerCardAnimations[card], {
-        toValue: this.state.playerNewValues[card],
+        toValue: playerNewValues[card],
         duration: 1000,
         useNativeDriver: false
       }).start();
@@ -405,13 +496,13 @@ export default class GameSetting extends Component {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.buttonInExit}
+                style={[styles.buttonInExit, {backgroundColor: "#c80c0d"}]}
                 onPress={() => {
                   this.setModalVisible(!this.state.quitVisible)
                   this.leaveGame()
                 }}
               >
-                <Text style={ styles.exitStyle }>Quit Game</Text>
+                <Text style={styles.textStyle}>Quit Game</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -485,8 +576,17 @@ export default class GameSetting extends Component {
         game.raisedVal += amount 
         game.pot += amount 
         game.balance[this.props.playerNum] -= amount
-        game.ready[this.props.playerNum] = false //CHECK ME
+        game.ready[this.props.playerNum] = true
         keys = ['move', 'chipsIn', 'raisedVal', 'balance', 'pot', 'playerTurn', 'ready']
+      }
+      else if (type === 'big blind'){
+        game.move[this.props.playerNum] = type
+        game.chipsIn[this.props.playerNum] += amount //what if you don't have enough chips Fix for Partial Calls
+        game.pot += amount 
+        game.balance[this.props.playerNum] -= amount
+        game.ready.fill(false) 
+        game.ready[this.props.playerNum] = true
+        keys = ['move', 'chipsIn', 'balance', 'pot', 'playerTurn', 'ready']
       }
 
       game.playerTurn++;
@@ -621,7 +721,7 @@ export default class GameSetting extends Component {
           }
           else if(bigBlindLoc == this.props.playerNum && this.props.game.raisedVal == Math.ceil(this.props.game.blindAmount * 0.5)){
             callString = "Big Blind: "
-            callType = 'call'
+            callType = 'big blind'
             callAmount = this.props.game.blindAmount
             callString += callAmount
             setupCall = false
@@ -766,9 +866,17 @@ export default class GameSetting extends Component {
     }
 
     playerMoveView(num){
+      var opac = false
+      if(this.props.game.move[num] === 'fold' ||
+         this.props.game.move[num] === 'all in' ||
+         this.props.game.move[num] === 'small blind')
+      {
+        opac = true
+      }
       return(
         <Animated.View
-          style={[{opacity: this.fadeIn(num)}]}
+          style={[{opacity: opac||this.props.game.ready[num]?(this.fadeIn(num)):(0),
+          backgroundColor: "#27ae60", padding: 2, borderRadius: 20}]}
         >
           <Text style={styles.textStyle}>
             {this.props.game.move[num] == 'raise' || this.props.game.move[num] == 'call'? (
@@ -778,6 +886,25 @@ export default class GameSetting extends Component {
             )}
           </Text>
         </Animated.View>
+      )
+    }
+
+    playerAvatarView(num){
+      return(
+        this.props.game.size > num ? (
+        <View style = {{alignItems: 'center'}}>
+          <Image
+            source={{ uri: this.props.game.playerAvatar[num] }}
+            style = {styles.avatarImage}/>
+            <View style={styles.textBackground}> 
+              <Text style={styles.playerNames}>
+                {this.props.game.players[num]}</Text>
+            </View>
+            {this.playerMoveView(num)}
+        </View>
+        ) : (
+          this.defaultEmptyAvatar()
+        )
       )
     }
 
@@ -801,54 +928,16 @@ export default class GameSetting extends Component {
       return (
         
         <View style={styles.container}>
-          {this.props.game.turn == 5 && this.props.game.roundWinner != -1? (
-           this.roundWinnerView()
-           ):(<Text></Text>)}
           
-          {this.quitView()}
-          
-          <View style={{
-            left: '4%',
-            top: '1%'
-          }}> 
+          <View style={{left: '2%', top: '2.5%', position: 'absolute'}}> 
             <TouchableOpacity
-              style={[styles.button, styles.buttonOpen]}
+              style={styles.exitButton}
               onPress={() => this.setModalVisible(true)}
             >
               <Text style={styles.textStyle}>EXIT</Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.player1View}>
-            <View style = {{alignItems: 'center'}}>
-              <Image 
-                source={{ uri: this.props.game.playerAvatar[0] }}
-                style={styles.avatarImage}/>
-              <View style={styles.textBackground}>
-                <Text style={styles.playerNames}> {this.props.game.players[0]} </Text>
-              </View>
-
-              {this.props.game.ready[0] && this.playerMoveView(0)}
-            </View>
-          </View>
-
-          <View style={styles.player2View}>
-              {this.props.game.size > 1 ? (
-                <View style = {{alignItems: 'center'}}>
-                  <Image
-                    source={{ uri: this.props.game.playerAvatar[1] }}
-                    style = {styles.avatarImage}/>
-                    <View style={styles.textBackground}> 
-                      <Text style={styles.playerNames}>
-                        {this.props.game.players[1]}</Text>
-                    </View>
-                    {this.props.game.ready[1] && this.playerMoveView(1)}
-                </View>
-              ) : (
-                this.defaultEmptyAvatar()
-              )}
-          </View>
-          
           <View style={styles.tableView}>
             <Image
               style={styles.tableImage}
@@ -858,25 +947,22 @@ export default class GameSetting extends Component {
             {1 < this.props.game.turn && this.props.game.turn < 5 &&
               this.props.game.board.map((card, i) =>
                 this.flopTurnRiver(card.suit, card.value, i))}
-
           </View>
 
+          <View style={styles.player1View}>
+            {this.playerAvatarView(0)}
+          </View>
+
+          <View style={styles.player2View}>
+            {this.playerAvatarView(1)}
+          </View>
+          
           <View style={styles.player3View}>
-              {this.props.game.size > 2 ? (
-                <View style = {{alignItems: 'center'}}> 
-                  <Image 
-                  source={{ uri: this.props.game.playerAvatar[2] }}
-                  style = {styles.avatarImage}/>
-                  <View style={styles.textBackground}>
-                    <Text style={styles.playerNames}>
-                      {this.props.game.players[2]}
-                    </Text>
-                  </View>
-                  {this.props.game.ready[2] && this.playerMoveView(2)}
-                </View>
-              ) : (
-                this.defaultEmptyAvatar()
-              )}
+            {this.playerAvatarView(2)}
+          </View>
+
+          <View style={styles.player4View}>
+            {this.playerAvatarView(3)}
           </View>
 
           <View style={styles.potView}>
@@ -894,29 +980,7 @@ export default class GameSetting extends Component {
             </Text>
           </View>
 
-          <View style={styles.player4View}>
-            {this.props.game.size > 3 ? (
-              <View style = {{alignItems: 'center'}}>
-                <Image 
-                source={{ uri: this.props.game.playerAvatar[3] }}
-                style = {styles.avatarImage}/>
-                <View style={styles.textBackground}>
-                  <Text style={styles.playerNames}>
-                    {this.props.game.players[3]}
-                  </Text>
-                </View>
-                {this.props.game.ready[3] && this.playerMoveView(3)}
-              </View>
-            ) : (
-              this.defaultEmptyAvatar()
-            )}
-          </View>
-
-          {this.props.game.turn < 5 ?(
-            this.actionsView()):
-            (<Text>
-            </Text>)
-          }
+          {this.props.game.turn < 5 && this.actionsView()}
 
           <View>
             {!(0 == this.props.game.turn || this.props.game.turn == 5) &&
@@ -950,6 +1014,11 @@ export default class GameSetting extends Component {
           </View>
 
           {this.props.game.turn == 1 && this.transitionBlinds()}
+
+          {this.props.game.turn == 5 && this.props.game.roundWinner != -1 &&
+           this.roundWinnerView()}
+          
+          {this.quitView()}
         </View>
       );
     }
@@ -967,7 +1036,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#2ecc71',
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
+    flexWrap: 'nowrap'
   },
   centeredView: {
     flex: 1,
@@ -981,38 +1051,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonInExit: {
-    borderRadius: 2,
+    borderRadius: 20,
     padding: 10,
     elevation: 2,
-    backgroundColor: "#b2bec3",
-    marginTop: 5
-  },
-  exitStyle: {
-    fontWeight: 'bold',
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  buttonInExit: {
-    borderRadius: 2,
-    padding: 10,
-    elevation: 2,
-    backgroundColor: "#b2bec3",
-    marginVertical: 5
-  },
-  button: {
-    borderRadius: 2,
-    padding: 10,
-    elevation: 2,
-    backgroundColor: "#b2bec3",
-    top: "3%",
-    left: "20%"
-  },
-  buttonOpen: {
-    backgroundColor: "#778899",
+    width: '80%',
+    //backgroundColor: "#27ae60",
+    marginTop: 5,
+    alignItems: 'center',
   },
   exitButton:{
-    color: '#FFFFFF',
-    fontWeight: 'bold',
+    borderRadius: 50,
+    padding: 10,
+    elevation: 2,
+    backgroundColor: "#27ae60",
   },
   timer: {
     flexDirection: 'row',
@@ -1066,11 +1117,12 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5
+    elevation: 5,
+    width: '35%'
   },
   textBackground:{
     backgroundColor:"#ff9f1a",
-    paddingVertical: 5,
+    paddingBottom: 4,
     paddingHorizontal: 5,
     borderRadius: 50
   },
@@ -1078,7 +1130,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     borderRadius: 2,
     borderColor: 'black',
-    top: "37%",
+    top: "35%",
     left: "6%",
     alignContent: "center",
     paddingBottom: 15
@@ -1086,21 +1138,23 @@ const styles = StyleSheet.create({
   player2View: {
     borderRadius: 2,
     borderColor: 'black',
-    top: "0.5%",
-    left:"28%",
+    position: 'absolute',
+    left: "20%",
+    top: "1%",
   },
   player3View: {
     borderRadius: 2,
-    borderColor: "black",
-    top: "0.5%",
-    right: '12%',
+    borderColor: 'black',
+    position: 'absolute',
+    right: "20%",
+    top: "1%",
   },
   player4View: {
     position:'absolute',
     borderRadius: 2,
     borderColor: 'black',
-    top: "37%",
-    right: "5%",
+    top: "35%",
+    right: "6%",
     alignContent: "center"
   },
   potView:{
@@ -1128,18 +1182,16 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   tableView: {
+    position: 'absolute',
+    top: '5%',
+    //left: 0, 
+    //right: 0,
+    bottom: 0,
+    width: '60%',
     justifyContent: 'center',
     alignItems: 'center',
-    top: '2%',
-    left: '5%',
-    position: 'relative',
-    width: '60%',
-    //marginLeft: StatusBar.currentHeight,
-    marginLeft: Platform.OS === "android" ? StatusBar.currentHeight : 30,
   },
   tableImage: {
-    justifyContent: 'center',
-    alignItems: 'center',
     width: '100%',  
     resizeMode: 'contain',
   },

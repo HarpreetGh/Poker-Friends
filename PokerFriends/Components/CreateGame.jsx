@@ -129,8 +129,6 @@ export default class CreateGame extends Component {
                 if(this.createGame('public')){
                   setStatusBarHidden(true, 'slide');
                   this.props.navigation.navigate('GameController')
-                  ScreenOrientation.lockAsync
-                  (ScreenOrientation.OrientationLock.LANDSCAPE)  
                 }
               }}>
                 <Text style={styles.registerButtonText}>Create Public Game</Text>
@@ -141,8 +139,6 @@ export default class CreateGame extends Component {
                 if(this.createGame('private')){
                   setStatusBarHidden(true, 'slide');
                   this.props.navigation.navigate('GameController')
-                  ScreenOrientation.lockAsync
-                  (ScreenOrientation.OrientationLock.LANDSCAPE)  
                 }
               }}>
                 <Text style={styles.registerButtonText}>Create Private Game</Text>

@@ -103,8 +103,6 @@ export default class JoinGame extends Component {
       firebase.database().ref().update(updates);
       setStatusBarHidden(true, 'slide');
       this.props.navigation.navigate('GameController')
-      ScreenOrientation.lockAsync
-      (ScreenOrientation.OrientationLock.LANDSCAPE)
     })
 
   }

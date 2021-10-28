@@ -77,8 +77,6 @@ export default class LandingPage extends Component {
                 onPress = {() => {
                   setStatusBarHidden(true, 'slide');
                   this.props.navigation.navigate('GameController'); ///// 'GameSetting'
-                  ScreenOrientation.lockAsync
-                  (ScreenOrientation.OrientationLock.LANDSCAPE);
                 }}
               >
                 <Text style={styles.textStyle}>Continue Game</Text>
