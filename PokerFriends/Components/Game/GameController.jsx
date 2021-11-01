@@ -167,13 +167,12 @@ export default class GameSetting extends Component {
           updates[matchPath + "/player_cards"] = game.player_cards;
           updates[matchPath + "/deck"] = game.deck;
           updates[matchPath + "/turn"] = game.turn;
-
           //prepare for game.turn == 1
-          this.setState({
-            myCards: game.player_cards[this.state.playerNum].myCards,
-          });
         }
       } else if (game.turn < 5) {
+        this.setState({
+            myCards: game.player_cards[this.state.playerNum].myCards,
+          });
         const allPlayersFolded = //does all players who folded or all in
           game.move.filter((move) => move != "fold" && move != "all in").length == 1;
         //^This line also works when the game.size is 1, thus ending the current round, and wait for new players.
@@ -244,15 +243,11 @@ export default class GameSetting extends Component {
         }
         else if(allPlayersReady){
           game.smallBlindLoc += 1;
+          
+          if (game.smallBlindLoc == game.size) {
+            game.smallBlindLoc = 0;
+          }
           game.playerTurn = game.smallBlindLoc;
-          if (game.playerTurn == game.size) {
-            game.playerTurn = 0;
-          }
-          if (game.smallBlindLoc > game.size) {
-            game.smallBlindLoc = 1;
-            game.playerTurn = 1;
-          }
-
           game.round++;
 
           updates[matchPath + "/roundWinner"] = -1;
@@ -277,10 +272,10 @@ export default class GameSetting extends Component {
       //all players but host
       if (this.state.newPlayer) {
         this.setState({ myCards: [{ suit: "wait", value: "wait" }] });
-      } else if (game.turn == 1) {
+      } else if (game.turn > 0) {
         this.setState({
           myCards: game.player_cards[this.state.playerNum].myCards,
-        });
+       });
       }
     }
     this.setState({ ready: true });
@@ -635,7 +630,7 @@ export default class GameSetting extends Component {
     return [playerRanks, deck];
   }
 
-  updateGame(keys, newGameData, matchType, fullMatchName) {
+  /* updateGame(keys, newGameData, matchType, fullMatchName) {
     var updates = {};
     var matchLocation = "/games/" + matchType + "/" + fullMatchName + "/";
 
@@ -644,6 +639,90 @@ export default class GameSetting extends Component {
     }
 
     console.log("updateGame: ", updates);
+
+    if (Object.keys(updates).length > 0) {
+      firebase.database().ref().update(updates);
+    }
+  } */
+
+  updateGame(type, amount, gameData, playerNum, matchType, matchName) {
+      var game = {...gameData}
+      var keys = []
+      if(type === 'check'){
+        game.move[playerNum] = type
+        game.ready[playerNum] = true
+        keys = ['move', 'playerTurn', 'ready']
+      }
+      else if(type === 'call'){
+        game.move[playerNum] = type
+        game.chipsIn[playerNum] += amount //what if you don't have enough chips Fix for Partial Calls
+        game.pot += amount 
+        game.balance[playerNum] -= amount
+        game.ready[playerNum] = true
+        keys = ['move', 'chipsIn', 'balance', 'pot', 'playerTurn', 'ready']
+      }
+      else if (type === 'fold'){
+        game.move[playerNum] = type
+        game.ready[playerNum] = true
+        keys = ['move', 'playerTurn', 'ready']
+      }
+      else if (type === 'raise'){
+        game.move[playerNum] = type
+        game.chipsIn[playerNum] += amount
+        game.raisedVal += amount 
+        game.pot += amount 
+        game.balance[playerNum] -= amount
+
+        game.ready.fill(false) 
+        game.ready[playerNum] = true
+        keys = ['move', 'chipsIn', 'raisedVal', 'balance', 'pot', 'playerTurn', 'ready']
+
+        this.setState({raiseAmount: 10})
+      }
+      else if (type === 'all in'){
+        game.move[playerNum] = type
+        game.ready[playerNum] = true
+        keys = ['move', 'playerTurn', 'ready']
+
+        if(amount > 0){
+          game.chipsIn[playerNum] += amount //what if you don't have enough chips Fix for Partial Calls
+          game.pot += amount 
+          game.balance[playerNum] -= amount
+          keys.push('chipsIn', 'balance', 'pot')
+        }
+      }
+      else if (type === 'small blind'){
+        game.move[playerNum] = type
+        game.chipsIn[playerNum] += amount //what if you don't have enough chips Fix for Partial Calls
+        game.raisedVal += amount 
+        game.pot += amount 
+        game.balance[playerNum] -= amount
+        game.ready[playerNum] = true
+        keys = ['move', 'chipsIn', 'raisedVal', 'balance', 'pot', 'playerTurn', 'ready']
+      }
+      else if (type === 'big blind'){
+        game.move[playerNum] = type
+        game.chipsIn[playerNum] += amount //what if you don't have enough chips Fix for Partial Calls
+        game.pot += amount 
+        game.balance[playerNum] -= amount
+        game.ready.fill(false) 
+        game.ready[playerNum] = true
+        keys = ['move', 'chipsIn', 'balance', 'pot', 'playerTurn', 'ready']
+      }
+
+      game.playerTurn++;
+      //see if it's the last player's turn and change it to the first player's turn
+      if(game.playerTurn >= game.size-game.newPlayer){
+        game.playerTurn = 0;
+      }
+
+    var updates = {};
+    var matchLocation = "/games/" + matchType + "/" + matchType + 
+      '_' + matchName + "/";
+
+    for (var i = 0; i < keys.length; i++) {
+      updates[matchLocation + keys[i]] = game[keys[i]];
+    }
 
     if (Object.keys(updates).length > 0) {
       firebase.database().ref().update(updates);
@@ -743,6 +822,13 @@ export default class GameSetting extends Component {
           editGame.smallBlindLoc -= 1
           updates[matchLocation + "/smallBlindLoc"] = editGame.smallBlindLoc;
         } 
+
+        //see if it's the last player's turn and change it to the first player's turn
+        if(editGame.playerTurn >= editGame.size-editGame.newPlayer){
+          editGame.playerTurn = 0;
+          updates[matchLocation + "/playerTurn"] = editGame.playerTurn;
+        }
+        
 
         editGame.wins.splice(playernum, 1);
         editGame.chipsWon.splice(playernum, 1);

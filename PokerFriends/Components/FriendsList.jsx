@@ -79,6 +79,7 @@ export default class FriendsList extends Component {
 
     firebase.database().ref('/users').orderByChild("/data/email").equalTo(searchEmail).limitToFirst(1).once('value', (snapshot) => {
       if(snapshot.val() == null){
+        Alert.alert('Not Found','A user was not found with email entered')
         this.setState({foundUser: false})
         return
       }
@@ -91,18 +92,15 @@ export default class FriendsList extends Component {
       console.log(foundUserData, foundUserRequest)
 
       if(foundUserData.friends.includes(this.props.userData.username)){
-        Alert.alert('Already friends with user')
-        console.log('Already friends with user')
+        Alert.alert('Cannot Add','Already friends with user')
         userAbleAdd = false
       }
       else if(foundUserRequest.friend_request.includes(this.props.userData.username)){
-        Alert.alert('Friend Request already sent')
-        console.log('Friend Request already sent')
+        Alert.alert('Cannot Add','Friend Request already sent')
         userAbleAdd = false
       }
       else if(foundUserData.username === this.props.userData.username){
-        Alert.alert('You cannot add yourself!')
-        console.log('You cannot add yourself!')
+        Alert.alert('Cannot Add','You cannot add yourself!')
         userAbleAdd = false
       }
       else{
@@ -354,6 +352,7 @@ export default class FriendsList extends Component {
                     returnKeyType="next"
                     autoCapitalize="none"
                     autoCorrect={false}
+                    keyboardType={'email-address'}
                     onChangeText={text => this.setState({searchEmail: text})}
                     value={this.state.searchEmail}
                   />

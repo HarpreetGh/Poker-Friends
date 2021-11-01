@@ -44,7 +44,6 @@ export default function Chat(matchInfo){
       const messagesFirestore = querySnapshot.docChanges()
       .filter(({type}) => type === 'added')
       .map(({doc}) => {
-
         const message = doc.data()
         return {...message, createdAt: message.createdAt.toDate()}
       }).sort((a,b) => b.createdAt.getTime() - a.createdAt.getTime())
@@ -62,7 +61,7 @@ const appendMessages = useCallback(
 )
 
  async function handleSend(messages){
-   setNewMessages(newMessages+2)
+  setNewMessages(newMessages+1)
   const writes = messages.map(m => chatRef.add(m))
   await Promise.all(writes)
 }
@@ -77,7 +76,7 @@ return (
         visible={modalVisible}
       >
         <SafeAreaView style={{
-          //marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+          marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
           flex:1 
         }}>
           <KeyboardAvoidingView
@@ -107,7 +106,7 @@ return (
               style={[styles.button, styles.buttonClose, {
                 marginBottom: Platform.OS === "android" ? 20 : 5,
                 width:'90%', marginLeft: 'auto', marginRight: 'auto'}]}
-              onPress={() => {setModalVisible(false); ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE)}}>
+              onPress={() => {setModalVisible(false); ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE); setNewMessages(messages.length)}}>
               <Text style={styles.exitTextStyle}>EXIT</Text>
             </Pressable>
             </KeyboardAvoidingView>
@@ -116,10 +115,10 @@ return (
     
 
     <Pressable
-      style={[styles.button, styles.buttonOpen]}
-      onPress={() => {setModalVisible(true); ScreenOrientation.unlockAsync()}}
+      style={[styles.button, {backgroundColor: (messages.length - newMessages == 0)?("#27ae60"):("#c80c0d")}]}
+      onPress={() => {setModalVisible(true); ScreenOrientation.unlockAsync(); setNewMessages(messages.length)}}
     >
-      <Text style={styles.textStyle}>CHAT</Text>
+      <Text style={styles.textStyle}>CHAT {messages.length - newMessages}</Text>
     </Pressable>
   </View>
 );

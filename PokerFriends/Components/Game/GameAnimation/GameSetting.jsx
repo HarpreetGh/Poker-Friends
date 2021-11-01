@@ -26,45 +26,18 @@ export default class GameSetting extends Component {
     }
 
     this.state = {
-      animationBB_4P: [
+      animationBB: [
         new Animated.ValueXY({ x: 0, y: 0 }),
         new Animated.ValueXY({ x: 185, y: 0 }),
         new Animated.ValueXY({ x: 450, y: 80 }),
         new Animated.ValueXY({ x: -225, y: 75 }),
       ],
-      animationSB_4P: [
+      animationSB: [
         new Animated.ValueXY({ x: 0, y: 0 }),
         new Animated.ValueXY({ x: 225, y: -95 }),
         new Animated.ValueXY({ x: 415, y: -75 }),
         new Animated.ValueXY({ x: 625, y: 0 }),
       ],
-      animationBB_3P: [
-        new Animated.ValueXY({ x: 0, y: 0 }),
-        new Animated.ValueXY({ x: 185, y: 0 }),
-        new Animated.ValueXY({ x: -225, y: 75 }),
-      ],
-      animationSB_3P: [
-        new Animated.ValueXY({ x: 0, y: 0 }),
-        new Animated.ValueXY({ x: 225, y: -95 }),
-        new Animated.ValueXY({ x: 415, y: -75 }),
-      ],
-      animationBB_2P: [
-        new Animated.ValueXY({ x: 0, y: 0 }),
-        new Animated.ValueXY({ x: -225, y: 75 }),
-      ],
-      animationSB_2P: [
-        new Animated.ValueXY({ x: 0, y: 0 }),
-        new Animated.ValueXY({ x: 230, y: -75 }),
-      ],
-      newValueBB_4P: [{ x: 375, y: 0 }, { x: 430, y: 115 }, { x: -190, y: 110 }, { x: 0, y: 0 }],
-      newValueSB_4P: [{ x: 180, y: -98 }, { x: 550, y: -95 }, { x: 580, y: -10 },{ x: 0, y: 0 }],
-
-      newValueBB_3P: [{ x: 400, y: 20 }, { x: -180, y: 95 }, { x: -130, y: 0 }],
-      newValueSB_3P: [{ x: 10, y: -98 }, { x: 575, y: -95 },{ x: 0, y: 0 }],
-
-      newValueBB_2P: [{ x: -170, y: 110 }, { x: -160, y: 0 }],
-      newValueSB_2P: [{ x: 30, y: -90 }, { x: 0, y: 0 }],
-
       playerCardAnimations: [
         new Animated.ValueXY({ x: 0, y: 0 }),
         new Animated.ValueXY({ x: 0, y: 0 }),
@@ -75,31 +48,12 @@ export default class GameSetting extends Component {
         new Animated.ValueXY({ x: 0, y: 0 }),
         new Animated.ValueXY({ x: 0, y: 0 }),
       ],
-
       tableCardsStart: [
         new Animated.ValueXY({ x: 0, y: 0 }),
         new Animated.ValueXY({ x: 0, y: 0 }),
         new Animated.ValueXY({ x: 0, y: 0 }),
         new Animated.ValueXY({ x: 0, y: 0 }),
         new Animated.ValueXY({ x: 0, y: 0 }),
-      ],
-      tableCardsMove: [
-        { x: -184, y: -280 },
-        { x: -108, y: -280 },
-        { x: -34, y: -280 },
-        { x: 39, y: -280 },
-        { x: 118, y: -280 },
-      ],
-
-      playerNewValues: [
-        { x: -350, y: 5 },
-        { x: -300, y: 5 },
-        { x: -130, y: -240 },
-        { x: -80, y: -240 },
-        { x: 75, y: -240 },
-        { x: 125, y: -240 },
-        { x: 280, y: -10 },
-        { x: 330, y: -10 },
       ],
 
       quitVisible: false,
@@ -119,7 +73,6 @@ export default class GameSetting extends Component {
         "hardwareBackPress",
         this.backAction
       );
-      //this.setState({width: Dimensions.get('window').width})
     }
   
     componentWillUnmount() {
@@ -160,79 +113,43 @@ export default class GameSetting extends Component {
     moveBB(player) {
       var screen = this.state.screen
       var xOS = Platform.OS === "android" ? (StatusBar.currentHeight) : (screen.width*0.035)
-      var newValueBB_4P = [{ x: 375, y: 0 }, { x: 430, y: 115 }, { x: -190, y: 110 }, { x: 0, y: 0 }]
-      var newValueBB_3P = [{ x: 400, y: 20 }, { x: -180, y: 95 }, { x: -130, y: 0 }]
 
-      //parseFloat(styles.player2View.top) / 10.0;
-      var newValueBB_2P = [{ 
-        x: (screen.width*parseFloat(styles.player1View.left) / 100.0)+140+xOS, 
-        y: screen.height*(parseFloat(styles.player1View.top) / 100.0)
-      }, 
-      {x:(screen.width*parseFloat(styles.player2View.left) / 100.0)+xOS, 
-        y: (screen.height*parseFloat(styles.player2View.top) / 100.0)}]
+      var newValueBB = [
+        { x: (screen.width*parseFloat(styles.player1View.left) / 100.0)+130+xOS, 
+          y: screen.height*(parseFloat(styles.player1View.top) / 100.0)},
+        { x:(screen.width*parseFloat(styles.player2View.left) / 100.0)+20+xOS, 
+          y: (screen.height*parseFloat(styles.player2View.top) / 100.0)},
+        { x: (screen.width*(1-parseFloat(styles.player3View.right) / 100.0))-20 -xOS, 
+          y: screen.height*(parseFloat(styles.player3View.top) / 100.0)},
+        { x: (screen.width*(1-parseFloat(styles.player4View.right) / 100.0))-20-xOS, 
+          y: screen.height*(parseFloat(styles.player4View.top) / 100.0)}]
 
-
-      console.log(screen)
-      console.log(newValueBB_2P)
-      //var newValueBB_2P = [{ x: 220, y: 0 }, { x: 220, y: 300 }]
-
-      if(this.props.game.size == 4){
-        Animated.timing(this.state.animationBB_4P[player], {
-          toValue: newValueBB_4P[player],
+      Animated.timing(this.state.animationBB[player], {
+          toValue: newValueBB[player],
           duration: 1000,
           useNativeDriver: false
         }).start();
-      }
-      else if(this.props.game.size == 3) {
-        Animated.timing(this.state.animationBB_3P[player], {
-          toValue: newValueBB_3P[player],
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-      }
-      else{
-        Animated.timing(this.state.animationBB_2P[player], {
-          toValue: newValueBB_2P[player],
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-        }
     }
 
     moveSB(player) {
       var screen = this.state.screen
       var xOS = Platform.OS === "android" ? (StatusBar.currentHeight) : (screen.width*0.035)
-      
-      var newValueSB_4P = [{ x: 180, y: -98 }, { x: 550, y: -95 }, { x: 580, y: -10 },{ x: 0, y: 0 }]
-      var newValueSB_3P = [{ x: 10, y: -98 }, { x: 575, y: -95 },{ x: 0, y: 0 }]
-      var newValueSB_2P = [{ 
-        x:(screen.width*parseFloat(styles.player2View.left) / 100.0)+xOS, 
-        y: (screen.height*parseFloat(styles.player2View.top) / 100.0)}, 
 
-        {x: (screen.width*parseFloat(styles.player1View.left) / 100.0)+140+xOS, 
-        y: screen.height*(parseFloat(styles.player1View.top) / 100.0)}]
+      var newValueSB = [
+        { x: (screen.width*parseFloat(styles.player1View.left) / 100.0)+120+xOS, 
+          y: screen.height*(parseFloat(styles.player1View.top) / 100.0)},
+        { x:(screen.width*parseFloat(styles.player2View.left) / 100.0)+xOS, 
+          y: (screen.height*parseFloat(styles.player2View.top) / 100.0)}, 
+        { x: (screen.width*(1-parseFloat(styles.player3View.right) / 100.0))-20-xOS, 
+          y: screen.height*(parseFloat(styles.player3View.top) / 100.0)},
+        { x: (screen.width*(1-parseFloat(styles.player4View.right) / 100.0))-20-xOS, 
+          y: screen.height*(parseFloat(styles.player4View.top) / 100.0)}]
 
-      if(this.props.game.size == 4){
-        Animated.timing(this.state.animationSB_4P[player], {
-          toValue: newValueSB_4P[player],
+      Animated.timing(this.state.animationSB[player], {
+          toValue: newValueSB[player],
           duration: 1000,
           useNativeDriver: false
         }).start();
-      }
-      else if(this.props.game.size == 3) {
-        Animated.timing(this.state.animationSB_3P[player], {
-          toValue: newValueSB_3P[player],
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-      }
-      else{
-        Animated.timing(this.state.animationSB_2P[player], {
-          toValue: newValueSB_2P[player],
-          duration: 1000,
-          useNativeDriver: false
-        }).start();
-      }
     }
       
     fadeIn(num) {
@@ -252,121 +169,73 @@ export default class GameSetting extends Component {
     }
 
     transitionBlinds(){
-      //This first if statement should only be done in the
-      //beginning of each game(New Lobby)
-      var fiveCardsFin = this.props.game.smallBlindLoc;
-      console.log("FIVE CARD FIN IS ", fiveCardsFin);
-      if (fiveCardsFin == 0) {
-        return (
-          <View>
-            <Animated.View>
-              <View
-                style={{
-                  width: 25,
-                  height: 25,
-                  borderRadius: 25,
-                  backgroundColor: "black",
-                  justifyContent: "center",
-                  top: "350%",
-                  right: "1700%",
-                }}
-              >
-                <Text style={{ textAlign: "center", color: "white" }}>BB</Text>
-              </View>
-            </Animated.View>
-            <Animated.View>
-              <View
-                style={{
-                  width: 25,
-                  height: 25,
-                  borderRadius: 25,
-                  backgroundColor: "white",
-                  justifyContent: "center",
-                  top: "350%",
-                  right: "2500%",
-                }}
-              >
-                <Text style={{ textAlign: "center" }}>SB</Text>
-              </View>
-            </Animated.View>
-          </View>
-        );
-      } else if (fiveCardsFin < 5) {
-        var index = fiveCardsFin - 1;
-        var moveBigBlinds
-        var moveSmallBlinds
+      var indexSB = this.props.game.smallBlindLoc;
+      var indexBB = indexSB+1 
 
-        if(this.props.game.size == 4){
-          moveBigBlinds = this.state.animationBB_4P[index].getLayout()
-          moveSmallBlinds = this.state.animationSB_4P[index].getLayout()
-        }
-        else if(this.props.game.size == 3){
-          moveBigBlinds = this.state.animationBB_3P[index].getLayout()
-          moveSmallBlinds = this.state.animationSB_3P[index].getLayout()
-        }
-        else{
-          moveBigBlinds = this.state.animationBB_2P[index].getLayout()
-          moveSmallBlinds = this.state.animationSB_2P[index].getLayout()
-        }
-        console.log("MY INDEX IS ", index)
-
-        return (
-          <View>
-            <Animated.View
-              //  style = {moveBlinds}>
-              style={moveBigBlinds}
-            >
-              <View
-                style={{
-                  width: 25,
-                  height: 25,
-                  borderRadius: 25,
-                  backgroundColor: "black",
-                  justifyContent: "center",
-                  top: "100%",
-                  right: "2100%",
-                }}
-              >
-                {this.moveBB(index)}
-                <Text style={{ textAlign: "center", color: "white" }}>BB</Text>
-              </View>
-            </Animated.View>
-
-            <Animated.View
-              //  style = { this.state.animationSB_4P[index].getLayout()}>
-              style={moveSmallBlinds}
-            >
-              <View
-                style={{
-                  width: 25,
-                  height: 25,
-                  borderRadius: 25,
-                  backgroundColor: "white",
-                  justifyContent: "center",
-                  top: "100%",
-                  right: "2100%",
-                }}
-              >
-                {this.moveSB(index)}
-                <Text style={{ textAlign: "center" }}>SB</Text>
-              </View>
-            </Animated.View>
-          </View>
-        );
+      if(indexBB == this.props.game.size){
+        indexBB = 0
       }
+      var moveBigBlinds = this.state.animationBB[indexBB].getLayout()
+      var moveSmallBlinds = this.state.animationSB[indexSB].getLayout()
+      //console.log("MY INDEXES ARE ", indexSB, indexBB)
+
+      return (
+        <View>
+          <Animated.View
+            style={moveBigBlinds}
+          >
+            <View
+              style={{
+                width: 25,
+                height: 25,
+                borderRadius: 25,
+                backgroundColor: "black",
+                justifyContent: "center",
+                top: "100%",
+                right: "2100%",
+                opacity: this.props.game.turn == 1? 1:0
+              }}
+            >
+              {this.moveBB(indexBB)}
+              <Text style={{ textAlign: "center", color: "white" }}>BB</Text>
+            </View>
+          </Animated.View>
+
+          <Animated.View
+            style={moveSmallBlinds}
+          >
+            <View
+              style={{
+                width: 25,
+                height: 25,
+                borderRadius: 25,
+                backgroundColor: "white",
+                justifyContent: "center",
+                top: "100%",
+                right: "2100%",
+                opacity: this.props.game.turn == 1? 1:0
+              }}
+            >
+              {this.moveSB(indexSB)}
+              <Text style={{ textAlign: "center" }}>SB</Text>
+            </View>
+          </Animated.View>
+        </View>
+      );
     }
 
     flopTurnRiver(suit,value, i){
       var screen = this.state.screen
       return (
-        <View>
+        <View style={{left: 0, right:0}}>
           <Animated.View style = {this.state.tableCardsStart[i].getLayout()}>
             <View style = {
               {position:'absolute',
                 borderRadius: 2,
+                justifyContent: 'center',
                 alignItems: 'center',
-                paddingVertical: screen.height * 0.075,
-                paddingHorizontal: screen.width * 0.03,
+                width: screen.width * 0.08,
+                height: screen.height * 0.25,
                 backgroundColor:"white",}}
             >
               <Text style={{color: suit == '♥' || 
@@ -382,26 +251,13 @@ export default class GameSetting extends Component {
 
     moveTableCards(card){
       var screen = this.state.screen
-      /* 
-      Android
-      var xBase = (StatusBar.currentHeight*2)-(screen.width*0.60)/2
-      var yBase = (screen.height/1.4) * -1
-      var xMod = (screen.width*0.1 - ((StatusBar.currentHeight*2)*0.1))+1 
-      */
-      /* 
-      iPhone
-      var xBase = (screen.width*0.035*2)-(screen.width*0.60)/2
-      var yBase = (screen.height/1.35) * -1
-      var xMod = (screen.width*0.1 - ((screen.width*0.035)*0.1)) 
-      */
-      var xOS = (Platform.OS === "android" ? (StatusBar.currentHeight) : (screen.width*0.035)) * 2
-      var xBase = (xOS)-(screen.width*0.60)/2
-      var yBase = (screen.height/(1.325 + (Platform.OS === "android" ? 0.075 : 0))) * -1
-      var xMod = (screen.width*0.1) - (Platform.OS === "android" ?(xOS):(xOS/2))*0.1
-
-      //StatusBar no work on iphobne
-      //var xBase = (55)-(screen.width*0.60)/2
-      //var xMod = (screen.width*0.1 - (0))
+      var xOS = (Platform.OS === "android" ? (0.016*(1+(screen.scale/2)/10)) : 
+      (screen.width*0.034/1000))
+      var xBase = (Platform.OS === "android" ? (-screen.width*0.3 + screen.width*0.6*0.2):
+        (-screen.width*0.3 + screen.width*0.6*0.103)+(screen.width*0.035*1.45))
+      var yBase = screen.height/2.5
+      var xMod = (screen.width * 0.08) + (screen.width*0.6*xOS)
+      
       
       var tableCardsMove= [
         { x: 0+xBase, y: yBase},
@@ -411,8 +267,6 @@ export default class GameSetting extends Component {
         { x: (4*xMod)+xBase, y: yBase},
       ]
 
-      //console.log(StatusBar.currentHeight, screen)
-      //console.log(window)
       Animated.timing(this.state.tableCardsStart[card], {
         toValue: tableCardsMove[card],
         duration: 1000,
@@ -431,11 +285,7 @@ export default class GameSetting extends Component {
 
     movePlayerCards(card) {
       var screen = this.state.screen
-      var xBase = (StatusBar.currentHeight*2)-(screen.width*0.60)/2
-      //var yBase =
-      var xMod = (screen.width*0.1 - ((StatusBar.currentHeight*2)*0.1))+1
-      //console.log(styles.player2View.top) == '1%'
-      var result = parseFloat(styles.player2View.top) / 10.0;
+
       var playerNewValues= [
         { x: -(screen.width/2)*(0.75-parseFloat(styles.player1View.left) / 100.0), 
           y: screen.height*(1.09-parseFloat(styles.player1View.top) / 100.0)},
@@ -447,10 +297,15 @@ export default class GameSetting extends Component {
         { x: -(screen.width/2)*(parseFloat(styles.player2View.left) / 100.0) + 50,  
           y: screen.height*(parseFloat(styles.player2View.top) / 10.0)},
 
-        { x: 75, y: -240 },
-        { x: 125, y: -240 },
-        { x: 280, y: -10 },
-        { x: 330, y: -10 }]
+        { x: -(screen.width/2)*((1-parseFloat(styles.player3View.right)) / 100.0), 
+          y: screen.height*(parseFloat(styles.player3View.top) / 10.0)},
+        { x: -(screen.width/2)*((1-parseFloat(styles.player3View.right)) / 100.0) + 50,  
+          y: screen.height*(parseFloat(styles.player2View.top) / 10.0)},
+
+        { x: (screen.width/2)*(0.85-parseFloat(styles.player4View.right) / 100.0), 
+          y: screen.height*(1.09-parseFloat(styles.player4View.top) / 100.0)},
+        { x: (screen.width/2)*(0.85-parseFloat(styles.player4View.right) / 100.0) +50,  
+          y: screen.height*(1.09-parseFloat(styles.player4View.top) / 100.0)}]
 
       Animated.timing(this.state.playerCardAnimations[card], {
         toValue: playerNewValues[card],
@@ -525,80 +380,11 @@ export default class GameSetting extends Component {
     }
 
     UpdateInitializer(type, amount){
-      var game = {...this.props.game}
-      var keys = []
-      if(type === 'check'){
-        game.move[this.props.playerNum] = type
-        game.ready[this.props.playerNum] = true
-        keys = ['move', 'playerTurn', 'ready']
-      }
-      else if(type === 'call'){
-        game.move[this.props.playerNum] = type
-        game.chipsIn[this.props.playerNum] += amount //what if you don't have enough chips Fix for Partial Calls
-        game.pot += amount 
-        game.balance[this.props.playerNum] -= amount
-        game.ready[this.props.playerNum] = true
-        keys = ['move', 'chipsIn', 'balance', 'pot', 'playerTurn', 'ready']
-      }
-      else if (type === 'fold'){
-        game.move[this.props.playerNum] = type
-        game.ready[this.props.playerNum] = true
-        keys = ['move', 'playerTurn', 'ready']
-      }
-      else if (type === 'raise'){
-        game.move[this.props.playerNum] = type
-        game.chipsIn[this.props.playerNum] += amount
-        game.raisedVal += amount 
-        game.pot += amount 
-        game.balance[this.props.playerNum] -= amount
-
-        game.ready.fill(false) 
-        game.ready[this.props.playerNum] = true
-        keys = ['move', 'chipsIn', 'raisedVal', 'balance', 'pot', 'playerTurn', 'ready']
-
-        this.setState({raiseAmount: 10})
-      }
-      else if (type === 'all in'){
-        game.move[this.props.playerNum] = type
-        game.ready[this.props.playerNum] = true
-        keys = ['move', 'playerTurn', 'ready']
-
-        if(amount > 0){
-          game.chipsIn[this.props.playerNum] += amount //what if you don't have enough chips Fix for Partial Calls
-          game.pot += amount 
-          game.balance[this.props.playerNum] -= amount
-          keys.push('chipsIn', 'balance', 'pot')
-        }
-      }
-      else if (type === 'small blind'){
-        game.move[this.props.playerNum] = type
-        game.chipsIn[this.props.playerNum] += amount //what if you don't have enough chips Fix for Partial Calls
-        game.raisedVal += amount 
-        game.pot += amount 
-        game.balance[this.props.playerNum] -= amount
-        game.ready[this.props.playerNum] = true
-        keys = ['move', 'chipsIn', 'raisedVal', 'balance', 'pot', 'playerTurn', 'ready']
-      }
-      else if (type === 'big blind'){
-        game.move[this.props.playerNum] = type
-        game.chipsIn[this.props.playerNum] += amount //what if you don't have enough chips Fix for Partial Calls
-        game.pot += amount 
-        game.balance[this.props.playerNum] -= amount
-        game.ready.fill(false) 
-        game.ready[this.props.playerNum] = true
-        keys = ['move', 'chipsIn', 'balance', 'pot', 'playerTurn', 'ready']
-      }
-
-      game.playerTurn++;
-      //see if it's the last player's turn and change it to the first player's turn
-      if(game.playerTurn >= game.size-game.newPlayer){
-        game.playerTurn = 0;
-      }
-
-      this.props.updateGame(keys,//{...this.props.game}, 
-        game,
+      this.props.updateGame(type, amount, 
+        this.props.game,
+        this.props.playerNum,
         this.props.matchType,
-        this.props.matchType+'_'+this.props.matchName
+        this.props.matchName
       )
     }
 
@@ -702,7 +488,7 @@ export default class GameSetting extends Component {
         if(this.props.game.turn == 1) {
           var smallBlindLoc = this.props.game.smallBlindLoc
           if( 
-            this.props.game.smallBlindLoc == this.props.game.size)
+            this.props.game.smallBlindLoc == this.props.game.size-this.props.game.newPlayer)
           {
               smallBlindLoc = 0
           }
@@ -789,6 +575,7 @@ export default class GameSetting extends Component {
 
     roundWinnerView(){
       var isVisible = !this.props.game.ready[this.props.playerNum]
+
       return (
         <Modal
           supportedOrientations={['landscape']}
@@ -809,6 +596,9 @@ export default class GameSetting extends Component {
                   isVisible = false
                   if(this.props.game.size-this.props.game.newPlayer > this.props.playerNum){
                     this.UpdateInitializer('check')
+                  }
+                  else{
+                    isVisible = false
                   }
                 }}
               >
@@ -943,11 +733,12 @@ export default class GameSetting extends Component {
               style={styles.tableImage}
               source={require("../../../assets/pokertable.png")}
             />
+            
+          </View>
 
-            {1 < this.props.game.turn && this.props.game.turn < 5 &&
+          {1 < this.props.game.turn && this.props.game.turn < 5 &&
               this.props.game.board.map((card, i) =>
                 this.flopTurnRiver(card.suit, card.value, i))}
-          </View>
 
           <View style={styles.player1View}>
             {this.playerAvatarView(0)}
@@ -980,10 +771,10 @@ export default class GameSetting extends Component {
             </Text>
           </View>
 
-          {this.props.game.turn < 5 && this.actionsView()}
+          {0 < this.props.game.turn && this.props.game.turn < 5 && this.actionsView()}
 
           <View>
-            {!(0 == this.props.game.turn || this.props.game.turn == 5) &&
+            {0 < this.props.game.turn && this.props.game.turn < 5 &&
               this.props.myCards.map((card, i) =>
                 this.cardDeal(card.suit, card.value, i + this.props.playerNum * 2))}
           </View>
@@ -1055,7 +846,7 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 2,
     width: '80%',
-    //backgroundColor: "#27ae60",
+    backgroundColor: "#cccccc",
     marginTop: 5,
     alignItems: 'center',
   },
@@ -1070,7 +861,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
     resizeMode: 'contain',
-    //top: '83%',
     top: Platform.OS === "android" ? '83%' : '81%',
     right: '37%',
     width: '25%',
@@ -1130,6 +920,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     borderRadius: 2,
     borderColor: 'black',
+    width: 110,
     top: "35%",
     left: "6%",
     alignContent: "center",
@@ -1139,6 +930,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     borderColor: 'black',
     position: 'absolute',
+    width: 110,
     left: "20%",
     top: "1%",
   },
@@ -1146,6 +938,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     borderColor: 'black',
     position: 'absolute',
+    width: 110,
     right: "20%",
     top: "1%",
   },
@@ -1153,6 +946,7 @@ const styles = StyleSheet.create({
     position:'absolute',
     borderRadius: 2,
     borderColor: 'black',
+    width: 110,
     top: "35%",
     right: "6%",
     alignContent: "center"
