@@ -118,7 +118,12 @@ return (
       style={[styles.button, {backgroundColor: (messages.length - newMessages == 0)?("#27ae60"):("#c80c0d")}]}
       onPress={() => {setModalVisible(true); ScreenOrientation.unlockAsync(); setNewMessages(messages.length)}}
     >
-      <Text style={styles.textStyle}>CHAT {messages.length - newMessages}</Text>
+      {messages.length - newMessages == 0?(
+        <Text style={styles.textStyle}>CHAT</Text>
+      ):(
+        <Text style={styles.textStyle}>CHAT {messages.length - newMessages}</Text>
+      )}
+      
     </Pressable>
   </View>
 );

@@ -24,6 +24,7 @@ export default class GameSetting extends Component {
       dimensions.height = dimensions.width
       dimensions.width = temp
     }
+    var xOS = Platform.OS === "android" ? (StatusBar.currentHeight) : (dimensions.width*0.035)
 
     this.state = {
       animationBB: [
@@ -56,15 +57,34 @@ export default class GameSetting extends Component {
         new Animated.ValueXY({ x: 0, y: 0 }),
       ],
 
-      quitVisible: false,
-      raiseVisible: false,
-
       valueFoldCard: new Animated.ValueXY({ x: 25, y: 25 }),
       fadeAnimation: [new Animated.Value(0), new Animated.Value(0),
                       new Animated.Value(0), new Animated.Value(0)], 
 
+      quitVisible: false,
+      raiseVisible: false,
       raiseAmount: 10,
-      screen: dimensions
+      screen: dimensions,
+
+      newValueSB:[
+        { x: (dimensions.width*parseFloat(styles.player1View.left) / 100.0)+120+xOS, 
+          y: dimensions.height*(parseFloat(styles.player1View.top) / 100.0)},
+        { x:(dimensions.width*parseFloat(styles.player2View.left) / 100.0)+xOS, 
+          y: (dimensions.height*parseFloat(styles.player2View.top) / 100.0)}, 
+        { x: (dimensions.width*(1-parseFloat(styles.player3View.right) / 100.0))-20-xOS, 
+          y: dimensions.height*(parseFloat(styles.player3View.top) / 100.0)},
+        { x: (dimensions.width*(1-parseFloat(styles.player4View.right) / 100.0))-20-xOS, 
+          y: dimensions.height*(parseFloat(styles.player4View.top) / 100.0)}],
+      
+      newValueBB: [
+        { x: (dimensions.width*parseFloat(styles.player1View.left) / 100.0)+130+xOS, 
+          y: dimensions.height*(parseFloat(styles.player1View.top) / 100.0)},
+        { x:(dimensions.width*parseFloat(styles.player2View.left) / 100.0)+20+xOS, 
+          y: (dimensions.height*parseFloat(styles.player2View.top) / 100.0)},
+        { x: (dimensions.width*(1-parseFloat(styles.player3View.right) / 100.0))-20 -xOS, 
+          y: dimensions.height*(parseFloat(styles.player3View.top) / 100.0)},
+        { x: (dimensions.width*(1-parseFloat(styles.player4View.right) / 100.0))-20-xOS, 
+          y: dimensions.height*(parseFloat(styles.player4View.top) / 100.0)}]
     };
   }
   
@@ -111,61 +131,19 @@ export default class GameSetting extends Component {
     }
     
     moveBB(player) {
-      var screen = this.state.screen
-      var xOS = Platform.OS === "android" ? (StatusBar.currentHeight) : (screen.width*0.035)
-
-      var newValueBB = [
-        { x: (screen.width*parseFloat(styles.player1View.left) / 100.0)+130+xOS, 
-          y: screen.height*(parseFloat(styles.player1View.top) / 100.0)},
-        { x:(screen.width*parseFloat(styles.player2View.left) / 100.0)+20+xOS, 
-          y: (screen.height*parseFloat(styles.player2View.top) / 100.0)},
-        { x: (screen.width*(1-parseFloat(styles.player3View.right) / 100.0))-20 -xOS, 
-          y: screen.height*(parseFloat(styles.player3View.top) / 100.0)},
-        { x: (screen.width*(1-parseFloat(styles.player4View.right) / 100.0))-20-xOS, 
-          y: screen.height*(parseFloat(styles.player4View.top) / 100.0)}]
-
       Animated.timing(this.state.animationBB[player], {
-          toValue: newValueBB[player],
+          toValue: this.state.newValueBB[player],
           duration: 1000,
           useNativeDriver: false
         }).start();
     }
 
     moveSB(player) {
-      var screen = this.state.screen
-      var xOS = Platform.OS === "android" ? (StatusBar.currentHeight) : (screen.width*0.035)
-
-      var newValueSB = [
-        { x: (screen.width*parseFloat(styles.player1View.left) / 100.0)+120+xOS, 
-          y: screen.height*(parseFloat(styles.player1View.top) / 100.0)},
-        { x:(screen.width*parseFloat(styles.player2View.left) / 100.0)+xOS, 
-          y: (screen.height*parseFloat(styles.player2View.top) / 100.0)}, 
-        { x: (screen.width*(1-parseFloat(styles.player3View.right) / 100.0))-20-xOS, 
-          y: screen.height*(parseFloat(styles.player3View.top) / 100.0)},
-        { x: (screen.width*(1-parseFloat(styles.player4View.right) / 100.0))-20-xOS, 
-          y: screen.height*(parseFloat(styles.player4View.top) / 100.0)}]
-
       Animated.timing(this.state.animationSB[player], {
-          toValue: newValueSB[player],
+          toValue: this.state.newValueSB[player],
           duration: 1000,
           useNativeDriver: false
         }).start();
-    }
-      
-    fadeIn(num) {
-      Animated.timing(this.state.fadeAnimation[num], {
-        toValue: 1,
-        duration: 4000,
-        useNativeDriver: false,
-      }).start();
-    }
-
-    fadeOut(num) {
-      Animated.timing(this.state.fadeAnimation[num], {
-        toValue: 0,
-        duration: 3000,
-        useNativeDriver: false,
-      }).start();
     }
 
     transitionBlinds(){
@@ -596,6 +574,10 @@ export default class GameSetting extends Component {
                   isVisible = false
                   if(this.props.game.size-this.props.game.newPlayer > this.props.playerNum){
                     this.UpdateInitializer('check')
+                    this.setState({
+                      playerCardAnimations: this.state.playerCardAnimations.map(a => new Animated.ValueXY({ x: 0, y: 0 })),
+                      tableCardsStart: this.state.tableCardsStart.map(a => new Animated.ValueXY({ x: 0, y: 0 }))
+                    })
                   }
                   else{
                     isVisible = false
@@ -655,18 +637,27 @@ export default class GameSetting extends Component {
       this.UpdateInitializer('fold')
     }
 
+    fade(num, opac) {
+      Animated.timing(this.state.fadeAnimation[num], {
+        toValue: opac,
+        duration: 1000,
+        useNativeDriver: false,
+      }).start();
+    }
+
     playerMoveView(num){
-      var opac = false
+      var show = false
       if(this.props.game.move[num] === 'fold' ||
          this.props.game.move[num] === 'all in' ||
          this.props.game.move[num] === 'small blind')
       {
-        opac = true
+        show = true
       }
+      var opac = show||this.props.game.ready[num]? 1:0
       return(
         <Animated.View
-          style={[{opacity: opac||this.props.game.ready[num]?(this.fadeIn(num)):(0),
-          backgroundColor: "#27ae60", padding: 2, borderRadius: 20}]}
+          style={[{opacity: this.state.fadeAnimation[num], 
+            backgroundColor: "#27ae60", padding: 2, borderRadius: 20}]}
         >
           <Text style={styles.textStyle}>
             {this.props.game.move[num] == 'raise' || this.props.game.move[num] == 'call'? (
@@ -675,6 +666,7 @@ export default class GameSetting extends Component {
               this.props.game.move[num]
             )}
           </Text>
+          {this.fade(num, opac)}
         </Animated.View>
       )
     }
