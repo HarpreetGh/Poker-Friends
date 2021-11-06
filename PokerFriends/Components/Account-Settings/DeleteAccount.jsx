@@ -18,15 +18,15 @@ export default class DeleteAccount extends Component {
 
     updates['/users/'+ user.uid +'/data'] = null;
     updates['/users/'+ user.uid +'/request'] = null;
-    await firebase.database().ref().update(updates);
 
     user.delete()
       .then(() =>{
+        firebase.database().ref().update(updates);
         Alert.alert("Account Delete")
         this.props.navigation.navigate('LandingPage')
       })
       .catch(function(error) {
-        Alert.alert("Error: ", "Please Log out, then Login again!")
+        Alert.alert("Reauthenticate", "Please Log out, then Login again! To delete your account.")
       });
   }
     render(){

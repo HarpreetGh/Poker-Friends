@@ -25,7 +25,7 @@ export default class HelpButton extends Component {
       <View style={styles.cornerView}>
         <Modal
           animationType="slide"
-          transparent={true}
+          transparent={false}
           visible={modalVisible}
           onRequestClose={() => {
             this.setModalVisible(!modalVisible);

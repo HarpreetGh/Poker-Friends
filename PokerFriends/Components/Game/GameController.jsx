@@ -143,7 +143,7 @@ export default class GameSetting extends Component {
             game.chipsIn.push(0);
             game.chipsLost.push(0);
             game.chipsWon.push(0);
-            game.move.push("check");
+            game.move[game.size - game.newPlayer + i] = 'check';
             game.ready.push(false);
           }
 
@@ -159,7 +159,6 @@ export default class GameSetting extends Component {
           //waiting for users to leave/join
         } else {
           var cards = await this.giveOutCards();
-          console.log(cards)
           game.player_cards = cards[0];
           game.deck = cards[1];
           game.turn++;
@@ -167,6 +166,7 @@ export default class GameSetting extends Component {
           updates[matchPath + "/player_cards"] = game.player_cards;
           updates[matchPath + "/deck"] = game.deck;
           updates[matchPath + "/turn"] = game.turn;
+          updates[matchPath + "/round"] = game.round.map(x => x+1)
           //prepare for game.turn == 1
         }
       } else if (game.turn < 5) {
@@ -174,7 +174,7 @@ export default class GameSetting extends Component {
             myCards: game.player_cards[this.state.playerNum].myCards,
           });
         const allPlayersFolded = //does all players who folded or all in
-          game.move.filter((move) => move != "fold" && move != "all in").length == 1;
+          game.move.filter((move) => move != "fold" && move != "all in" && move != "waiting").length == 1;
         //^This line also works when the game.size is 1, thus ending the current round, and wait for new players.
 
         if (allPlayersReady || allPlayersFolded) {
@@ -248,13 +248,11 @@ export default class GameSetting extends Component {
             game.smallBlindLoc = 0;
           }
           game.playerTurn = game.smallBlindLoc;
-          game.round++;
 
           updates[matchPath + "/roundWinner"] = -1;
           updates[matchPath + "/roundWinnerRank"] = "High Card";
           updates[matchPath + "/move"] = game.move.fill("check");
           updates[matchPath + "/playerTurn"] = game.playerTurn;
-          updates[matchPath + "/round"] = game.round;
           updates[matchPath + "/chipsIn"] = game.chipsIn.fill(0);
           updates[matchPath + "/raisedVal"] = 0;
           updates[matchPath + "/smallBlindLoc"] = game.smallBlindLoc;
@@ -271,7 +269,7 @@ export default class GameSetting extends Component {
     } else {
       //all players but host
       if (this.state.newPlayer) {
-        this.setState({ myCards: [{ suit: "wait", value: "wait" }] });
+        this.setState({ myCards: [{ suit: 'back', value: 2 }] });
       } else if (game.turn > 0) {
         this.setState({
           myCards: game.player_cards[this.state.playerNum].myCards,
@@ -289,9 +287,8 @@ export default class GameSetting extends Component {
       "Straight", "Three of a Kind", "Two Pair", "Pair", "High Card", "Uncontested Round"]
 
     var hands = [] //hands in play
-
-    if(game.size-game.newPlayers == 1){
-      return [[game.player[0]], ranks[10]]
+    if(game.size-game.newPlayer == 1){
+      return [[0], ranks[10]]
     }
     
     for (var i = 0; i < game.size; i++) {
@@ -315,9 +312,7 @@ export default class GameSetting extends Component {
           game.player_cards[i].rank = rank2
         }
         else{
-          console.log(game.player_cards[i])
           var high = game.player_cards[i].myCards
-          console.log("High Card", high)
           high.sort(function (a, b) {return b.value - a.value});
           game.player_cards[i].rank = [10, [high[0].value, high[1].value]]
         }
@@ -450,7 +445,6 @@ export default class GameSetting extends Component {
   // Rank 5 - Five cards all same suit but not in numerical order
   isFlush(hand) {
     hand.sort(function (a, b) {return a.suit - b.suit;}); //sorts from small to high
-    console.log(hand)
 
     var diamond = "♦";
     var diamondCounter = 0;
@@ -537,7 +531,6 @@ export default class GameSetting extends Component {
   
   isDubs(hand){ //Rank 3,4,7,8,9
     hand.sort(function (a, b) {return b.value - a.value}); //sorts from highest to smallest
-    console.log(hand)
     //console.log("hand", hand)
     //Loop through hand array to see if 4 cards have the same value (4 of a kind) then return true if so
     //var totalCounter = [0, 0, 0, 0, 0, 0, 0]
@@ -630,21 +623,6 @@ export default class GameSetting extends Component {
     return [playerRanks, deck];
   }
 
-  /* updateGame(keys, newGameData, matchType, fullMatchName) {
-    var updates = {};
-    var matchLocation = "/games/" + matchType + "/" + fullMatchName + "/";
-
-    for (var i = 0; i < keys.length; i++) {
-      updates[matchLocation + keys[i]] = newGameData[keys[i]];
-    }
-
-    console.log("updateGame: ", updates);
-
-    if (Object.keys(updates).length > 0) {
-      firebase.database().ref().update(updates);
-    }
-  } */
-
   updateGame(type, amount, gameData, playerNum, matchType, matchName) {
       var game = {...gameData}
       var keys = []
@@ -676,8 +654,6 @@ export default class GameSetting extends Component {
         game.ready.fill(false) 
         game.ready[playerNum] = true
         keys = ['move', 'chipsIn', 'raisedVal', 'balance', 'pot', 'playerTurn', 'ready']
-
-        this.setState({raiseAmount: 10})
       }
       else if (type === 'all in'){
         game.move[playerNum] = type
@@ -746,12 +722,15 @@ export default class GameSetting extends Component {
     var user = firebase.auth().currentUser;
 
     const quitBalance = editGame.balance[playernum];
+    var games = userData.games + editGame.round[playernum]
     updates["/users/" + user.uid + "/data/in_game"] = ""; 
     updates["/users/" + user.uid + "/data/chips"] = userData.chips + quitBalance;
 
     editGame.balance.splice(playernum, 1);
     editGame.players.splice(playernum, 1);
     editGame.playerAvatar.splice(playernum, 1);
+    editGame.move.splice(playernum, 1);
+    editGame.round.splice(playernum, 1);
     editGame.size -= 1;
 
     if (newPlayer) {
@@ -761,6 +740,8 @@ export default class GameSetting extends Component {
       updates[matchLocation + "/playerAvatar"] = editGame.playerAvatar;
       updates[matchLocation + "/size"] = editGame.size;
       updates[matchLocation + "/newPlayer"] = editGame.newPlayer;
+      updates[matchLocation + '/move'] = editGame.move
+      updates[matchLocation + '/round'] = editGame.round
 
       updates["/games/list/" + fullMatchName + "/size"] = editGame.size;
     } 
@@ -769,9 +750,10 @@ export default class GameSetting extends Component {
       const chipsWon = editGame.chipsWon[playernum];
       const chipsLost =
         editGame.chipsLost[playernum] + editGame.chipsIn[playernum];
-      var games = userData.games + editGame.round
-      if(editGame.turn == 0){
+
+      if(editGame.turn == 0 || (editGame.turn == 1 && editGame.chipsIn[playernum] == 0)){
         games = games - 1
+        console.log(games)
       }
 
       var indexOfType = userData.in_game.indexOf("_")+1
@@ -818,14 +800,14 @@ export default class GameSetting extends Component {
         //update game
         updates["/games/list/" + fullMatchName + "/size"] = editGame.size;
         
-        if(editGame.smallBlindLoc == editGame.size + 1){
-          editGame.smallBlindLoc -= 1
+        if(editGame.smallBlindLoc >= editGame.size){
+          editGame.smallBlindLoc = editGame.size-1
           updates[matchLocation + "/smallBlindLoc"] = editGame.smallBlindLoc;
         } 
 
         //see if it's the last player's turn and change it to the first player's turn
         if(editGame.playerTurn >= editGame.size-editGame.newPlayer){
-          editGame.playerTurn = 0;
+          editGame.playerTurn = editGame.smallBlindLoc;
           updates[matchLocation + "/playerTurn"] = editGame.playerTurn;
         }
         
@@ -834,10 +816,10 @@ export default class GameSetting extends Component {
         editGame.chipsWon.splice(playernum, 1);
         editGame.chipsLost.splice(playernum, 1);
         editGame.chipsIn.splice(playernum, 1);
-        editGame.move.splice(playernum, 1);
         editGame.player_cards.splice(playernum, 1);
         editGame.ready.splice(playernum, 1);
         
+        updates[matchLocation + "/ready"] = editGame.ready;
         updates[matchLocation + "/balance"] = editGame.balance;
         updates[matchLocation + "/players"] = editGame.players;
         updates[matchLocation + "/playerAvatar"] = editGame.playerAvatar;
@@ -848,7 +830,7 @@ export default class GameSetting extends Component {
         updates[matchLocation + "/chipsWon"] = editGame.chipsWon;
         updates[matchLocation + "/move"] = editGame.move;
         updates[matchLocation + "/player_cards"] = editGame.player_cards;
-        updates[matchLocation + "/ready"] = editGame.ready;
+        updates[matchLocation + '/round'] = editGame.round
       }
     }
     firebase

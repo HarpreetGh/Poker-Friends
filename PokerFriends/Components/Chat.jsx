@@ -99,6 +99,7 @@ return (
               onSend = {handleSend}
               placeholder = {'Type'}
               isKeyboardInternallyHandled={false}
+              maxInputLength={100}
               //bottomOffset={10}
             />
             

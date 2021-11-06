@@ -9,6 +9,7 @@ import {
     } from 'react-native';
 
 import Deck from '../../decks'
+import {CardImageUtil as CardImages} from './CardImages'
 
 export default class CardDealing extends Component {    
 
@@ -46,7 +47,6 @@ export default class CardDealing extends Component {
              }).start();
           }
       }
-    
      
     render() {
          const frontAnimatedStyle = {
@@ -68,20 +68,18 @@ export default class CardDealing extends Component {
                     </Animated.View>
                     
                     <Animated.View style = {[styles.flipCard , frontAnimatedStyle,  styles.flipCardBack]}>
-                        <View style = {{position: 'absolute',
-                            flex: 1,
+                        <View style = {
+                            {position:'absolute',
                             borderRadius: 2,
+                            justifyContent: 'center',
                             alignItems: 'center',
-                            justifyContent:'center',
-                            paddingVertical: 15,
-                            paddingHorizontal: 15,
-                            backgroundColor:"white",}}>
-                            
-                            <Text style={{color: this.props.suit == '♥' || this.props.suit == '♦'? 
-                                'red': 'black'}}
-                            >{this.props.suit}</Text>
-                            <Text>{this.props.value}</Text>
-                            
+                            width: this.props.screen.width * 0.065,
+                            height: this.props.screen.height * 0.2,}}
+                        >
+                            <Image source={this.props.image}
+                            style = {{width: '100%',  
+                                    resizeMode: 'contain',}}
+                            />
                         </View>
                     </Animated.View>
                 </View>

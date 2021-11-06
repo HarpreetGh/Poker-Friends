@@ -7,6 +7,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import {setStatusBarHidden } from 'expo-status-bar';
 
 import Balance from './Balance'
+import { update } from 'lodash';
 
 
 
@@ -81,6 +82,8 @@ export default class JoinGame extends Component {
       data.balance.push(data.buyIn)
       data.players.push(username)
       data.playerAvatar.push(user.photoURL)
+      data.move.push('waiting')
+      data.round.push(0)
       data.newPlayer +=1
       data.size += 1
 
@@ -94,6 +97,8 @@ export default class JoinGame extends Component {
       updates[matchPath + '/balance'] = data.balance
       updates[matchPath + '/players'] = data.players
       updates[matchPath + '/playerAvatar'] = data.playerAvatar
+      updates[matchPath + '/move'] = data.move
+      updates[matchPath + '/round'] = data.round
       updates[matchPath + '/newPlayer'] = data.newPlayer
       updates[matchPath + '/size'] = data.size
 

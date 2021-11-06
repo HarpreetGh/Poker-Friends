@@ -138,10 +138,17 @@ export default class LandingPage extends Component {
   }
 
   AccountSettings = () => {
+    var disabled = false;
+    if(this.props.userData.in_game == ''){
+      disabled = true
+    }
     return(
     <View style={styles.SettingcornerView}>
       <TouchableOpacity style={styles.Settingbutton}
-        onPress = {() => this.props.navigation.navigate('AccountSettings')}>
+        onPress = {() => {disabled?
+          this.props.navigation.navigate('AccountSettings'):
+          Alert.alert("Disabled", "Cannot change Account Settings while in a game.")}}
+      >
           <Text style={styles.SettingtextStyle}>Account Settings</Text>
       </TouchableOpacity>
     </View>

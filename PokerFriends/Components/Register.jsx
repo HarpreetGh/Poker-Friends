@@ -11,11 +11,15 @@ export default class Register extends Component {
       username: '',
       email: '',
       password: '',
-      time: ''
+      time: '',
     }
   }
 
   async SignUp(){
+    if(this.state.username.trim().length < 1){
+      Alert.alert('No Name Entered', 'Please enter a valid name for yourself.')
+      return
+    } 
     firebase.auth().createUserWithEmailAndPassword(this.state.email.trim(), this.state.password.trim())
       .then((userCredential) =>{
         var user = firebase.auth().currentUser;
@@ -39,6 +43,8 @@ export default class Register extends Component {
       Alert.alert(errorCode, errorMessage);
     });
   }
+
+  
 
   async InitializeUserInDB(user, username){
     firebase.database().ref('users/' + user.uid +'/data').set({
@@ -78,8 +84,12 @@ export default class Register extends Component {
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoCompleteType='username'
+                maxLength={16}
+                keyboardType='email-address'
                 style={styles.input}
-                onChangeText={text => this.setState({username: text})}
+                onChangeText={text => this.setState({username: text.replace(/\s+/g, ' ').replace(
+                  /[`~!@#$%^&*()|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''
+                )})}
                 value={this.state.username}
             />
 

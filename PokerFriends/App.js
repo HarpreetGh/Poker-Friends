@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { StatusBar as StatusBarExpo } from 'expo-status-bar';
 import Firebaseinit from "./firebase"; //Intializes Firebase
 import firebase from "firebase";
 
@@ -57,7 +58,7 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    this.getData();
+    //this.getData();
   }
 
   async getData() {
@@ -128,15 +129,18 @@ export default class App extends Component {
               newFriends.push(
                 ...request.friend_confirmed.slice(1)
               );
-              console.log(newFriends)
 
               updates["/users/" + user.uid + "/request/friend_confirmed"] = [""];
               updates["/users/" + user.uid + "/data/friends"] = newFriends;
+
+              data.friends = newFriends
             }
             if(request.friend_delete != null){
               var newFriendList = data.friends.filter(friend => !request.friend_delete.includes(friend))
               updates["/users/" + user.uid + "/request/friend_delete"] = null;
               updates["/users/" + user.uid + "/data/friends"] = newFriendList;
+
+              data.friends = newFriends
             }
             if (Object.keys(updates).length > 0) {
               firebase.database().ref().update(updates);
@@ -200,9 +204,14 @@ export default class App extends Component {
               )}
             </Stack.Screen>
 
+            <Stack.Screen name="ChangeUsername">
+              {(props) => (
+                <ChangeUsername {...props} userData={this.state.userData} />
+              )}
+            </Stack.Screen>
+
             <Stack.Screen name="Leaderboard" component={Leaderboard} />
             <Stack.Screen name="AccountSettings" component={AccountSettings} />
-            <Stack.Screen name="ChangeUsername" component={ChangeUsername} />
             <Stack.Screen name="ChangeEmail" component={ChangeEmail} />
             <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
             <Stack.Screen name="DeleteAccount" component={DeleteAccount} />
@@ -212,7 +221,8 @@ export default class App extends Component {
       );
     } else {
       return (
-        <View style={[styles.container, styles.horizontal]}>
+        <View style={[styles.container]}>
+          <StatusBarExpo style="light"/>
           <ActivityIndicator size="large" color="#FB6342" />
         </View>
       );
@@ -223,7 +233,7 @@ export default class App extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#2ecc71",
     alignItems: "center",
     justifyContent: "center",
   },

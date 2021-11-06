@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, Text, StyleSheet, ActivityIndicator, Image, TouchableOpacity} from 'react-native'
+import {View, Text, StyleSheet, ActivityIndicator, Image, TouchableOpacity, SafeAreaView} from 'react-native'
 import Logo from '../Components/Logo'
 import firebase from 'firebase'
 
@@ -27,7 +27,7 @@ export default class AccountStats extends Component {
     render() { 
         if(this.state.ready){
             return ( 
-            <View style = {styles.container}>
+            <SafeAreaView style = {styles.container}>
                 <View style = {styles.bubble}> 
                     
                     <View style={{flexDirection: 'row' , justifyContent: 'center'}}>
@@ -48,7 +48,7 @@ export default class AccountStats extends Component {
                 >
                     <Text style={styles.buttonText}>Go Back</Text>
                 </TouchableOpacity>
-            </View> 
+            </SafeAreaView> 
             );
         }
         else{
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#2ecc71',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     title: {
         fontSize: 25,
@@ -77,17 +77,23 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     Stats: {
-        borderRadius: 50,
-        margin: 10,
+        //backgroundColor: "#7befb2",
         elevation: 2,
-        backgroundColor: "#7befb2",
         color: 'black',
         fontWeight: 'bold',
         textAlign: 'center',
-        padding: 10
     },  
     textContainer: {
-        width: '100%'
+        /* margin: 10,
+        padding: 10,
+        borderRadius: 50,
+        backgroundColor: "#7befb2", */
+        backgroundColor: "#7befb2",
+        margin: 10,
+        padding: 10,
+        borderRadius: 50,
+        overflow: 'hidden',
+        width: '100%',
     },
     avatarImage: {
       width: 150, 

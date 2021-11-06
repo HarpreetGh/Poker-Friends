@@ -26,7 +26,7 @@ export default class ChangeEmail extends Component {
       this.props.navigation.navigate('AccountSettings')
     })
     .catch(function(error) {
-      console.log(error)
+       Alert.alert('Error:', error.message)
     });
   }
   
@@ -44,7 +44,6 @@ export default class ChangeEmail extends Component {
                     keyboardType="email-address"
                     autoCapitalize="none"
                     autoCorrect={false}
-                    onSubmitEditing={() => this.passwordInput.focus()}
                     style={styles.input}
                     ref={(input) => this.emailInput = input}
                     onChangeText={text => this.setState({email: text})}

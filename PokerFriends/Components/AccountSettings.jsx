@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react'
-import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, Touchable } from 'react-native';
+import { StyleSheet, Text, View, Image, KeyboardAvoidingView, SafeAreaView, TouchableOpacity } from 'react-native';
 import Logo from './Logo';
 
 import firebase from 'firebase'
@@ -11,12 +11,14 @@ export default class AccountSettings extends Component {
   render(){
     var user = firebase.auth().currentUser;
     return (
-        <KeyboardAvoidingView 
+      <SafeAreaView 
           style={styles.container}
           >
-            <Image  source ={{ uri: user.photoURL }} style={{ width: 200, height: 200, marginBottom: 20, borderRadius: 100}} />
+            <Image  source ={{ uri: user.photoURL }} style={{ width: 200, height: 200, 
+              marginBottom: 20, marginTop: 40, borderRadius: 100}} />
             <Text style={styles.title}>{user.displayName}'s Account Settings</Text>
-          
+            
+          <View style={{width:'85%'}}>
             <TouchableOpacity style={styles.buttonContainer}
               onPress={() => this.props.navigation.navigate('ForgotPassword')}>
                 <Text style={styles.textStyle}>Password Reset</Text>
@@ -42,12 +44,12 @@ export default class AccountSettings extends Component {
                 <Text style={styles.textStyle}>Delete Account</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.buttonContainer}
+            <TouchableOpacity style={[styles.buttonContainer, {marginBottom: 30}]}
               onPress={() => this.props.navigation.navigate('LandingPage')}>
-                  <Text style={styles.textStyle}>Go Back</Text>
-              </TouchableOpacity>
-
-        </KeyboardAvoidingView>
+                <Text style={styles.textStyle}>Go Back</Text>
+            </TouchableOpacity>
+            </View>
+      </SafeAreaView>
     );
   }
 }
@@ -60,19 +62,22 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 25,
+    flexDirection: 'row',
+    width: "85%",
     fontWeight: 'bold',
     color: 'white',
     justifyContent: 'center',
     alignContent: 'center',
     textAlign: 'center',
-    marginBottom: 50
+    marginBottom: 20
   },
     container: {
       padding: 20,
       flex: 1,
       backgroundColor: '#2ecc71',
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      width: '100%'
     },
     buttonContainer:{
       backgroundColor: '#27ae60',

@@ -14,15 +14,6 @@ export default class CreateGame extends Component {
       buyIn: 50
     }
   }
-  /*
-  getGames(){
-    var games = firebase.database().ref('games/public').orderByChild('$')
-    games.on('value', (snapshot) => {
-      const data = snapshot.val();
-      updateStarCount(postElement, data);
-    });
-  }
-  */
 
   createGame(type){
     var user = firebase.auth().currentUser;
@@ -69,7 +60,7 @@ export default class CreateGame extends Component {
       pot: 0,
       raisedVal: 0,
       ready: [false],
-      round: 1,
+      round: [0],
       roundWinner: -1,
       roundWinnerRank: -1,
       size: 1,
@@ -89,9 +80,10 @@ export default class CreateGame extends Component {
 
   render(){
     return (
+      <View style={styles.container}>
         <KeyboardAvoidingView 
           behavior={Platform.OS === "ios" ? "padding" : "height"} 
-          style={styles.container}
+             style={styles.keyboardAvoidingContainer}
           >
             <Logo />
             <Text style={styles.textStyle}>Make Game</Text>
@@ -104,10 +96,13 @@ export default class CreateGame extends Component {
                 autoCapitalize="none"
                 autoCorrect={false}
                 style={styles.input}
-                onChangeText={text => this.setState({name: text})}
+                maxLength={20}
+                onChangeText={text => this.setState({name: text.replace(/\s+/g, ' ').replace(
+                  /[`~!@#$%^&*()|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''
+                )})}
                 value={this.state.name}
             />
-
+          </KeyboardAvoidingView>
             <Text style={styles.textStyle}> Buy-In {this.state.buyIn} </Text>
             
             <Slider 
@@ -148,9 +143,8 @@ export default class CreateGame extends Component {
             onPress={() => this.props.navigation.navigate('LandingPage')}>
                 <Text style={styles.registerButtonText}>Go Back</Text>
             </TouchableOpacity>
-
-
-        </KeyboardAvoidingView>
+        
+      </View>
     );
   }
 }
@@ -158,12 +152,21 @@ export default class CreateGame extends Component {
 const styles = StyleSheet.create({
   textStyle: {
     marginBottom: 10,
+    fontSize: 20,
     color: "white",
     fontWeight: "bold",
     textAlign: "center"
   },
     container: {
       padding: 20,
+      flex: 1,
+      backgroundColor: '#2ecc71',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    keyboardAvoidingContainer: {
+      paddingHorizontal: 20,
+      width:'100%',
       flex: 1,
       backgroundColor: '#2ecc71',
       alignItems: 'center',

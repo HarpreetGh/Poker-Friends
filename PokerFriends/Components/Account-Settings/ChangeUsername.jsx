@@ -18,7 +18,12 @@ export default class ChangeUsername extends Component {
   UpdateUsername(){
     var user = firebase.auth().currentUser;
     var updates = {};
-    const usernameID = this.state.newUsername+"#"+user.uid
+    if(this.state.newUsername.trim().length < 1){
+      Alert.alert('No Name Entered', 'Please enter a valid name for yourself.')
+      return
+    } 
+    const usernameID = (this.state.newUsername.trim()+"#"+user.uid)
+    updates['/users/'+ user.uid +'/data/username'] = usernameID;
 
     user.updateProfile({
       displayName: this.state.newUsername
@@ -26,8 +31,8 @@ export default class ChangeUsername extends Component {
     .then(() => {
       Alert.alert("Username changed", "From: " + this.state.oldUsername + 
         " to: " + this.state.newUsername)
-      updates['/users/'+ user.uid +'/data/username'] = usernameID;
-      firebase.database().ref().update(updates);
+
+      firebase.database().ref().update(updates)
       this.props.navigation.navigate('LandingPage')
     })
     .catch(function(error) {
@@ -49,9 +54,11 @@ export default class ChangeUsername extends Component {
                     autoCapitalize="none"
                     autoCorrect={false}
                     autoCompleteType="username"
-                    onSubmitEditing={() => this.passwordInput.focus()}
                     style={styles.input}
-                    onChangeText={text => this.setState({newUsername: text})}
+                    maxLength={16}
+                    onChangeText={text => this.setState({newUsername: text.replace(/\s+/g, ' ').replace(
+                      /[`~!@#$%^&*()|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''
+                    )})}
                     value={this.state.newUsername}
                 />
 

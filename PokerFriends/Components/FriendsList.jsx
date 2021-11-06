@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, 
+import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, SafeAreaView, StatusBar,
   TouchableOpacity, Touchable, Alert, ActivityIndicator, Modal, FlatList } from 'react-native';
 import firebase from 'firebase'
 import AccountStats from "./AccountStats";
 import { set } from 'react-native-reanimated';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import {setStatusBarHidden } from 'expo-status-bar';
+import { update } from 'lodash';
 
 export default class FriendsList extends Component {
   constructor(props){
@@ -49,16 +50,27 @@ export default class FriendsList extends Component {
 
   GetData(){
     var data = []
+    var updates = {}
+    var user = firebase.auth().currentUser;
     if(this.state.friends.length > 0){
-      this.state.friends.forEach(async (fullName) => { 
+      this.state.friends.forEach(async (fullName, index) => { 
         var uid = fullName.slice(fullName.indexOf('#')+1)
         var name = fullName.slice(0, fullName.indexOf('#'))
+        var name2 = name
         console.log(name)
         firebase.database().ref('/users/'+ uid + '/data').once('value', (snapshot) => {
+          name2 = snapshot.val().username.slice(0, snapshot.val().username.indexOf('#'))
+          if(name != name2){
+            name = name2
+            updates['/users/'+user.uid+'/data/friends/'+(index+1)] = snapshot.val().username
+          } 
           data.push({key: name, ...snapshot.val()})
           if(data.length == this.state.friends.length)
           {
             this.setState({friendData:data, ready: true})    
+            if (Object.keys(updates).length > 0) {
+              firebase.database().ref().update(updates);
+            }
           }
         })
       });
@@ -91,11 +103,13 @@ export default class FriendsList extends Component {
 
       console.log(foundUserData, foundUserRequest)
 
+
       if(foundUserData.friends.includes(this.props.userData.username)){
         Alert.alert('Cannot Add','Already friends with user')
         userAbleAdd = false
       }
-      else if(foundUserRequest.friend_request.includes(this.props.userData.username)){
+      else if(-1 != foundUserRequest.friend_request.findIndex(obj => obj.username == 
+        this.props.userData.username)){
         Alert.alert('Cannot Add','Friend Request already sent')
         userAbleAdd = false
       }
@@ -103,6 +117,9 @@ export default class FriendsList extends Component {
         Alert.alert('Cannot Add','You cannot add yourself!')
         userAbleAdd = false
       }
+      /* else if(){
+
+      } */
       else{
         this.setState({foundUser: true,
           foundUserData: foundUserData, 
@@ -160,33 +177,31 @@ export default class FriendsList extends Component {
         transparent={true}
         visible={this.state.foundModalVisible}
       >
-        <View style = {styles.centeredView}>
-          <View style = {styles.modalView}>
-            <View style={{flexDirection: 'row' , justifyContent: 'center'}}>
-              <Image source={{ uri: this.state.foundUserData.photoURL }} style = {styles.avatarImage}/>
-            </View>
-
-            <Text style = {{padding: 0, fontWeight: 'bold'}}>
-              {this.state.foundUserData.username.slice(0, this.state.foundUserData.username.indexOf('#'))}
-            </Text>
-
-            <View style = {{padding: 5}}></View>
-            <TouchableOpacity
-              disabled={!this.state.userAbleAdd}
-              style={[styles.buttonStyle, (this.state.userAbleAdd)?{backgroundColor:"#D6A2E8"}:styles.disabled]}
-              onPress={() => {this.SendFriendRequest(); this.setState({foundModalVisible: false })}}
-            >
-              <Text>ADD</Text>
-            </TouchableOpacity>
-            
-            <View style = {{padding: 5}}></View>
-            <TouchableOpacity
-              style={styles.buttonStyle}
-              onPress={() => this.setState({foundModalVisible: false })}
-            >
-              <Text>EXIT</Text>
-            </TouchableOpacity>
+        <View style={[styles.friendRequestBubble,  {backgroundColor: "white", marginTop: 50}]}>
+          <View style={{flexDirection: 'row' , justifyContent: 'center'}}>
+            <Image source={{ uri: this.state.foundUserData.photoURL }} style = {styles.avatarImage}/>
           </View>
+
+          <Text style={[styles.textStyleDark, {fontSize: 20}]}>
+            {this.state.foundUserData.username.slice(0, this.state.foundUserData.username.indexOf('#'))}
+          </Text>
+
+          <View style = {{padding: 5}}></View>
+          <TouchableOpacity
+            disabled={!this.state.userAbleAdd}
+            style={[styles.buttonRequest, (this.state.userAbleAdd)?{backgroundColor: '#2e8fff'}:styles.disabled]}
+            onPress={() => {this.SendFriendRequest(); this.setState({foundModalVisible: false })}}
+          >
+            <Text style={styles.textStyle}>ADD</Text>
+          </TouchableOpacity>
+          
+          <View style = {{padding: 5}}></View>
+          <TouchableOpacity
+            style={[styles.buttonRequest, {backgroundColor: "#c80c0d"}]}
+            onPress={() => this.setState({foundModalVisible: false })}
+          >
+            <Text style={styles.textStyle}>EXIT</Text>
+          </TouchableOpacity>
         </View>
       </Modal>
       )
@@ -209,6 +224,8 @@ export default class FriendsList extends Component {
       var data = snapshot.val()
       data.balance.push(data.buyIn)
       data.players.push(username)
+      data.move.push('waiting')
+      data.round.push(0)
       data.playerAvatar.push(user.photoURL)
       data.newPlayer +=1
       data.size += 1
@@ -225,7 +242,8 @@ export default class FriendsList extends Component {
       updates[matchPath + '/playerAvatar'] = data.playerAvatar
       updates[matchPath + '/newPlayer'] = data.newPlayer
       updates[matchPath + '/size'] = data.size
-
+      updates[matchPath + '/move'] = data.move
+      updates[matchPath + '/round'] = data.round
       
       updates['/games/list/' + matchName + '/size'] = data.size
 
@@ -240,59 +258,59 @@ export default class FriendsList extends Component {
     var friendRequests = this.props.userRequest.friend_request.slice(1)
   
     return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={this.state.requestModalVisible}
-    >
-      <View style = {styles.centeredView}>
+    <View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={this.state.requestModalVisible}
+      >
         <View style = {styles.modalView}>
           {friendRequests.length == 0? (
-            <Text>No Friend Requests</Text>
+              <Text style={[styles.titleButtonStyle, {color:'black'}]}>No Friend Requests</Text>
           ):(
           <FlatList style={{width:'100%'}}
             data={friendRequests}
             keyExtractor={(item)=>item.username}
             renderItem={({item})=>{
               return(
-                <View style={{padding: 10}}>
+                <View style={styles.friendRequestBubble}>
                   <View style={{flexDirection: 'row' , justifyContent: 'center'}}>
                     <Image source={{ uri: item.photoURL}} style = {styles.avatarImage}/>
                   </View>
 
-                  <Text style={styles.textStyleDark}> {item.username.slice(0, item.username.indexOf('#'))}</Text>
+                  <Text style={[styles.textStyleDark, {fontSize: 20}]}> {item.username.slice(0, item.username.indexOf('#'))}</Text>
                   
                   <View style={{flexDirection: "row", justifyContent: "space-evenly"}}>
                     <TouchableOpacity
-                      style={styles.buttonAccept}
+                      style={[styles.buttonRequest, {backgroundColor: '#2e8fff'}]}
                       onPress={() => { this.RespondFriendRequest(item.username, true)} }
                     >
-                      <Text>Accept</Text>
+                      <Text style={styles.textStyle}>Accept</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                      style={[styles.buttonDecline]}
+                      style={[styles.buttonRequest, {backgroundColor: "#c80c0d"}]}
                       onPress={() => { this.RespondFriendRequest(item.username, false)} }
                     >
-                      <Text>Decline</Text>
+                      <Text style={styles.textStyle}>Decline</Text>
                     </TouchableOpacity>
                   </View>
                 </View>)
             }}
-            />
-          )}
-          
-          
-          <View style = {{padding: 5}}></View>
-          <TouchableOpacity
-            style={styles.buttonStyle}
-            onPress={() => this.setState({requestModalVisible: false })}
-          >
-            <Text>EXIT</Text>
-          </TouchableOpacity>
+              />
+            )}
+            
+            
+            <View style = {{padding: 5}}></View>
+            <TouchableOpacity
+              style={styles.buttonRequest}
+              onPress={() => this.setState({requestModalVisible: false })}
+            >
+              <Text style={styles.textStyleDark}>EXIT</Text>
+            </TouchableOpacity>
         </View>
-      </View>
-    </Modal>
+      </Modal>
+    </View>
     )
   }
 
@@ -329,99 +347,101 @@ export default class FriendsList extends Component {
     render(){
       if(this.state.ready){
         return (
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"} 
-            style={styles.container} 
-            >
-              {(this.state.foundModalVisible)? (this.DisplayFoundUser()):(<Text></Text>)}
-              {(this.state.requestModalVisible)? (this.DisplayFriendRequest()):(<Text></Text>)}
-              <TouchableOpacity style={styles.buttonContainer}
-                  onPress={() => this.setState({mangageFriendsVisible: !this.state.mangageFriendsVisible})}
-                >
-                  <Text style={styles.titleButtonStyle}>Manage Friends</Text>
-              </TouchableOpacity>
-              
-              {!this.state.mangageFriendsVisible? (
-                <View></View>
-              ):( 
-                <View style={{width: '100%'}}>
-                  <TextInput
-                    style={styles.input} 
-                    placeholder="Find Friend via Email"
-                    placeholderTextColor="rgba(255, 255, 255, 0.75)"
-                    returnKeyType="next"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    keyboardType={'email-address'}
-                    onChangeText={text => this.setState({searchEmail: text})}
-                    value={this.state.searchEmail}
+          <SafeAreaView style={{flex:1, backgroundColor: '#2ecc71'}} >
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : "height"} 
+                style={styles.container} 
+              >
+                {this.state.foundModalVisible && this.DisplayFoundUser()}
+                {this.state.requestModalVisible && this.DisplayFriendRequest()}
+                <TouchableOpacity style={styles.buttonContainer}
+                    onPress={() => this.setState({mangageFriendsVisible: !this.state.mangageFriendsVisible})}
+                  >
+                    <Text style={styles.titleButtonStyle}>Manage Friends</Text>
+                </TouchableOpacity>
+                
+                {!this.state.mangageFriendsVisible? (
+                  <View></View>
+                ):( 
+                  <View style={{width: '100%'}}>
+                    <TextInput
+                      style={styles.input} 
+                      placeholder="Find Friend via Email"
+                      placeholderTextColor="rgba(255, 255, 255, 0.75)"
+                      returnKeyType="next"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      keyboardType={'email-address'}
+                      onChangeText={text => this.setState({searchEmail: text})}
+                      value={this.state.searchEmail}
+                    />
+                      
+                    <TouchableOpacity style={styles.buttonContainer}
+                      disabled = {this.state.searchEmail.length < 1}
+                      onPress={() => this.FindUser()}
+                    >
+                      <Text style={styles.textStyle}>Find</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.buttonContainer}
+                      onPress={() => this.setRequestModalVisible()}
+                    >
+                      <Text style={styles.textStyle}>Friend Requests: {this.props.userRequest.friend_request.length - 1}</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[styles.buttonContainer, (this.state.removeFriendsOn)?{backgroundColor: '#c80c0d'}:{}]}
+                      onPress={() => this.setState({removeFriendsOn: !this.state.removeFriendsOn})}
+                    >
+                      <Text style={styles.textStyle}>Remove Friend</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+
+                <View style={{flex:1, alignContent:'center', justifyContent:'center', paddingBottom: 10, width: '100%'}}>
+                  <Text style={styles.titleTextStyle}>Friends:</Text>
+                  <FlatList
+                    horizontal={false}
+                    numColumns={2}
+                    data={this.state.friendData}
+                    keyExtractor={(item)=>item.key}
+                    renderItem={({item})=>{
+                      var gameName = item.in_game.slice(0, item.in_game.indexOf('-'))
+                      var inGame = gameName.length > 0
+                      return(
+                        <View style={styles.friendListContainer}>
+                          <View style={{flexDirection: 'row' , justifyContent: 'center'}}>
+                            <Image
+                              source={{ uri: item.photoURL }}
+                              style = {styles.avatarImage}/>
+                          </View>
+                          
+                          {this.state.removeFriendsOn? (
+                            this.RemoveFriendButton(item.key, item.username)
+                            ):(
+                            <Text style={styles.titleTextStyle}>{item.key}</Text>
+                          )}
+
+                          {inGame? (<View>
+                            <Text style={[styles.textStyle, {marginBottom: 5}]}>Game: {gameName}</Text> 
+                            <TouchableOpacity style={styles.joinButton}
+                            onPress={() => this.joinGame(item.in_game)}>
+                              <Text style={styles.joinTextStyle}>Join Game</Text>
+                            </TouchableOpacity>
+                          </View>
+                          ):(<Text style={styles.textStyle}>Not in a game.</Text>)}
+                        </View>
+                      )
+                    }}
                   />
-                    
-                  <TouchableOpacity style={styles.buttonContainer}
-                    disabled = {this.state.searchEmail.length < 1}
-                    onPress={() => this.FindUser()}
-                  >
-                    <Text style={styles.textStyle}>Find</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity style={styles.buttonContainer}
-                    onPress={() => this.setRequestModalVisible()}
-                  >
-                    <Text style={styles.textStyle}>Friend Requests: {this.props.userRequest.friend_request.length - 1}</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity style={[styles.buttonContainer, (this.state.removeFriendsOn)?{backgroundColor: '#c80c0d'}:{}]}
-                    onPress={() => this.setState({removeFriendsOn: !this.state.removeFriendsOn})}
-                  >
-                    <Text style={styles.textStyle}>Remove Friend</Text>
-                  </TouchableOpacity>
                 </View>
-              )}
 
-              <View style={{flex:1, alignContent:'center', justifyContent:'center', paddingBottom: 10, width: '100%'}}>
-                <Text style={styles.titleTextStyle}>Friends:</Text>
-                <FlatList
-                  horizontal={false}
-                  numColumns={2}
-                  data={this.state.friendData}
-                  keyExtractor={(item)=>item.key}
-                  renderItem={({item})=>{
-                    var gameName = item.in_game.slice(0, item.in_game.indexOf('-'))
-                    var inGame = gameName.length > 0
-                    return(
-                      <View style={styles.friendListContainer}>
-                        <View style={{flexDirection: 'row' , justifyContent: 'center'}}>
-                          <Image
-                            source={{ uri: item.photoURL }}
-                            style = {styles.avatarImage}/>
-                        </View>
-                        
-                        {this.state.removeFriendsOn? (
-                          this.RemoveFriendButton(item.key, item.username)
-                          ):(
-                          <Text style={styles.titleTextStyle}>{item.key}</Text>
-                        )}
+                <TouchableOpacity style={styles.buttonContainer}
+                onPress={() => this.props.navigation.navigate('LandingPage')}>
+                    <Text style={styles.textStyle}>Go Back</Text>
+                </TouchableOpacity>
 
-                        {inGame? (<View>
-                          <Text style={[styles.textStyle, {marginBottom: 5}]}>Game: {gameName}</Text> 
-                          <TouchableOpacity style={styles.joinButton}
-                          onPress={() => this.joinGame(item.in_game)}>
-                            <Text style={styles.joinTextStyle}>Join Game</Text>
-                          </TouchableOpacity>
-                        </View>
-                        ):(<Text style={styles.textStyle}>Not in a game.</Text>)}
-                      </View>
-                    )
-                  }}
-                />
-              </View>
-
-              <TouchableOpacity style={styles.buttonContainer}
-              onPress={() => this.props.navigation.navigate('LandingPage')}>
-                  <Text style={styles.textStyle}>Go Back</Text>
-              </TouchableOpacity>
-
-          </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+          </SafeAreaView>
         );
       }
       else{
@@ -436,6 +456,7 @@ export default class FriendsList extends Component {
 
 const styles = StyleSheet.create({
     container: {
+      paddingTop: Platform.OS === "android" ? StatusBar.currentHeight+5 : 0,
       padding: 20,
       flex: 1,
       backgroundColor: '#2ecc71',
@@ -443,7 +464,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center'
     },
     centeredView: {
-      flex: 1,
+      //flex: 1,
       justifyContent: "center",
       alignItems: "center",
       marginTop: 22
@@ -493,19 +514,12 @@ const styles = StyleSheet.create({
       backgroundColor: "#b2bec3",
       marginTop: 5
     },
-    buttonAccept: {
-      borderRadius: 2,
+    buttonRequest: {
+      borderRadius: 20,
       padding: 10,
       elevation: 2,
-      backgroundColor: "#D6A2E8",
-      marginTop: 5
-    },
-    buttonDecline: {
-      borderRadius: 2,
-      padding: 10,
-      elevation: 2,
-      backgroundColor: "#b2bec3",
-      marginTop: 5
+      marginTop: 5,
+      backgroundColor: "#cccccc",
     },
     buttonContainer:{
       backgroundColor: '#27ae60',
@@ -518,8 +532,20 @@ const styles = StyleSheet.create({
     disabled:{
       backgroundColor: "#cccccc"
     },
+    friendRequestBubble:{
+      justifyContent: "center",
+      alignContent: 'center',
+      width: "85%",
+      backgroundColor: "#e0e0e0",
+      padding: 20,
+      paddingEnd: 20,
+      marginLeft: 20,
+      borderRadius: 30,
+      marginBottom: 10
+    },
     modalView: {
       margin: 20,
+      marginTop: 50,
       backgroundColor: "white",
       borderRadius: 20,
       padding: 35,

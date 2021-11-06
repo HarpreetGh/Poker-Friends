@@ -19,7 +19,7 @@ export default class ForgotPassword extends Component {
       this.props.navigation.navigate('Login')
     })
     .catch(function(error) {
-      console.log(error)
+      Alert.alert('Error:', error.message)
     });
   }
     render(){
