@@ -1,17 +1,10 @@
 import React, { Component, useState } from 'react'
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, FlatList, Switch } from 'react-native';
-import Slider from '@react-native-community/slider';
-import Logo from './Logo';
 import firebase from 'firebase'
-import * as ScreenOrientation from 'expo-screen-orientation';
 import {setStatusBarHidden } from 'expo-status-bar';
+import { joinGame } from './Utils/JoinGame'
 
-import Balance from './Balance'
-import { update } from 'lodash';
-
-
-
-export default class JoinGame extends Component {
+export default class JoinGamePage extends Component {
   constructor(props){
     super(props)
     this.state = {
@@ -67,51 +60,6 @@ export default class JoinGame extends Component {
     })
   }
 
-
-  async joinGame(matchName){
-    var user = firebase.auth().currentUser;
-    const username = user.displayName
-    const matchPath =  '/games/' + 'public' + '/' + matchName;
-    const matchListPath = '/games/list/' + matchName;
-
-    
-    
-    firebase.database().ref(matchPath).once('value', (snapshot) => {
-      console.log('game data recieved')
-      var data = snapshot.val()
-      data.balance.push(data.buyIn)
-      data.players.push(username)
-      data.playerAvatar.push(user.photoURL)
-      data.move.push('waiting')
-      data.round.push(0)
-      data.newPlayer +=1
-      data.size += 1
-
-      this.props.userData.chips -= data.buyIn
-      
-      var updates = {};
-      
-      updates['/users/'+ user.uid +'/data/in_game'] = matchName
-      updates['/users/'+ user.uid +'/data/chips'] = this.props.userData.chips
-
-      updates[matchPath + '/balance'] = data.balance
-      updates[matchPath + '/players'] = data.players
-      updates[matchPath + '/playerAvatar'] = data.playerAvatar
-      updates[matchPath + '/move'] = data.move
-      updates[matchPath + '/round'] = data.round
-      updates[matchPath + '/newPlayer'] = data.newPlayer
-      updates[matchPath + '/size'] = data.size
-
-      
-      updates['/games/list/' + matchName + '/size'] = data.size
-
-      firebase.database().ref().update(updates);
-      setStatusBarHidden(true, 'slide');
-      this.props.navigation.navigate('GameController')
-    })
-
-  }
-
   render(){
     return (
         <KeyboardAvoidingView 
@@ -150,8 +98,8 @@ export default class JoinGame extends Component {
             </View>
           </View>
 
-          <View style={{flex:1, alignSelf:'center', justifyContent:'center', paddingBottom: 10}}>
-            <FlatList style={{width:'90%'}}
+          <View style={{flex:1, alignSelf:'center', justifyContent:'center', paddingBottom: 10, width: '100%'}}>
+            <FlatList
               horizontal={false}
               numColumns={2}
               data={this.state.gameList}
@@ -165,7 +113,7 @@ export default class JoinGame extends Component {
                       <Text style={styles.textStyle}> Buy In: {item.buyIn}</Text>
                     </View>
                     <TouchableOpacity style={styles.joinButton}
-                    onPress={() => this.joinGame(item.key)}>
+                    onPress={() => joinGame(item.key, this.props.userData.chips, this.props.navigation)}>
                       <Text style={styles.textStyle}>Join Game</Text>
                     </TouchableOpacity>
                   </View>)

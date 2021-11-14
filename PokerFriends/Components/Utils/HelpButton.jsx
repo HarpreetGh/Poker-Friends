@@ -71,11 +71,11 @@ export default class HelpButton extends Component {
 
               <Image
                style = {{borderColor: 'white', borderWidth: 2, marginBottom: 5}}
-                source = {require('../assets/communityCards.png')}
+                source = {require('../../assets/communityCards.png')}
               />
               <Image
               style = {{borderColor: 'white', borderWidth: 2}}
-              source = {require('../assets/poker_hands.png')}
+              source = {require('../../assets/poker_hands.png')}
               />
               <Pressable
                 style={[styles.button, styles.buttonClose]}
