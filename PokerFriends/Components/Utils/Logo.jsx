@@ -9,7 +9,7 @@ export default class Logo extends Component {
             >
             <Image 
               style={styles.logo} 
-              source={require('../assets/placeholderLOGO.png')} />
+              source={require('../../assets/placeholderLOGO.png')}/>
   
             <Text style={styles.title}> Play Poker with friends! </Text>
           </KeyboardAvoidingView>

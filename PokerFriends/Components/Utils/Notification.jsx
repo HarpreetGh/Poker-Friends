@@ -125,7 +125,7 @@ export default class HelpButton extends Component {
           >
               <Image 
                 style={{width:20, height:20}}
-                source={require('../assets/notification-alert.png')} //https://uxwing.com/notification-alert-icon/
+                source={require('../../assets/notification-alert.png')} //https://uxwing.com/notification-alert-icon/
                 /> 
               <Text style={styles.NotificationtextStyle}>{alerts}</Text>
           </TouchableOpacity>
