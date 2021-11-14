@@ -1,18 +1,15 @@
 import React, {Component} from 'react';
 import { Text, StyleSheet, View, TouchableOpacity,
-         StatusBar, Image, Modal, TextInput,
+         StatusBar, Image, Modal,
          BackHandler, Alert, Animated, Dimensions,
-         ActivityIndicator, SafeAreaView
          } from 'react-native';
 import Slider from '@react-native-community/slider';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { StatusBar as StatusBarExpo, setStatusBarHidden } from 'expo-status-bar';
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
-import Chat from '../../Chat' 
-import Deck from '../../decks'
+import Chat from './Chat'
 import CardDealing from './cardDealing'
 import {CardImageUtil as CardImages} from './CardImages'
-
 
 export default class GameSetting extends Component {
   constructor(props){
@@ -70,22 +67,12 @@ export default class GameSetting extends Component {
       raiseAmount: 10,
       screen: dimensions,
 
-      newValueSB:[
-        { x: (dimensions.width*parseFloat(styles.player1View.left) / 100.0)*2.5, 
+      newValueBlinds:[
+        { x: (dimensions.width*parseFloat(styles.player1View.left) / 100.0)*2.5,
           y: dimensions.height*(parseFloat(styles.player1View.top) / 100.0)},
         { x:(dimensions.width*parseFloat(styles.player2View.left) / 100.0)*1.4, 
           y: (dimensions.height*parseFloat(styles.player2View.top) / 100.0)}, 
         { x: (dimensions.width*(1-parseFloat(styles.player3View.right) / 100.0))-20-xOS, 
-          y: dimensions.height*(parseFloat(styles.player3View.top) / 100.0)},
-        { x: (dimensions.width*(1-parseFloat(styles.player4View.right) / 100.0))-20-xOS, 
-          y: dimensions.height*(parseFloat(styles.player4View.top) / 100.0)}],
-      
-      newValueBB: [
-        { x: (dimensions.width*parseFloat(styles.player1View.left) / 100.0)*2.5, 
-          y: dimensions.height*(parseFloat(styles.player1View.top) / 100.0)},
-        { x:(dimensions.width*parseFloat(styles.player2View.left) / 100.0)*1.4, 
-          y: (dimensions.height*parseFloat(styles.player2View.top) / 100.0)},
-        { x: (dimensions.width*(1-parseFloat(styles.player3View.right) / 100.0))-20 -xOS, 
           y: dimensions.height*(parseFloat(styles.player3View.top) / 100.0)},
         { x: (dimensions.width*(1-parseFloat(styles.player4View.right) / 100.0))-20-xOS, 
           y: dimensions.height*(parseFloat(styles.player4View.top) / 100.0)}],
@@ -161,7 +148,7 @@ export default class GameSetting extends Component {
     
     moveBB(player) {
       Animated.timing(this.state.animationBB[player], {
-          toValue: this.state.newValueBB[player],
+          toValue: this.state.newValueBlinds[player],
           duration: 1000,
           useNativeDriver: false
         }).start();
@@ -169,7 +156,7 @@ export default class GameSetting extends Component {
 
     moveSB(player) {
       Animated.timing(this.state.animationSB[player], {
-          toValue: this.state.newValueSB[player],
+          toValue: this.state.newValueBlinds[player],
           duration: 1000,
           useNativeDriver: false
         }).start();
@@ -430,22 +417,7 @@ export default class GameSetting extends Component {
       this.props.navigation.navigate('LandingPage')
       ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
       
-      this.props.leaveGame(this.props.game,
-        this.props.playerNum,
-        this.props.matchType,
-        this.props.matchType+'_'+this.props.matchName,
-        this.props.userData,
-        this.props.newPlayer
-      )
-    }
-
-    UpdateInitializer(type, amount){
-      this.props.updateGame(type, amount, 
-        this.props.game,
-        this.props.playerNum,
-        this.props.matchType,
-        this.props.matchName
-      )
+      this.props.leaveGame()
     }
 
     raiseView(callAmount, maxChips){
@@ -498,11 +470,11 @@ export default class GameSetting extends Component {
                   if(this.state.raiseAmount > 0){
                     if(this.state.raiseAmount == this.props.game.balance[this.props.playerNum]){
                       console.log('hey', this.state.raiseAmount, callAmount)
-                      this.UpdateInitializer('all in', this.state.raiseAmount+callAmount);
+                      this.props.updateGame('all in', this.state.raiseAmount+callAmount);
                       this.setState({raiseAmount: 10})
                     }
                     else{
-                      this.UpdateInitializer('raise', this.state.raiseAmount+callAmount)
+                      this.props.updateGame('raise', this.state.raiseAmount+callAmount)
                       this.setState({raiseAmount: 10})
                     }
                     //this.fadeIn(this.props.playerNum);
@@ -540,7 +512,7 @@ export default class GameSetting extends Component {
         this.props.game.move[this.props.playerNum] === 'all in' ){ //if you fold
           myTurn = false
           callAmount = 0
-          this.UpdateInitializer(this.props.game.move[this.props.playerNum], callAmount)
+          this.props.updateGame(this.props.game.move[this.props.playerNum], callAmount)
         }
 
         /* var lowestchips = this.props.game.chipsIn.map((chips, index) => {
@@ -588,7 +560,7 @@ export default class GameSetting extends Component {
 
         if(balance == 0) { //if you run out of funds
           callAmount = 0
-          this.UpdateInitializer('check')
+          this.props.updateGame('check')
         }
         if(setupCall){
           callString = 'Call: '
@@ -621,13 +593,13 @@ export default class GameSetting extends Component {
 
           {callAmount == 0? (
             <TouchableOpacity style={[styles.bettingButtons, (myTurn)?{backgroundColor:"#D6A2E8"}:styles.disabled]}
-              disabled={!myTurn} onPress={() => this.UpdateInitializer('check')}
+              disabled={!myTurn} onPress={() => this.props.updateGame('check')}
             >
               <Text>Check</Text>
             </TouchableOpacity>
           ):( 
             <TouchableOpacity style={[styles.bettingButtons, (myTurn)? styles.callButt:styles.disabled]}
-              disabled={!myTurn} onPress={() => this.UpdateInitializer(callType, callAmount)}
+              disabled={!myTurn} onPress={() => this.props.updateGame(callType, callAmount)}
             >
               <Text>{callString}</Text>
             </TouchableOpacity>
@@ -636,7 +608,7 @@ export default class GameSetting extends Component {
           <TouchableOpacity style={[styles.bettingButtons, (myTurn)? styles.foldButt:styles.disabled]} 
             disabled={!myTurn} onPress = {() => {
               this.foldCard() 
-              this.UpdateInitializer('fold')
+              this.props.updateGame('fold')
             }}
           >
             <Text>Fold</Text>
@@ -671,7 +643,7 @@ export default class GameSetting extends Component {
                 duration={15}
                 onComplete={() => {
                   if(!newPlayer){
-                    this.UpdateInitializer('check')
+                    this.props.updateGame('check')
                   }
                   this.setState({
                     playerCardAnimations: this.state.playerCardAnimations.map(a => new Animated.ValueXY({ x: 0, y: 0 })),
@@ -695,7 +667,7 @@ export default class GameSetting extends Component {
               {(!newPlayer) && <TouchableOpacity
                   style={styles.buttonInExit}
                   onPress={() => {
-                    this.UpdateInitializer('check')
+                    this.props.updateGame('check')
                     this.setState({
                       playerCardAnimations: this.state.playerCardAnimations.map(a => new Animated.ValueXY({ x: 0, y: 0 })),
                       tableCardsStart: this.state.tableCardsStart.map(a => new Animated.ValueXY({ x: 0, y: 0 }))
@@ -778,7 +750,7 @@ export default class GameSetting extends Component {
         this.setRaiseVisible(false)
         this.setState({autoFolds: this.state.autoFolds+1})
       }
-      this.UpdateInitializer('fold')
+      this.props.updateGame('fold')
     }
 
     fade(num, opac) {
@@ -966,7 +938,6 @@ export default class GameSetting extends Component {
       );
     }
 }
- 
 
 const styles = StyleSheet.create({
   avatarImage: {

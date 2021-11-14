@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, 
   TouchableOpacity, Touchable, Alert } from 'react-native';
-import Logo from '../Logo';
+import Logo from '../Utils/Logo';
 import firebase from 'firebase'
 
 export default class DeleteAccount extends Component {
@@ -38,10 +38,10 @@ export default class DeleteAccount extends Component {
                 <Text style={styles.textStyle}>Are you sure you want to Delete your account?</Text>
 
                 <TouchableOpacity style={styles.yesButtonContainer} onPress={() => this.Delete()}>
-                    <Text style={styles.yesSendButtonText}>Yes</Text>
+                    <Text style={styles.ButtonText}>Yes</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.noButtonContainer} onPress={() => this.props.navigation.navigate('AccountSettings')}>
-                    <Text style={styles.noSendButtonText}>No</Text>
+                    <Text style={styles.ButtonText}>No</Text>
                 </TouchableOpacity>
 
             </KeyboardAvoidingView>
@@ -72,22 +72,16 @@ const styles = StyleSheet.create({
       marginBottom: 20
     },
     yesButtonContainer:{
-      backgroundColor: '#FB6342',
+      backgroundColor: '#c80c0d',
       paddingVertical: 20,
       padding: 20,
       borderRadius: 50,
       width:"100%",
       marginBottom: 20
     },
-    noSendButtonText: {
+    ButtonText: {
       fontWeight: 'bold',
       textAlign: 'center',
       color: '#FFF',
-      fontWeight: '900'
-    },
-    yesSendButtonText: {
-      textAlign: 'center',
-      color: '#FFF',
-      fontWeight: '900'
     }
 })

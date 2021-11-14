@@ -26,16 +26,10 @@ import ChangeEmail from "./Components/Account-Settings/ChangeEmail";
 import DeleteAccount from "./Components/Account-Settings/DeleteAccount";
 import FriendsList from "./Components/FriendsList";
 import CreateGame from "./Components/CreateGame";
-import JoinGame from "./Components/JoinGame";
+import JoinGamePage from "./Components/JoinGamePage";
 import AccountStats from "./Components/AccountStats";
 import ChangeAvatar from "./Components/Account-Settings/ChangeAvatar";
 import Leaderboard from "./Components/Leaderboard";
-
-// LogBox.ignoreLogs(["Setting a timer for a long period of time"]);
-// LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
-// LogBox.ignoreLogs(['Each child in a list should have a unique']);
-// LogBox.ignoreLogs(['Cannot update during an existing state transition'])
-// LogBox.ignoreLogs(["Can't perform a React state update on an unmounted component." ])
 
 const Stack = createStackNavigator();
 
@@ -55,10 +49,6 @@ export default class App extends Component {
       this.setState({ ready: false });
       this.getData();
     });
-  }
-
-  componentDidMount() {
-    //this.getData();
   }
 
   async getData() {
@@ -192,9 +182,9 @@ export default class App extends Component {
               )}
             </Stack.Screen>
 
-            <Stack.Screen name="JoinGame">
+            <Stack.Screen name="JoinGamePage">
               {(props) => (
-                <JoinGame {...props} userData={this.state.userData} />
+                <JoinGamePage {...props} userData={this.state.userData} />
               )}
             </Stack.Screen>
 

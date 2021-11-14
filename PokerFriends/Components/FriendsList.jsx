@@ -3,17 +3,15 @@ import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, SafeAre
   TouchableOpacity, Touchable, Alert, ActivityIndicator, Modal, FlatList } from 'react-native';
 import firebase from 'firebase'
 import AccountStats from "./AccountStats";
-import { set } from 'react-native-reanimated';
-import * as ScreenOrientation from 'expo-screen-orientation';
-import {setStatusBarHidden } from 'expo-status-bar';
-import { update } from 'lodash';
+import { joinGame } from './Utils/JoinGame'
+
 
 export default class FriendsList extends Component {
   constructor(props){
     super(props)
     this.state = {
       ready: false,
-      friends: null,//this.props.userData.friends.slice(1),
+      friends: null,
       friendSize: this.props.userData.friends.length - 1,
       friendData: [],
 
@@ -35,12 +33,9 @@ export default class FriendsList extends Component {
   componentDidMount(){
     var user = firebase.auth().currentUser;
     firebase.database().ref("/users/"+ user.uid + "/data/friends").on("value", (snapshot) => {
-      var data = null
-      data = snapshot.val().slice(1);
-      console.log("Friends updated", data); 
+      var data = snapshot.val().slice(1);
       this.setState({ready: false, friends: data}, () => this.GetData());
     });
-      //this.GetData()
    }
 
    componentWillUnmount(){
@@ -48,32 +43,45 @@ export default class FriendsList extends Component {
     firebase.database().ref('/users').off()
   }
 
-  GetData(){
+  async GetData(){
     var data = []
     var updates = {}
+    var removeFriend = []
+    var promises = []
     var user = firebase.auth().currentUser;
+
     if(this.state.friends.length > 0){
-      this.state.friends.forEach(async (fullName, index) => { 
+      this.state.friends.forEach((fullName, index) => {
         var uid = fullName.slice(fullName.indexOf('#')+1)
         var name = fullName.slice(0, fullName.indexOf('#'))
         var name2 = name
-        console.log(name)
-        firebase.database().ref('/users/'+ uid + '/data').once('value', (snapshot) => {
-          name2 = snapshot.val().username.slice(0, snapshot.val().username.indexOf('#'))
-          if(name != name2){
-            name = name2
-            updates['/users/'+user.uid+'/data/friends/'+(index+1)] = snapshot.val().username
-          } 
-          data.push({key: name, ...snapshot.val()})
-          if(data.length == this.state.friends.length)
-          {
-            this.setState({friendData:data, ready: true})    
-            if (Object.keys(updates).length > 0) {
-              firebase.database().ref().update(updates);
+        promises.push(new Promise ((resolve, reject) => {
+          firebase.database().ref('/users/'+ uid + '/data').once('value', (snapshot) => {
+            if(snapshot.val() != null){
+              name2 = snapshot.val().username.slice(0, snapshot.val().username.indexOf('#'))
+              if(name != name2){ //friend updated name
+                name = name2
+                updates['/users/'+user.uid+'/data/friends/'+(index+1)] = snapshot.val().username
+              } 
+              data.push({key: name, ...snapshot.val()})
             }
-          }
-        })
-      });
+            else{ //friend no longer exists 
+              removeFriend.push(index+1)
+            }
+            resolve("success")
+          })
+        }))
+      })
+
+      await Promise.all(promises).then(()=>{
+        this.setState({friendData:data, ready: true})   
+        if(removeFriend.length > 0){
+          updates['/users/'+user.uid+'/data/friends'] = this.props.userData.friends.filter((friend, index) => !removeFriend.includes(index))
+        }
+        if (Object.keys(updates).length > 0) {
+          firebase.database().ref().update(updates);
+        }
+      })
     }
     else{
       this.setState({ready: true, friendData: []})
@@ -81,11 +89,6 @@ export default class FriendsList extends Component {
   }
 
   FindUser(){
-    /*var currentlyFriend = friendData.filter(data => data.email == this.state.searchEmail) == 1
-    if(currentlyFriend){
-      console.log('Already friends with user')
-    }
-    else{*/
     var searchEmail = this.state.searchEmail.trim()
     this.setState({searchEmail: ''})
 
@@ -129,7 +132,6 @@ export default class FriendsList extends Component {
         })
       }
     })
-    //}
   }
 
   SendFriendRequest(){
@@ -153,18 +155,22 @@ export default class FriendsList extends Component {
     updates['/users/'+ user.uid +'/request/friend_request'] = newFriendRequest
     
     if(accept){
-      var newFriends = this.props.userData.friends
-      newFriends.push(friendName)
-      updates['/users/'+ user.uid +'/data/friends'] = newFriends
-
       const friendID = friendName.slice(friendName.indexOf('#')+1)
-      
       //FETCH FRIEND INFO AND PUSH IT 
       var friend_confirmed = await firebase.database().ref('/users/'+ friendID + '/request/friend_confirmed').once('value').then((snapshot) => {  
         return snapshot.val()
       })
+      if(friend_confirmed !== null){ //Friend exists
+      var newFriends = this.props.userData.friends
+      newFriends.push(friendName)
+      updates['/users/'+ user.uid +'/data/friends'] = newFriends
+
       friend_confirmed.push(this.props.userData.username)
       updates['/users/'+ friendID +'/request/friend_confirmed'] = friend_confirmed
+      }
+      else{
+        Alert.alert('User: '+ friendName, 'This user no longer exists. The user has deleted their account.')
+      }
     }
 
     firebase.database().ref().update(updates);
@@ -205,53 +211,6 @@ export default class FriendsList extends Component {
         </View>
       </Modal>
       )
-  }
-
-  async joinGame(matchName){
-    console.log(matchName)
-    var user = firebase.auth().currentUser;
-    const username = user.displayName
-    var matchPath
-    if (matchName.search('private') == -1) {
-      matchPath =  '/games/public/' + matchName 
-    }
-    else {
-      matchPath =  '/games/private/' + matchName 
-    }
-
-    firebase.database().ref(matchPath).once('value', (snapshot) => {
-      console.log('game data recieved')
-      var data = snapshot.val()
-      data.balance.push(data.buyIn)
-      data.players.push(username)
-      data.move.push('waiting')
-      data.round.push(0)
-      data.playerAvatar.push(user.photoURL)
-      data.newPlayer +=1
-      data.size += 1
-
-      this.props.userData.chips -= data.buyIn
-      
-      var updates = {};
-      
-      updates['/users/'+ user.uid +'/data/in_game'] = matchName
-      updates['/users/'+ user.uid +'/data/chips'] = this.props.userData.chips
-
-      updates[matchPath + '/balance'] = data.balance
-      updates[matchPath + '/players'] = data.players
-      updates[matchPath + '/playerAvatar'] = data.playerAvatar
-      updates[matchPath + '/newPlayer'] = data.newPlayer
-      updates[matchPath + '/size'] = data.size
-      updates[matchPath + '/move'] = data.move
-      updates[matchPath + '/round'] = data.round
-      
-      updates['/games/list/' + matchName + '/size'] = data.size
-
-      firebase.database().ref().update(updates);
-      setStatusBarHidden(true, 'slide');
-      this.props.navigation.navigate('GameController')
-    })
-
   }
   
   DisplayFriendRequest(){
@@ -314,7 +273,6 @@ export default class FriendsList extends Component {
     )
   }
 
-  //do the remove on other end
   async RemoveFriend(username){
     var user = firebase.auth().currentUser;
 
@@ -424,7 +382,7 @@ export default class FriendsList extends Component {
                           {inGame? (<View>
                             <Text style={[styles.textStyle, {marginBottom: 5}]}>Game: {gameName}</Text> 
                             <TouchableOpacity style={styles.joinButton}
-                            onPress={() => this.joinGame(item.in_game)}>
+                            onPress={() => joinGame(item.in_game, this.props.userData.chips, this.props.navigation)}>
                               <Text style={styles.joinTextStyle}>Join Game</Text>
                             </TouchableOpacity>
                           </View>

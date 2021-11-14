@@ -1,39 +1,25 @@
 import React, { Component } from "react";
-import {
-  Text,
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  StatusBar,
-  Image,
-  Modal,
-  TextInput,
-  BackHandler,
-  Alert,
-  Animated,
-  Dimensions,
-  ActivityIndicator,
-} from "react-native";
+import {StyleSheet, View, Alert, ActivityIndicator} from "react-native";
 import * as ScreenOrientation from "expo-screen-orientation";
 import firebase from "firebase";
 import _ from "lodash"
 
 import GameView from "./GameAnimation/GameSetting";
-import Deck from "../decks";
+import Deck from "./Decks";
 const gameDeck = new Deck();
-
-import CardDealing from "./GameAnimation/cardDealing";
 
 export default class GameSetting extends Component {
   constructor(props) {
     super(props);
+    this.leaveGame = this.leaveGame.bind(this)
+    this.updateGame = this.updateGame.bind(this)
 
     this.state = {
       matchName: "",
       matchType: "",
       game: {},
       myCards: [],
-      playerNum: 0, //fake value
+      playerNum: 0,
 
       deck: [],
       user: {},
@@ -122,7 +108,7 @@ export default class GameSetting extends Component {
   turn = 2 //place 3 cards on board, and players can fold/raise/check/call 
   turn = 3 //place 4th card, bet
   turn = 4 //place 5th card, bet
-  turn = 5 //show cards, last turn and winner takes pot. RESET turn to 0
+  turn = 5 //last turn and winner takes pot. RESET turn to 0
   */
 
   async gameTurnAction() {
@@ -623,7 +609,12 @@ export default class GameSetting extends Component {
     return [playerRanks, deck];
   }
 
-  updateGame(type, amount, gameData, playerNum, matchType, matchName) {
+  updateGame(type, amount) {
+      var gameData = {...this.state.game}
+      var playerNum = this.state.playerNum
+      var matchType = this.state.matchType
+      var matchName = this.state.matchName
+
       var game = {...gameData}
       var keys = []
       if(type === 'check'){
@@ -705,18 +696,14 @@ export default class GameSetting extends Component {
     }
   }
 
-  leaveGame(
-    editGame,
-    playernum,
-    matchType,
-    fullMatchName,
-    userData,
-    newPlayer
-  ) {
-    //When player wants leave game in progress
-    //var editGame = this.props.game
-    //const playernum = this.state.playerNum
-    //editGame, playernum, matchType, fullMatchName
+  leaveGame() {
+    var playernum = this.state.playerNum
+    var editGame = {...this.state.game}
+    var matchType = this.state.matchType
+    var fullMatchName = this.state.matchType+'_'+this.state.matchName
+    var userData = this.props.userData
+    var newPlayer = this.state.newPlayer
+
     var updates = {};
     var matchLocation = "/games/" + matchType + "/" + fullMatchName;
     var user = firebase.auth().currentUser;
@@ -852,8 +839,6 @@ export default class GameSetting extends Component {
           navigation={this.props.navigation}
           leaveGame={this.leaveGame}
           updateGame={this.updateGame}
-          userData={this.props.userData}
-          newPlayer={this.state.newPlayer}
         />
       );
     } else {

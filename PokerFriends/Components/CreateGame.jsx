@@ -1,7 +1,7 @@
 import React, { Component, useState } from 'react'
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, Touchable, Alert } from 'react-native';
 import Slider from '@react-native-community/slider';
-import Logo from './Logo';
+import Logo from './Utils/Logo';
 import firebase from 'firebase'
 import * as ScreenOrientation from 'expo-screen-orientation';
 import {setStatusBarHidden } from 'expo-status-bar';

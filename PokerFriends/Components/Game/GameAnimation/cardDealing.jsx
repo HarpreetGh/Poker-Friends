@@ -8,7 +8,7 @@ import {
      Text
     } from 'react-native';
 
-import Deck from '../../decks'
+import Deck from '../Decks'
 import {CardImageUtil as CardImages} from './CardImages'
 
 export default class CardDealing extends Component {    

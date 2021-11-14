@@ -4,11 +4,11 @@ import { StyleSheet, Text, View, Image, KeyboardAvoidingView, SafeAreaView,
 import { StatusBar as StatusBarExpo, setStatusBarHidden } from 'expo-status-bar';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
-import HelpButton from './HelpButton'
-import Logo from './Logo'
+import HelpButton from './Utils/HelpButton'
+import Logo from './Utils/Logo'
 import firebase from 'firebase'
-import Balance from './Balance'
-import Notification from './Notification'
+import Balance from './Utils/Balance'
+import Notification from './Utils/Notification'
 import Logout from './Logout'
 
 
@@ -54,16 +54,16 @@ export default class LandingPage extends Component {
                 alignContent: 'center'
               }}>
                 <TouchableOpacity 
-                  style={styles.button}
+                  style={styles.centerButtons}
                   onPress = {() => {
-                    this.props.navigation.navigate('JoinGame');
+                    this.props.navigation.navigate('JoinGamePage');
                   }}
                 >
                   <Text style={styles.textStyle}>Join Game</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity 
-                  style={styles.button}
+                  style={styles.centerButtons}
                   onPress = {() => {
                     this.props.navigation.navigate('CreateGame'); 
                   }}
@@ -73,7 +73,7 @@ export default class LandingPage extends Component {
               </View>
             ):(
               <TouchableOpacity 
-                style={[styles.button, {backgroundColor:"#c80c0d"}]}
+                style={[styles.centerButtons, {backgroundColor:"#c80c0d"}]}
                 onPress = {() => {
                   setStatusBarHidden(true, 'slide');
                   this.props.navigation.navigate('GameController'); ///// 'GameSetting'
@@ -84,7 +84,7 @@ export default class LandingPage extends Component {
             )}
 
             <TouchableOpacity 
-              style={styles.button}
+              style={styles.centerButtons}
               onPress = {() => {
                 this.props.navigation.navigate('Leaderboard'); 
               }}
@@ -92,7 +92,7 @@ export default class LandingPage extends Component {
               <Text style={styles.textStyle}>Leaderboard</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} 
+            <TouchableOpacity style={styles.centerButtons} 
               onPress = {() => this.LogOut()}
             >
               <Text style={styles.textStyle}>Log Out</Text>
@@ -122,12 +122,12 @@ export default class LandingPage extends Component {
 
         <View style={[styles.SignedView, {flex: 0.33}]}>
 
-          <TouchableOpacity style={styles.button} 
+          <TouchableOpacity style={styles.centerButtons} 
             onPress = {() => this.props.navigation.navigate('Register')}>
                 <Text style={styles.textStyle}>Sign Up</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} 
+          <TouchableOpacity style={styles.centerButtons} 
             onPress = {() => this.props.navigation.navigate('Login')}>
                 <Text style={styles.textStyle}>Login</Text>
           </TouchableOpacity>
@@ -143,13 +143,13 @@ export default class LandingPage extends Component {
       disabled = true
     }
     return(
-    <View style={styles.SettingcornerView}>
-      <TouchableOpacity style={styles.Settingbutton}
+    <View style={styles.AccountSettingsButtonView}>
+      <TouchableOpacity style={styles.button}
         onPress = {() => {disabled?
           this.props.navigation.navigate('AccountSettings'):
           Alert.alert("Disabled", "Cannot change Account Settings while in a game.")}}
       >
-          <Text style={styles.SettingtextStyle}>Account Settings</Text>
+          <Text style={styles.textStyle}>Account Settings</Text>
       </TouchableOpacity>
     </View>
     )
@@ -158,9 +158,9 @@ export default class LandingPage extends Component {
   AccountStatistics = () => {
     return(
     <View >
-      <TouchableOpacity style = {styles.accountStatsButton} 
+      <TouchableOpacity style = {styles.button} 
         onPress = {() => this.props.navigation.navigate('AccountStats')}>
-          <Text style={styles.SettingtextStyle}>Account Stats</Text>
+          <Text style={styles.textStyle}>Account Stats</Text>
       </TouchableOpacity>
     </View>
     )
@@ -168,7 +168,7 @@ export default class LandingPage extends Component {
 
   FriendsButton = () => {
     return(
-    <TouchableOpacity style={styles.Settingbutton} 
+    <TouchableOpacity style={styles.button} 
       onPress = {() => this.props.navigation.navigate('FriendsList')}>
       <Text style={styles.textStyle}>Friends</Text>
     </TouchableOpacity>
@@ -197,19 +197,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center'
   },
-  button:{
+  centerButtons:{
     backgroundColor: '#27ae60',
     paddingVertical: 20,
     padding: 50,
     borderRadius: 50,
     width:"100%",
     marginBottom: 20
-  },
-  accountStatsButton: {
-    borderRadius: 50,
-    padding: 10,
-    elevation: 2,
-    backgroundColor: "#27ae60",
   },
   topRow:{
     flexDirection: "row",
@@ -223,20 +217,15 @@ const styles = StyleSheet.create({
     width: '90%',
     marginVertical: 20
   },
-  SettingcornerView: {
+  AccountSettingsButtonView: {
     justifyContent: "flex-start",
     alignSelf: 'flex-start'
   },
-  Settingbutton: {
+  button: {
     borderRadius: 50,
     padding: 10,
     elevation: 2,
     backgroundColor: "#27ae60"
-  },
-  SettingtextStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center"
   },
   SignedView: {
     width: '60%',

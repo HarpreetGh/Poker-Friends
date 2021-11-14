@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, 
   TouchableOpacity, Touchable, Alert } from 'react-native';
-import Logo from '../Logo';
+import Logo from '../Utils/Logo';
 import firebase from 'firebase'
 
 export default class ChangeEmail extends Component {

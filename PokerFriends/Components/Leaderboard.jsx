@@ -1,6 +1,6 @@
 import React, { Component, useState } from 'react'
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, TextInput, TouchableOpacity, ActivityIndicator, FlatList, List, ListItem, Touchable, Alert, SafeAreaView } from 'react-native';
-import Logo from './Logo';
+import Logo from './Utils/Logo';
 import firebase from 'firebase'
 import * as ScreenOrientation from 'expo-screen-orientation';
 

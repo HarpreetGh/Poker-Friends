@@ -1,7 +1,7 @@
 import React, { Component, useState } from 'react'
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, 
   TextInput, TouchableOpacity, Touchable, Alert } from 'react-native';
-import Logo from '../Components/Logo';
+import Logo from './Utils/Logo';
 import firebase from 'firebase'
 
 export default class Register extends Component {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Touchable, Keyboard, KeyboardAvoidingView, Alert} from 'react-native';
 import firebase from 'firebase'
-import Logo from '../Components/Logo';
+import Logo from './Utils/Logo';
 
 export default class Login extends Component {
   constructor(props){

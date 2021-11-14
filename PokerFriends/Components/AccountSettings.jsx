@@ -1,6 +1,6 @@
 import React, { Component, useState } from 'react'
 import { StyleSheet, Text, View, Image, KeyboardAvoidingView, SafeAreaView, TouchableOpacity } from 'react-native';
-import Logo from './Logo';
+import Logo from './Utils/Logo';
 
 import firebase from 'firebase'
 

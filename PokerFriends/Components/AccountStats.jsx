@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {View, Text, StyleSheet, ActivityIndicator, Image, TouchableOpacity, SafeAreaView} from 'react-native'
-import Logo from '../Components/Logo'
+import Logo from './Utils/Logo'
 import firebase from 'firebase'
 
 export default class AccountStats extends Component {
