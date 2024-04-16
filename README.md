@@ -17,8 +17,8 @@ Additional updates and features added in 10/2021 such as: Notification Center, T
 ### Please reference the Wiki Tab for more information, photos, and updates of the app.
 https://github.com/HarpreetGh/Poker-Friends/wiki
 
-Try out the App for yourself by downloading Expo Go app on Android's Play Store and then scanning the QR on https://expo.dev/@harpreetgh/poker-friends
+~~Try out the App for yourself by downloading Expo Go app on Android's Play Store and then scanning the QR on https://expo.dev/@harpreetgh/poker-friends
 Unfortunately Apple doesn't allow this functionality through Expo Go, so you may download the iOS build and run it on your own emulator.
-If your run the source code locally on a computer, you may use Expo Go to use this app on your own iPhone. 
+If your run the source code locally on a computer, you may use Expo Go to use this app on your own iPhone.~~ (App hasn't been updated since 2021, so Expo Go no longer supports it)
 
 (Outdated) Demonstration for California State University, Fresno's High Impact Practices Symposium May 2020 https://youtu.be/T5S3_SBrYSM 
